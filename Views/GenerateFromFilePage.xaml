@@ -1,6 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 x:Class="HSPGUI.Views.GenerateFromFilePage">
+<ContentPage
+    x:Class="HSPGUI.Views.GenerateFromFilePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="auto" />
+
+        </Grid.ColumnDefinitions>
+        <Entry
+            x:Name="fileLocationEntry"
+            Grid.Row="0"
+            Grid.Column="0"
+            IsReadOnly="True"
+            MinimumWidthRequest="500" />
+        <Button
+            Grid.Row="0"
+            Grid.Column="1"
+            Clicked="OnOpenFileClicked"
+            Text="Select File" />
+
+        <Button
+            x:Name="updateFromFileBtn"
+            Grid.Row="0"
+            Grid.Column="3"
+            Clicked="updateFromFileBtn_Clicked"
+            Text="Load File" />
+        <StackLayout Grid.Row="1">
+            <!--  Label and entry for 32 hex digits  -->
+
+            <Label Text="EPC Data: " />
+            <Entry
+                x:Name="EPC_Entry"
+                Keyboard="Numeric"
+                MaxLength="32"
+                Placeholder="Enter 32 hex digits" />
+
+
+            <!--  Label and another entry for 32 hex digits  -->
+
+            <Label Text="User Data:" />
+            <Entry
+                x:Name="UserData_Entry"
+                Keyboard="Numeric"
+                MaxLength="32"
+                Placeholder="Enter another 32 hex digits" />
+
+
+
+            <!--  Label and check box  -->
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Use Kill Password: " VerticalOptions="Center" />
+                <CheckBox x:Name="killPassCheckBox" CheckedChanged="OnCheckedChanged" />
+            </StackLayout>
+
+            <!--  Label and entry that appears if the check box is checked  -->
+            <Label
+                x:Name="killPassLabel"
+                IsVisible="False"
+                Text="Kill password:" />
+            <Entry
+                x:Name="KillPass_Entry"
+                IsVisible="False"
+                Placeholder="Enter value" />
+
+            <!--  Label and entry for 8 hex digits  -->
+            <Label Text="Access Password:" />
+            <Entry
+                x:Name="AccessPass_Entry"
+                Keyboard="Numeric"
+                MaxLength="8"
+                Placeholder="Enter 8 hex digits" />
+
+            <!--  Label and entry for 4 hex digits  -->
+            <Label Text="PC Word:" />
+            <Entry
+                x:Name="entry4"
+                Keyboard="Numeric"
+                MaxLength="4"
+                Placeholder="Enter 4 hex digits" />
+        </StackLayout>
+
+    </Grid>
 
 </ContentPage>

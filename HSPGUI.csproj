@@ -54,6 +54,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Resources\raw\Constants.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiAsset Include="Constants.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Essentials" Version="$(MauiVersion)" />

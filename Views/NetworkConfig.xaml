@@ -1,43 +1,65 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:HSPGUI.Resources"
              x:Class="HSPGUI.Views.NetworkConfig">
-    <!--<ContentView.Resources>
+    <ContentPage.Resources>
         <ResourceDictionary>
             <local:OctetValidationBehavior x:Key="octetValidation" />
         </ResourceDictionary>
-    </ContentView.Resources>
+    </ContentPage.Resources>
+    <Frame CornerRadius="5">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-
-        <Entry x:Name="octet1" WidthRequest="50" Placeholder="0" Keyboard="Numeric" MaxLength="3" Grid.Column="0">
+        <Label Text="IP address" Grid.Column="0" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="CenterAndExpand" 
+               Margin="10"/>
+        <Entry x:Name="octet1" WidthRequest="50" Placeholder="0" Keyboard="Numeric" MaxLength="3" 
+               Grid.Column="1" Grid.Row="0" Completed="octet1_Completed" Focused="focused">
             <Entry.Behaviors>
                 <local:OctetValidationBehavior />
             </Entry.Behaviors>
         </Entry>
-        <Label Text="." VerticalOptions="Center" Grid.Column="1" />
-        <Entry x:Name="octet2" WidthRequest="50" Placeholder="0" Keyboard="Numeric" MaxLength="3" Grid.Column="2">
+        <Label Text="." VerticalOptions="Center" Grid.Column="2"  Grid.Row="0"/>
+        <Entry x:Name="octet2" WidthRequest="50" Placeholder="0" Keyboard="Numeric" MaxLength="3"
+               Grid.Column="3" Grid.Row="0" Completed="octet2_Completed" Focused="focused">
             <Entry.Behaviors>
                 <local:OctetValidationBehavior />
             </Entry.Behaviors>
         </Entry>
-        <Label Text="." VerticalOptions="Center" Grid.Column="3" />
-        <Entry x:Name="octet3" WidthRequest="50" Placeholder="0" Keyboard="Numeric" MaxLength="3" Grid.Column="4">
+        <Label Text="." VerticalOptions="Center" Grid.Column="4" Grid.Row="0"/>
+        <Entry x:Name="octet3" WidthRequest="50" Placeholder="0" Keyboard="Numeric" MaxLength="3" 
+               Grid.Column="5" Grid.Row="0" Completed="octet3_Completed" Focused="focused">
             <Entry.Behaviors>
                 <local:OctetValidationBehavior />
             </Entry.Behaviors>
         </Entry>
-        <Label Text="." VerticalOptions="Center" Grid.Column="5" />
-        <Entry x:Name="octet4" WidthRequest="50" Placeholder="0" Keyboard="Numeric" MaxLength="3" Grid.Column="6">
+        <Label Text="." VerticalOptions="Center" Grid.Column="6"  Grid.Row="0"/>
+        <Entry x:Name="octet4" WidthRequest="50"  Keyboard="Numeric" MaxLength="3" 
+               Grid.Column="7"  Grid.Row="0" Completed="octet4_Completed" Focused="focused">
             <Entry.Behaviors>
                 <local:OctetValidationBehavior />
             </Entry.Behaviors>
         </Entry>
-    </Grid>-->   
-</ContentView>
+        <Label Text="Port" VerticalOptions="Center" Grid.Column="8" Grid.Row="0" Margin="10"/>
+        <Entry x:Name="port" Keyboard="Numeric" WidthRequest="100" MaxLength="4" 
+               Grid.Column="9" Grid.Row="0" Focused="focused"/>
+        <Button Text="Update IP Address" Clicked="Button_Clicked" Grid.Column="10" Grid.Row="0"></Button>
+    </Grid>
+    </Frame>
+</ContentPage>
