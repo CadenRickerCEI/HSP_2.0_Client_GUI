@@ -9,7 +9,7 @@
 	<ShellContent
 		Shell.NavBarIsVisible="true"
 		Title="RIFD Status"
-		Icon="iconblank.png"
+		Icon="rfidicon.svg"
 		ContentTemplate="{DataTemplate views:StatusPage}"
 		Route="StatusPage" />
 	<ShellContent
@@ -33,7 +33,7 @@
     <ShellContent
 		Shell.NavBarIsVisible="true"
 		Title="Network Config"
-		Icon="iconblank.png"
+		Icon="etherneticon.svg"
 		ContentTemplate="{DataTemplate views:NetworkConfig}"
 		Route="NetworkConfig" />
 </Shell>

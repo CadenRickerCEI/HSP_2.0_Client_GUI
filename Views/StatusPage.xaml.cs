@@ -2,7 +2,7 @@
 
 public partial class StatusPage : ContentPage
 {
-    TelnetClient client = ((App)Application.Current)._client;
+    HSPClient client = ((App)Application.Current)._client;
     public StatusPage()
     {
         InitializeComponent();
@@ -14,9 +14,9 @@ public partial class StatusPage : ContentPage
     public async void connectToServer()
     {
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Sevrver");
-        await client.ConnectAsync("192.168.100.10", 10);
+        await client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
         System.Diagnostics.Debug.WriteLine("await finished");
-        if (client.connected == false)
+        if (client._connected == false)
         {
             bool tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed try again", "Try Again", "Cancel");
             if (tryAgain)

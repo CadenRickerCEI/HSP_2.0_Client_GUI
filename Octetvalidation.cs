@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HSPGUI.Resources
+﻿namespace HSPGUI.Resources
 {
     public class OctetValidationBehavior : Behavior<Entry>
     {

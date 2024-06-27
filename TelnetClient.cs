@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 public class TelnetClient
 {
@@ -29,10 +26,11 @@ public class TelnetClient
                 writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
             }
         }
-        catch(Exception ex) {
-        
+        catch (Exception ex)
+        {
+
             connected = false;
-        }      
+        }
     }
 
     public async Task<string> ReadAsync()

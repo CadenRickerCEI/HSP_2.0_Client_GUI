@@ -3,19 +3,19 @@
 public partial class LoadFromFilePage : ContentPage
 {
     public LoadFromFilePage()
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         loadFileBtn.IsVisible = false;
 
     }
     async void OnOpenFileClicked(object sender, EventArgs e)
     {
-        
+
         var options = new PickOptions
         {
             PickerTitle = "Please select a CSV file",
             FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> { { DevicePlatform.WinUI, new[] { ".csv" } } })
-           
+
         };
 
         var result = await FilePicker.PickAsync(options);

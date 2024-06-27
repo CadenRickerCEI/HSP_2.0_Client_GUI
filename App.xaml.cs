@@ -1,15 +1,14 @@
 ﻿namespace HSPGUI;
-using HSPGUI.Resources;
 public partial class App : Application
 {
-	public TelnetClient _client;
-	public App()
-	{
-		InitializeComponent();
-        
+    public HSPClient _client;
+    public App()
+    {
+        InitializeComponent();
+
         MainPage = new AppShell();
-		_client = new TelnetClient();		
-	}
+        _client = new HSPClient();
+    }
     protected override void OnStart()
     {
         // Handle when your app starts
@@ -22,4 +21,5 @@ public partial class App : Application
             Preferences.Set(Constants.KeyPort, Constants.Port);
         }
     }
+
 }
