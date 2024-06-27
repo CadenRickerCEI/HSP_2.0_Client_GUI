@@ -8,6 +8,8 @@ public partial class GenerateFromFilePage : ContentPage
 	{
 		InitializeComponent();
         updateFromFileBtn.IsVisible = false;
+        EPC_Entry.MinimumWidthRequest = EPC_Entry.FontSize *Constants.fontToWidthScale *(double)Constants.MaxLenEPC_hex ;
+        UserData_Entry.MinimumWidthRequest = UserData_Entry.FontSize* Constants.fontToWidthScale * (double)Constants.MaxLenUSR_Hex;
 	}
     async void OnOpenFileClicked(object sender, EventArgs e)
     {
@@ -53,7 +55,27 @@ public partial class GenerateFromFilePage : ContentPage
             {
                 
                 System.Diagnostics.Debug.WriteLine(string.Join(",",dataItem));
+            
             }
+            if (data != null)
+            {
+                if (data[1] != null){
+                    EPC_Entry.Text = data[1][0];
+                    UserData_Entry.Text = data[1][1];
+                    if (data[1][2] != "")
+                    {
+                        killPassCheckBox.IsChecked = true;
+                        KillPass_Entry.Text = data[1][2];
+                    }
+                    else
+                    {
+                        killPassCheckBox.IsChecked = false;
+                    }
+                    AccessPass_Entry.Text = data[1][3];
+                    PC_Entry.Text = data[1][4];
+                }
+            }
+
         }
     }
     void OnCheckedChanged(object sender, CheckedChangedEventArgs e)
