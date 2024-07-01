@@ -6,6 +6,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -31,7 +32,15 @@
             x:Name="loadFileBtn"
             Grid.Row="0"
             Grid.Column="3"
-            Text="Load File" />
+            Text="Load File" 
+            Clicked="loadFileBtn_Clicked"/>
+        <ProgressBar
+            x:Name="progressBar"
+            IsVisible="True"
+            Grid.Row="1"
+            MinimumHeightRequest="60">          
+            
+        </ProgressBar>
 
     </Grid>
 

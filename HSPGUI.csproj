@@ -63,7 +63,10 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\AppIcon\rfid.svg" />
+	  <None Remove="Resources\Images\antena.svg" />
 	  <None Remove="Resources\Images\ethernetIcon.svg" />
+	  <None Remove="Resources\Images\fileplus.svg" />
+	  <None Remove="Resources\Images\rfid.svg" />
 	  <None Remove="Resources\Images\rfidIcon.svg" />
 	</ItemGroup>
 

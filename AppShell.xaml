@@ -9,31 +9,31 @@
 	<ShellContent
 		Shell.NavBarIsVisible="true"
 		Title="RIFD Status"
-		Icon="rfidicon.svg"
+		Icon="rfid.png"
 		ContentTemplate="{DataTemplate views:StatusPage}"
 		Route="StatusPage" />
 	<ShellContent
 		Shell.NavBarIsVisible="true"
 		Title="Load From File"
-		Icon="iconblank.png"
+		Icon="fileplus.png"
 		ContentTemplate="{DataTemplate views:LoadFromFilePage}"
 		Route="LoadFromFilePage" />
 	<ShellContent
 		Shell.NavBarIsVisible="true"
 		Title="Generate From File"
-		Icon="iconblank.png"
+        Icon="iconblank.png"
 		ContentTemplate="{DataTemplate views:GenerateFromFilePage}"
 		Route="GenerateFromFilePage" />
 	<ShellContent
 		Shell.NavBarIsVisible="true"
 		Title="Antena Setup"
-		Icon="iconblank.png"
+		Icon="antena.png"
 		ContentTemplate="{DataTemplate views:AntenaSetUp}"
 		Route="AntenaSetUp" />
     <ShellContent
 		Shell.NavBarIsVisible="true"
 		Title="Network Config"
-		Icon="etherneticon.svg"
+		Icon="etherneticon.png"
 		ContentTemplate="{DataTemplate views:NetworkConfig}"
 		Route="NetworkConfig" />
 </Shell>

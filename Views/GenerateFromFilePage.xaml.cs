@@ -1,11 +1,15 @@
 ﻿namespace HSPGUI.Views;
 using HSPGUI.Resources;
+using Microsoft.Maui.Graphics.Text;
+//using Windows.Media.Protection.PlayReady;
+
 
 public partial class GenerateFromFilePage : ContentPage
 {
-
+    private HSPClient client ;
     public GenerateFromFilePage()
     {
+        client = ((App)Application.Current)._client;
         InitializeComponent();
         updateFromFileBtn.IsVisible = false;
         EPC_Entry.MinimumWidthRequest = EPC_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenEPC_hex;
@@ -48,7 +52,7 @@ public partial class GenerateFromFilePage : ContentPage
         CSVReader csvReader = new CSVReader(fileLocationEntry.Text);
         List<string[]> data = csvReader.ReadCSV();
 
-
+        
         if (data != null)
         {
             foreach (var dataItem in data)
@@ -61,12 +65,13 @@ public partial class GenerateFromFilePage : ContentPage
             {
                 if (data[1] != null)
                 {
-                    EPC_Entry.Text = data[1][0];
+                    EPC_Entry.Text = data[1][0];                    
                     UserData_Entry.Text = data[1][1];
+                    
                     if (data[1][2] != "")
                     {
                         killPassCheckBox.IsChecked = true;
-                        KillPass_Entry.Text = data[1][2];
+                        KillPass_Entry.Text = data[1][2];                        
                     }
                     else
                     {
@@ -88,11 +93,52 @@ public partial class GenerateFromFilePage : ContentPage
     {
         KillPass_Entry.IsVisible = e.Value !;
     }
+    void OnEPC_EntryTextChanged(object sender, TextChangedEventArgs e)
+    {
+        System.Diagnostics.Debug.WriteLine("EPC Changed");
+        if (EPC_Entry.Text != null)
+        {
+            EPC_Entry.TextColor = client.validateInput(EPC_Entry.Text, EPC_Entry.Text.Length, false) ?
+                            Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
+        }
+    }
+    void OnUSR_EntryTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (UserData_Entry.Text != null)
+        {
+            UserData_Entry.TextColor = client.validateInput(UserData_Entry.Text, UserData_Entry.Text.Length, false) ?
+                            Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
+        }
+    }
+    void OnKIL_EntryTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (KillPass_Entry.Text != null)
+        {
+            KillPass_Entry.TextColor = client.validateInput(KillPass_Entry.Text, 8, false) ?
+                            Color.FromArgb("#00000") : Color.FromArgb("#FF0000");
+        }
+    }
+    void OnACC_EntryTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (AccessPass_Entry.Text != null)
+        {
+            AccessPass_Entry.TextColor = client.validateInput(AccessPass_Entry.Text, 8, false) ?
+                            Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
+        }
+    }
+    void OnPCW_EntryTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (PC_Entry.Text != null)
+        {
+            PC_Entry.TextColor = client.validateInput(PC_Entry.Text, 4, false) ?
+                            Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
+        }
+    }
 
     private async void loadBuffer_Clicked(object sender, EventArgs e)
     {
         bool resetBuffer = await DisplayAlert("Load Buffer", "Clear buffer in HSP before loading or add to the buffer?", "Clear Buffer", "Add to Buffer");
-        HSPClient client = ((App)Application.Current)._client ;
+        //HSPClient client = ((App)Application.Current)._client ;
         string? EPCData = EPC_Entry.Text != null ? EPC_Entry.Text : "";
         string? UserData = UserData_Entry.Text != null ? UserData_Entry.Text : "";
         string? killData = ( KillPass_Entry.Text != null & killPassCheckBox.IsChecked )? KillPass_Entry.Text : "";

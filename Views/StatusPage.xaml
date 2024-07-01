@@ -2,6 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 x:Class="HSPGUI.Views.StatusPage">
+    <NavigationPage.TitleView>
+        <StackLayout Orientation="Horizontal" Spacing="10">
+            <Image Source="rfid.png" HeightRequest="30" WidthRequest="30" />
+            <Label Text="RIFD Status" FontSize="Large" />
+        </StackLayout>
+    </NavigationPage.TitleView>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
