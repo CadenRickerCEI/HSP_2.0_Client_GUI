@@ -88,7 +88,8 @@
                         MaxLength="32"
                         Margin="0,0,5,0"
                         Placeholder="Epc Data"  
-                        TextChanged="OnEPC_EntryTextChanged"/>
+                        TextChanged="OnEPC_EntryTextChanged"
+                        Completed="EPC_Entry_Completed"/>
                     <StackLayout
                         Grid.Row="0"
                         Grid.Column="1"
@@ -110,7 +111,8 @@
                         MaxLength="32"
                         Margin="5,0,0,0"
                         Placeholder="User Data" 
-                        TextChanged="OnUSR_EntryTextChanged"/>
+                        TextChanged="OnUSR_EntryTextChanged"
+                        Completed="UserData_Entry_Completed"/>
                 </Grid>
 
 
@@ -149,7 +151,8 @@
                         MaxLength="8"
                         Margin="0,0,5,0"
                         Placeholder="Enter value" 
-                        TextChanged="OnKIL_EntryTextChanged"/>
+                        TextChanged="OnKIL_EntryTextChanged"
+                        Completed="KillPass_Entry_Completed"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="1"
@@ -164,7 +167,8 @@
                         Margin="5,0,5,0"
                         MaxLength="8"
                         Placeholder="Enter 8 hex digits" 
-                        TextChanged="OnACC_EntryTextChanged"/>
+                        TextChanged="OnACC_EntryTextChanged"
+                        Completed="AccessPass_Entry_Completed"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="2"
@@ -179,7 +183,8 @@
                         MaxLength="4"
                         Margin="5,0,5,0"
                         Placeholder="Enter 4 hex digits"
-                        TextChanged="OnPCW_EntryTextChanged"/>
+                        TextChanged="OnPCW_EntryTextChanged"
+                        Completed="PC_Entry_Completed"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="3"

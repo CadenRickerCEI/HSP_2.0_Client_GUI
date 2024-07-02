@@ -44,16 +44,16 @@ public partial class NetworkConfig : ContentPage
         int octet4_int = (octet4.Text == null) ? -1 : int.Parse(octet4.Text);
         int port_int = (port.Text == null) ? -1 : int.Parse(port.Text);
         System.Diagnostics.Debug.WriteLine($"{octet1_int}.{octet2_int}.{octet3_int}.{octet4_int} port {port_int}");
-        if (octet1_int >= 0 & octet1_int < 256 & octet2_int >= 0 & octet2_int < 256 &
-            octet3_int >= 0 & octet3_int < 256 & octet4_int > 0 & octet4_int < 256 &
-            port_int >= 0 & port_int < 65535)
+        if (octet1_int >= 0 && octet1_int < 256 && octet2_int >= 0 && octet2_int < 256 &
+            octet3_int >= 0 && octet3_int < 256 && octet4_int > 0 && octet4_int < 256 &
+            port_int >= 0 && port_int < 65535)
         {
             Preferences.Set(Constants.KeyIpAddress, octet1.Text + "." + octet2.Text + "." + octet3.Text + "." + octet4.Text);
             Preferences.Set(Constants.KeyPort, port_int);
         }
         else
         {
-            DisplayAlert("Invalid", "Ip Address or Port is invalid", "Confirm");
+            await DisplayAlert("Invalid", "Ip Address or Port is invalid", "Confirm");
         }
     }
 

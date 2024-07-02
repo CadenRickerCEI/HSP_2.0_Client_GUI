@@ -14,7 +14,7 @@ public partial class LoadFromFilePage : ContentPage
         loadFileBtn.IsVisible = false;        
         _progress.ProgressChanged += (s, e) =>
         {
-            System.Diagnostics.Debug.WriteLine(e);
+            //System.Diagnostics.Debug.WriteLine(e);
             progressBar.Progress = e;
         };
 
@@ -31,38 +31,43 @@ public partial class LoadFromFilePage : ContentPage
 
         var result = await FilePicker.PickAsync(options);
 
-        if (result != null)
+        if (result != null && File.Exists(result.FullPath))
         {
-            /*var fileName = result.FileName;
-            var fileData = await result.OpenReadAsync();*/
-            // Now you can use the file data
-
             // Display the file location in the Entry
-            loadFileBtn.IsVisible = File.Exists(result.FullPath);
+            loadFileBtn.IsVisible = true;
             fileLocationEntry.Text = result.FullPath;
+        }
+        else
+        {
+            loadFileBtn.IsVisible = false;
+            await DisplayAlert("File Does Not Exist", "Try Selecting the file again.", "Ok");
         }
     }
 
-    private void loadFileBtn_Clicked(object sender, EventArgs e)
-    {
-        loadFile();
-        
-
-    }
-    private async void loadFile()
-    {
-        progressBar.IsVisible = false;
+    private async void loadFileBtn_Clicked(object sender, EventArgs e)
+    {     
+        progressBar.Progress = 0;
+        bool resetBuffer = await DisplayAlert("Clear HSP Buffer", "Press reset to clear the buffer or add to add to the buffer", "Reset", "Add");
+        progressBar.IsVisible = true;
         if (_progress != null)
         {
-            await Task.Run(() => client.LoadFromFile(fileLocationEntry.Text, _progress));
-
+            await Task.Run(() => { Task task = client.LoadFromFile(fileLocationEntry.Text, _progress, resetBuffer); });
         }
         else
         {
             System.Diagnostics.Debug.WriteLine("progress null");
+        }        
+        await DisplayAlert("File Loading Complete", "File has been loaded into the HSP.", "Ok");
+        progressBar.Progress = 0;
+        progressBar.IsVisible = false;
+    }
+
+    private void fileLocationEntry_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (fileLocationEntry.Text != null)
+        {
+            // Display the file location in the Entry
+            loadFileBtn.IsVisible = File.Exists(fileLocationEntry.Text);
         }
-
-        progressBar.IsVisible = true;
-
     }
 }

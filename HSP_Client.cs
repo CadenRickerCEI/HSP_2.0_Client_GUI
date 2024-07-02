@@ -16,7 +16,7 @@ public class HSPClient
     /// Indicates whether the client is connected to the server.
     /// </summary>
     public bool _connected { get; }
-    string[] dataTypes = ["EPC", "USR", "KIL", "ACC", "PCW"];
+    private string[] dataTypes = new string[] { "EPC", "USR", "KIL", "ACC", "PCW" };
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
@@ -70,40 +70,52 @@ public class HSPClient
             await _client.WriteAsync(command);
         }
     }
-    public async Task LoadFromFile(string file, IProgress<double> progress)
+    public async Task LoadFromFile(string file, IProgress<double> progress, bool resetBuffer)
     {
+        if (resetBuffer)
+        {
+            System.Diagnostics.Debug.WriteLine("RESETBUFFER");
+            if (_connected)
+            {
+                await _client.WriteAsync("RESETBUFFER");
+            }
+        }
         try
         {
             CSVReader csvReader = new CSVReader(file);
             List<string[]> data = csvReader.ReadCSV();
             progress.Report( 0);
+            if (data == null)
+            {
+                throw new Exception();
+            }
             // start i at 1 to ignore the header
             for (int i = 1; i < data.Count; i++)
             {
                 
                 string command = "WRITEITEM=";
                 //EPC
-                if (data[i].Length >0 & data[i][0].Length>0 & validateInput(data[i][0], data[i][0].Length ,false) )
+                if (data[i].Length >0 && data[i][0].Length>0 && validateInput(data[i][0], data[i][0].Length ,false) )
                 {
                     command += dataTypes[0] + data[i][0];
                 }
                 //user data
-                if (data[i].Length > 1 & data[i][1].Length > 0 & validateInput(data[i][1], data[i][1].Length, false))
+                if (data[i].Length > 1 && data[i][1].Length > 0 && validateInput(data[i][1], data[i][1].Length, false))
                 {
                     command += dataTypes[1] + data[i][1];
                 }
                 //kill password
-                if (data[i].Length > 2 & data[i][2].Length > 0 & validateInput(data[i][2], 8, false))
+                if (data[i].Length > 2 && data[i][2].Length > 0 && validateInput(data[i][2], 8, false))
                 {
                     command += dataTypes[2] + data[i][2];
                 }
                 //Access password
-                if (data[i].Length > 3 & data[i][3].Length > 0 & validateInput(data[i][3], 8, false))
+                if (data[i].Length > 3 && data[i][3].Length > 0 && validateInput(data[i][3], 8, false))
                 {
                     command += dataTypes[3] + data[i][3];
                 }
                 //PC Word
-                if (data[i].Length > 4 & data[i][4].Length > 0 & validateInput(data[i][0], 4, false))
+                if (data[i].Length > 4 && data[i][4].Length > 0 && validateInput(data[i][0], 4, false))
                 {
                     command += dataTypes[4] + data[i][4];
                 }
@@ -113,17 +125,33 @@ public class HSPClient
                     if (_client.connected)
                     {
                         await _client.WriteAsync(command);
-                    }
+                    }                    
                 }
                 progress.Report((double)i/(double)data.Count*100.0);
             }
-            System.Diagnostics.Debug.WriteLine("completed loading");
+            //System.Diagnostics.Debug.WriteLine("completed loading");
+            return;
         }
         catch
         {
             return;
         }
         
+    }
+    public Task<int[]> readAntenaStatus()
+    {
+        int[] settings = new int[6];             
+
+        return Task.FromResult(settings);
+    }
+    public async Task writeAntenaSettigns( int [] Settings)
+    {
+        if (_client.connected)
+        {
+            await _client.WriteAsync("NB");
+            string message = await _client.ReadAsync();
+        }
+        return;
     }
     public bool validateInput(string input,int length,bool sequential)
     {
@@ -139,7 +167,7 @@ public class HSPClient
             length = sequential? 32:33;//if sequential the lenght will be one longer
         }
         
-        return regex.IsMatch(input) & input.Length == length;
+        return regex.IsMatch(input) && input.Length == length;
     }
 
 

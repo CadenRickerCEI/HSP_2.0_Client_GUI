@@ -2,53 +2,40 @@
 
 public partial class AntenaSetUp : ContentPage
 {
+    private HSPClient client;
     public AntenaSetUp()
     {
-
+        client = ((App)Application.Current)._client;
         InitializeComponent();
-
-        List<String> baudRateOptions = new List<String> {
-        "9600","19200","38400","57600","115200","230400","460800","921600"};
-        baudRateSelector.ItemsSource = baudRateOptions;
-        List<String> tariOptions = new List<String> {
-        " 6.25 usec","12.50 usec","25.00 usec"};
-        tariSelector.ItemsSource = tariOptions;
-        List<String> bitPatternOpt = new List<String> {
-        "FM0","MILLER2","MILLER4", "MILLER8"};
-        bitPatternSelector.ItemsSource = bitPatternOpt;
-        List<String> LFOptions = new List<String> {
-        "40 khz","160 khz","250 khz", "320 khz","640 khz"};
-        LFSelector.ItemsSource = LFOptions;
-        
-
-        baudRateSelector.SelectedIndexChanged += (s, e) =>
+        baudRateSelector.SelectedIndex      = Math.Max(baudRateSelector.SelectedIndex, 0  );
+        tariSelector.SelectedIndex          = Math.Max(tariSelector.SelectedIndex , 0 );
+        bitPatternSelector.SelectedIndex    = Math.Max(bitPatternSelector.SelectedIndex , 0 );
+        LFSelector.SelectedIndex            = Math.Max(LFSelector.SelectedIndex , 0 );
+        recieverGainSelector.SelectedIndex  = Math.Max(recieverGainSelector.SelectedIndex , 0 );
+        asyncRecieverGain.SelectedIndex     = Math.Max(asyncRecieverGain.SelectedIndex , 0 );        
+    }
+    private async void ReadSettings_Clicked(object sender, EventArgs e)
+    {
+        int[] settings = await client.readAntenaStatus();
+        if (settings != null && settings.Length >5 )
         {
-            //var updateBaudRate = true;
-            var selectedBaudRate = baudRateSelector.SelectedItem;
-        };
-
-        
-
-        tariSelector.SelectedIndexChanged += (s, e) =>
-        {
-            //var updateTariLength = true;
-            var selectedTariLength = baudRateSelector.SelectedIndex;
-        };
-
-        
-
-        bitPatternSelector.SelectedIndexChanged += (s, e) =>
-        {
-            //var updateBitPattern = true;
-            var selectedBitPattern = baudRateSelector.SelectedIndex;
-        };
-        
-
-        LFSelector.SelectedIndexChanged += async (s, e) =>
-        {
-            //var updateLF = true;
-            var selectedLF = LFSelector.SelectedIndex;
-            await DisplayAlert("Alert", "The selected item has changed to: " + LFSelector.SelectedItem, "OK");
-        };
+            baudRateSelector.SelectedIndex      = settings[0];
+            tariSelector.SelectedIndex          = settings[1];
+            bitPatternSelector.SelectedIndex    = settings[2];
+            LFSelector.SelectedIndex            = settings[3];
+            recieverGainSelector.SelectedIndex  = settings[4];
+            asyncRecieverGain.SelectedIndex     = settings[5];
+        }
+    }
+    private async void WriteSettings_Clicked(object sender, EventArgs e)
+    {
+        int [] settings = new int[6];
+        settings[0] = (int) baudRateSelector.SelectedIndex;
+        settings[1] = (int) tariSelector.SelectedIndex;
+        settings[2] = (int) bitPatternSelector.SelectedIndex;
+        settings[3] = (int) LFSelector.SelectedIndex;
+        settings[4] = (int) recieverGainSelector.SelectedIndex;
+        settings[5] = (int) asyncRecieverGain.SelectedIndex;
+        await client.writeAntenaSettigns(settings);
     }
 }

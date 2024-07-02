@@ -3,57 +3,144 @@
     x:Class="HSPGUI.Views.AntenaSetUp"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <!--  Add more RowDefinition elements here as needed  -->
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            
-            <!--  Add more ColumnDefinition elements here as needed  -->
-        </Grid.ColumnDefinitions>
-        <Picker x:Name="baudRateSelector" Title="Select Baud Rate" Grid.Row="0" Grid.Column="0" Margin="10">
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                </x:Array>
-            </Picker.ItemsSource>
-        </Picker>
-        <Picker x:Name="tariSelector" Title="Select Tari Length" Grid.Row="0" Grid.Column="1" Margin="10" >
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                </x:Array>
-            </Picker.ItemsSource>
-        </Picker>
-        <Picker x:Name="bitPatternSelector" Title="Select Bit Pattern" Grid.Row="0" Grid.Column="2" Margin="10" >
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                </x:Array>
-            </Picker.ItemsSource>
-        </Picker>
-        <Picker x:Name="LFSelector" Title="Select Tag Base Band" Grid.Row="0" Grid.Column="3" Margin="10" >
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                </x:Array>
-            </Picker.ItemsSource>
-        </Picker>
-        
-        <Picker x:Name="recieverGainSelector" Title="Reciever Gain" Grid.Row="1" Grid.Column="0" Margin="10">
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                </x:Array>
-            </Picker.ItemsSource>
-        </Picker>
-        <Picker x:Name="asyncRecieverGain" Title="Async Reciever Gain" Grid.Row="1" Grid.Column="1" Margin="10" >
-            <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                </x:Array>
-            </Picker.ItemsSource>
-        </Picker>
-    </Grid>
+
+    <StackLayout>
+
+        <Frame
+            Margin="5"
+            HorizontalOptions="StartAndExpand"
+            MaximumWidthRequest="550">
+            <StackLayout>
+                <FlexLayout
+                    AlignItems="Start"
+                    Direction="Row"
+                    JustifyContent="Start"
+                    Wrap="Wrap">
+                    <Picker
+                        x:Name="baudRateSelector"
+                        Title="Select Baud Rate"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>9600</x:String>
+                                <x:String>19200</x:String>
+                                <x:String>38400</x:String>
+                                <x:String>57600</x:String>
+                                <x:String>115200</x:String>
+                                <x:String>230400</x:String>
+                                <x:String>460800</x:String>
+                                <x:String>921600</x:String>
+                            </x:Array>
+
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Picker
+                        x:Name="tariSelector"
+                        Title="Select Tari Length"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>6.25 usec</x:String>
+                                <x:String>12.50 usec</x:String>
+                                <x:String>25.00 usec</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Picker
+                        x:Name="bitPatternSelector"
+                        Title="Select Bit Pattern"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>FM0</x:String>
+                                <x:String>MILLER2</x:String>
+                                <x:String>MILLER4</x:String>
+                                <x:String>MILLER8</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Picker
+                        x:Name="LFSelector"
+                        Title="Select Tag Base Band"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>40 khz</x:String>
+                                <x:String>160 khz</x:String>
+                                <x:String>250 khz</x:String>
+                                <x:String>320 khz</x:String>
+                                <x:String>640 khz</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <Picker
+                        x:Name="recieverGainSelector"
+                        Title="Reciever Gain"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String> 0 db</x:String>
+                                <x:String>-9 db</x:String>
+                                <x:String>-6 db</x:String>
+                                <x:String>+3 db</x:String>
+                                <x:String>+6 db</x:String>
+                                <x:String>+9 db</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Picker
+                        x:Name="asyncRecieverGain"
+                        Title="Async Reciever Gain"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String> 0 db</x:String>
+                                <x:String>-9 db</x:String>
+                                <x:String>-6 db</x:String>
+                                <x:String>+3 db</x:String>
+                                <x:String>+6 db</x:String>
+                                <x:String>+9 db</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </FlexLayout>
+                <StackLayout>
+                    <Button
+                        x:Name="ReadSettings"
+                        Margin="10,20,10,10"
+                        Clicked="ReadSettings_Clicked"
+                        HorizontalOptions="FillAndExpand"
+                        Text="Read Current Settings" />
+
+                    <Button
+                        x:Name="WriteSettings"
+                        Margin="10"
+                        Clicked="WriteSettings_Clicked"
+                        HorizontalOptions="FillAndExpand"
+                        Text="Write Settings" />
+                </StackLayout>
+            </StackLayout>
+        </Frame>
+    </StackLayout>
+
+
 
 </ContentPage>

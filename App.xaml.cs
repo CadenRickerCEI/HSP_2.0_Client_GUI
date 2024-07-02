@@ -7,6 +7,7 @@ public partial class App : Application
         InitializeComponent();
 
         MainPage = new AppShell();
+        MainPage.Title = "HSP 4.0";        
         _client = new HSPClient();
     }
     protected override void OnStart()
