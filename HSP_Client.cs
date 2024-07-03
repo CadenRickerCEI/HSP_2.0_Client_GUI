@@ -70,7 +70,7 @@ public class HSPClient
             await _client.WriteAsync(command);
         }
     }
-    public async Task LoadFromFile(string file, IProgress<double> progress, bool resetBuffer)
+    public async Task<int> LoadFromFile(string file, IProgress<double> progress, bool resetBuffer)
     {
         if (resetBuffer)
         {
@@ -89,52 +89,57 @@ public class HSPClient
             {
                 throw new Exception();
             }
+            int[] lengths = new int[] { -1, -1, 8, 8, 4 };
             // start i at 1 to ignore the header
+            
             for (int i = 1; i < data.Count; i++)
-            {
-                
+            {                
                 string command = "WRITEITEM=";
-                //EPC
-                if (data[i].Length >0 && data[i][0].Length>0 && validateInput(data[i][0], data[i][0].Length ,false) )
+                for (int j = 0; j < data[i].Length; j++)
+                { 
+                    int length = lengths[j] < 0 ? data[i][j].Length : lengths[j];
+                    if (data[i][j].Length > 0 && validateInput(data[i][j], length , false) == false)
+                    {
+                            System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
+                        return i;
+                    }
+                    command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] : "";//only add if the section is not blank
+                }                
+                if (command != "WriteItem=") //make sure we aren't adding blank tags
                 {
-                    command += dataTypes[0] + data[i][0];
-                }
-                //user data
-                if (data[i].Length > 1 && data[i][1].Length > 0 && validateInput(data[i][1], data[i][1].Length, false))
-                {
-                    command += dataTypes[1] + data[i][1];
-                }
-                //kill password
-                if (data[i].Length > 2 && data[i][2].Length > 0 && validateInput(data[i][2], 8, false))
-                {
-                    command += dataTypes[2] + data[i][2];
-                }
-                //Access password
-                if (data[i].Length > 3 && data[i][3].Length > 0 && validateInput(data[i][3], 8, false))
-                {
-                    command += dataTypes[3] + data[i][3];
-                }
-                //PC Word
-                if (data[i].Length > 4 && data[i][4].Length > 0 && validateInput(data[i][0], 4, false))
-                {
-                    command += dataTypes[4] + data[i][4];
-                }
-                if (command != "WriteItem=") //make sure we aren't creating an invalid tag
-                {
-                    //System.Diagnostics.Debug.WriteLine(command);
+                    if (i < -1)
+                    {
+                        System.Diagnostics.Debug.WriteLine(command);
+                    }                    
                     if (_client.connected)
                     {
                         await _client.WriteAsync(command);
-                    }                    
+                    }              
                 }
-                progress.Report((double)i/(double)data.Count*100.0);
-            }
-            //System.Diagnostics.Debug.WriteLine("completed loading");
-            return;
+                else
+                {
+                    return i;
+                }
+                
+                //System.Diagnostics.Debug.WriteLine($"row {i} total rows {data.Count} value {progressVal}");
+                if(  i % (data.Count/Math.Min(200,data.Count)) == 0)
+                {
+                    double progressVal = (double)i / (double)(data.Count - 1);
+                    progress.Report((double)i / (double)(data.Count - 1));
+                    if (!_client.connected)
+                    {
+                        await Task.Delay(20);
+                    }
+                }
+                
+            }            
+            progress.Report(1.0);
+            System.Diagnostics.Debug.WriteLine("completed loading");
+            return 0;
         }
         catch
         {
-            return;
+            return -2;
         }
         
     }
@@ -166,7 +171,14 @@ public class HSPClient
         {            
             length = sequential? 32:33;//if sequential the lenght will be one longer
         }
-        
+        if (!regex.IsMatch(input))
+        {
+           System.Diagnostics.Debug.WriteLine("bad expression");
+        }
+        if (input.Length != length)
+        {
+            System.Diagnostics.Debug.WriteLine($"length incorrect expected length {length} found length {input.Length}");
+        }
         return regex.IsMatch(input) && input.Length == length;
     }
 

@@ -47,19 +47,39 @@ public partial class LoadFromFilePage : ContentPage
     private async void loadFileBtn_Clicked(object sender, EventArgs e)
     {     
         progressBar.Progress = 0;
-        bool resetBuffer = await DisplayAlert("Clear HSP Buffer", "Press reset to clear the buffer or add to add to the buffer", "Reset", "Add");
+        progressFrame.IsVisible = true;
         progressBar.IsVisible = true;
+        loadFileBtn.IsEnabled = false;
+        bool resetBuffer = await DisplayAlert("Clear HSP Buffer", "Press reset to clear the buffer or add to add to the buffer", "Reset", "Add");
+        int loadResult = -1;
         if (_progress != null)
         {
-            await Task.Run(() => { Task task = client.LoadFromFile(fileLocationEntry.Text, _progress, resetBuffer); });
+            loadResult =  await Task.Run(() =>
+            {
+                return client.LoadFromFile(fileLocationEntry.Text, _progress, resetBuffer);
+            });
+            System.Diagnostics.Debug.WriteLine("file complete");
         }
         else
         {
             System.Diagnostics.Debug.WriteLine("progress null");
-        }        
-        await DisplayAlert("File Loading Complete", "File has been loaded into the HSP.", "Ok");
+        }
+        if (loadResult == 0)
+        {
+            await DisplayAlert("File Loading Complete", "File has been loaded into the HSP.", "Ok");
+        }
+        else if (loadResult < 0) {
+            await DisplayAlert("File Error", "File is missing, open in another program, or empty.", "Ok");
+        }
+        else
+        {
+            await DisplayAlert("Tag Error", $"Tag error on row {loadResult}. Only tags before this row have been added.", "Ok");
+        }
+        
         progressBar.Progress = 0;
         progressBar.IsVisible = false;
+        progressFrame.IsVisible= false;
+        loadFileBtn.IsEnabled = true;
     }
 
     private void fileLocationEntry_TextChanged(object sender, TextChangedEventArgs e)

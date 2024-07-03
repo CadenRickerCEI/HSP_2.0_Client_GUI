@@ -6,20 +6,25 @@
 
     <StackLayout>
 
-        <Frame
-            Margin="5"
-            HorizontalOptions="StartAndExpand"
-            MaximumWidthRequest="550">
+        <Frame Margin="5" Padding="20">
             <StackLayout>
-                <FlexLayout
-                    AlignItems="Start"
-                    Direction="Row"
-                    JustifyContent="Start"
-                    Wrap="Wrap">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+
+                    </Grid.ColumnDefinitions>
                     <Picker
                         x:Name="baudRateSelector"
                         Title="Select Baud Rate"
-                        Margin="5,0"
+                        Grid.Row="0" Grid.Column="0"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
                         VerticalOptions="Start">
@@ -40,7 +45,8 @@
                     <Picker
                         x:Name="tariSelector"
                         Title="Select Tari Length"
-                        Margin="5,0"
+                        Margin="10,0"
+                        Grid.Row="0" Grid.Column="1"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
                         VerticalOptions="Start">
@@ -57,7 +63,7 @@
                         Title="Select Bit Pattern"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
-                        VerticalOptions="Start">
+                        Grid.Row="0" Grid.Column="2">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
                                 <x:String>FM0</x:String>
@@ -70,9 +76,10 @@
                     <Picker
                         x:Name="LFSelector"
                         Title="Select Tag Base Band"
-                        Margin="5,0"
+                        
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
+                        Grid.Row="1" Grid.Column="0"
                         VerticalOptions="Start">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
@@ -88,9 +95,10 @@
                     <Picker
                         x:Name="recieverGainSelector"
                         Title="Reciever Gain"
-                        Margin="5,0"
+                        Margin="10,0"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
+                        Grid.Row="1" Grid.Column="1"
                         VerticalOptions="Start">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
@@ -106,9 +114,10 @@
                     <Picker
                         x:Name="asyncRecieverGain"
                         Title="Async Reciever Gain"
-                        Margin="5,0"
+                        
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
+                        Grid.Row="1" Grid.Column="2"
                         VerticalOptions="Start">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
@@ -121,18 +130,18 @@
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
-                </FlexLayout>
+                    </Grid>
                 <StackLayout>
                     <Button
                         x:Name="ReadSettings"
-                        Margin="10,20,10,10"
+                        Margin="0,20,0,0"
                         Clicked="ReadSettings_Clicked"
                         HorizontalOptions="FillAndExpand"
                         Text="Read Current Settings" />
 
                     <Button
                         x:Name="WriteSettings"
-                        Margin="10"
+                        Margin="0,20,0,0"
                         Clicked="WriteSettings_Clicked"
                         HorizontalOptions="FillAndExpand"
                         Text="Write Settings" />

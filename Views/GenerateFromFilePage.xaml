@@ -5,12 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
     <StackLayout>
 
-        <Frame Margin="5">
-            <StackLayout
-                Margin="2">
-                <Label                    
-                    FontSize="Subtitle"
-                    Text="Select File Here" />
+        <Frame Margin="5" Padding="20">
+            <StackLayout Margin="2">
+                <Label FontSize="Subtitle" Text="Select File Here" />
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -21,39 +18,34 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="auto" />
+
 
                     </Grid.ColumnDefinitions>
                     <Entry
                         x:Name="fileLocationEntry"
                         Grid.Row="0"
                         Grid.Column="0"
-                        
-                        IsReadOnly="True"
-                        MinimumWidthRequest="500" />
+                        IsReadOnly="True" />
                     <Button
                         Grid.Row="0"
                         Grid.Column="1"
+                        Margin="10,0,0,0"
                         Clicked="OnOpenFileClicked"
-                        Margin="10,0,0,0"
                         Text="Select File" />
-
-                    <Button
-                        x:Name="updateFromFileBtn"
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Margin="10,0,0,0"
-                        Clicked="updateFromFileBtn_Clicked"
-                        Text="Read File" />
                 </Grid>
+                <Button
+                    x:Name="updateFromFileBtn"
+                    Margin="0,20,0,0"
+                    Clicked="updateFromFileBtn_Clicked"
+                    Text="Read File" />
             </StackLayout>
         </Frame>
-        <Frame Margin="5">
+        <Frame Margin="5" Padding="20">
             <StackLayout>
                 <Label
                     Margin="2,0,0,0"
                     FontSize="Subtitle"
-                    Text="Edit Tag Data Here:" />
+                    Text="Edit Tag Data Here" />
                 <!--  Label and entry for 32 hex digits  -->
 
                 <Grid Margin="2,0,2,0">
@@ -64,7 +56,7 @@
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        
+
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackLayout
@@ -75,7 +67,7 @@
                         <Label Text="EPC Data: " VerticalOptions="CenterAndExpand" />
                         <Label
                             HorizontalOptions="EndAndExpand"
-                            Text="Sequential Add '!' and the digits to 4 dighits will be incremented:"
+                            Text="Sequential:"
                             VerticalOptions="CenterAndExpand" />
                         <CheckBox x:Name="EPC_SeqeuntialCheck" />
                     </StackLayout>
@@ -84,18 +76,21 @@
                         x:Name="EPC_Entry"
                         Grid.Row="1"
                         Grid.Column="0"
+                        Margin="0,0,5,0"
+                        Completed="EPC_Entry_Completed"
                         Keyboard="Numeric"
                         MaxLength="32"
-                        Margin="0,0,5,0"
-                        Placeholder="Epc Data"  
-                        TextChanged="OnEPC_EntryTextChanged"
-                        Completed="EPC_Entry_Completed"/>
+                        Placeholder="Epc Data"
+                        TextChanged="OnEPC_EntryTextChanged" />
                     <StackLayout
                         Grid.Row="0"
                         Grid.Column="1"
                         HorizontalOptions="FillAndExpand"
                         Orientation="Horizontal">
-                        <Label Text="User Data:" VerticalOptions="CenterAndExpand" Margin="5,0,0,0" />
+                        <Label
+                            Margin="5,0,0,0"
+                            Text="User Data:"
+                            VerticalOptions="CenterAndExpand" />
                         <Label
                             HorizontalOptions="EndAndExpand"
                             Text="Sequential:"
@@ -107,12 +102,12 @@
                         x:Name="UserData_Entry"
                         Grid.Row="1"
                         Grid.Column="2"
+                        Margin="5,0,0,0"
+                        Completed="UserData_Entry_Completed"
                         Keyboard="Numeric"
                         MaxLength="32"
-                        Margin="5,0,0,0"
-                        Placeholder="User Data" 
-                        TextChanged="OnUSR_EntryTextChanged"
-                        Completed="UserData_Entry_Completed"/>
+                        Placeholder="User Data"
+                        TextChanged="OnUSR_EntryTextChanged" />
                 </Grid>
 
 
@@ -127,11 +122,11 @@
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        
+
                         <ColumnDefinition Width="*" />
-                        
+
                         <ColumnDefinition Width="*" />
-                        
+
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
@@ -140,76 +135,78 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Orientation="Horizontal">
-                        <Label Text="Kill Password: " VerticalOptions="Center"  Margin="0,0,5,0"/>
+                        <Label
+                            Margin="0,0,5,0"
+                            Text="Kill Password: "
+                            VerticalOptions="Center" />
                         <CheckBox x:Name="killPassCheckBox" CheckedChanged="OnCheckedChanged" />
                     </StackLayout>
                     <Entry
                         x:Name="KillPass_Entry"
                         Grid.Row="1"
                         Grid.Column="0"
+                        Margin="0,0,5,0"
+                        Completed="KillPass_Entry_Completed"
                         IsVisible="False"
                         MaxLength="8"
-                        Margin="0,0,5,0"
-                        Placeholder="Enter value" 
-                        TextChanged="OnKIL_EntryTextChanged"
-                        Completed="KillPass_Entry_Completed"/>
+                        Placeholder="Enter value"
+                        TextChanged="OnKIL_EntryTextChanged" />
                     <Label
                         Grid.Row="0"
                         Grid.Column="1"
-                        Text="Access Password:"
                         Margin="5,0,5,0"
+                        Text="Access Password:"
                         VerticalOptions="Center" />
                     <Entry
                         x:Name="AccessPass_Entry"
                         Grid.Row="1"
                         Grid.Column="1"
-                        Keyboard="Numeric"                        
                         Margin="5,0,5,0"
+                        Completed="AccessPass_Entry_Completed"
+                        Keyboard="Numeric"
                         MaxLength="8"
-                        Placeholder="Enter 8 hex digits" 
-                        TextChanged="OnACC_EntryTextChanged"
-                        Completed="AccessPass_Entry_Completed"/>
+                        Placeholder="Enter 8 hex digits"
+                        TextChanged="OnACC_EntryTextChanged" />
                     <Label
                         Grid.Row="0"
                         Grid.Column="2"
-                        Text="PC Word:"
                         Margin="5,0,5,0"
+                        Text="PC Word:"
                         VerticalOptions="Center" />
                     <Entry
                         x:Name="PC_Entry"
                         Grid.Row="1"
                         Grid.Column="2"
+                        Margin="5,0,5,0"
+                        Completed="PC_Entry_Completed"
                         Keyboard="Numeric"
                         MaxLength="4"
-                        Margin="5,0,5,0"
                         Placeholder="Enter 4 hex digits"
-                        TextChanged="OnPCW_EntryTextChanged"
-                        Completed="PC_Entry_Completed"/>
+                        TextChanged="OnPCW_EntryTextChanged" />
                     <Label
                         Grid.Row="0"
                         Grid.Column="3"
-                        Text="Number of Tags to load:"
                         Margin="5,0,0,0"
+                        Text="Number of Tags to load:"
                         VerticalOptions="Center" />
                     <Entry
                         x:Name="GeneratorNum_Entry"
                         Grid.Row="1"
                         Grid.Column="4"
+                        Margin="5,0,0,0"
                         Keyboard="Numeric"
                         MaxLength="5"
-                        Margin="5,0,0,0"
-                        Placeholder="Number Of Tags to load into the buffer" 
-                        />
+                        Placeholder="Number Of Tags to load into the buffer" />
                 </Grid>
             </StackLayout>
         </Frame>
-        
+
 
         <Button
-            Margin="5,40"
+            Margin="5,20"
+            Clicked="loadBuffer_Clicked"
             HorizontalOptions="FillAndExpand"
-            Text="Load HSP Buffer" 
-            Clicked="loadBuffer_Clicked"/>
+            Text="Load HSP Buffer" />
 
     </StackLayout>
 </ContentPage>
