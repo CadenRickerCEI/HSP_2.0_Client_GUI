@@ -48,9 +48,11 @@ public class TelnetClient
     public async Task ConnectAsync(string hostname, int port)
     {
         client = new TcpClient();
+
         try
         {
             await client.ConnectAsync(hostname, port);
+
             if (client.Connected)
             {
                 connected = true;
@@ -98,9 +100,6 @@ public class TelnetClient
     /// </summary>
     public void Disconnect()
     {
-        if (client != null)
-        {
-            client.Close();
-        }
+        if (client != null) client.Close();
     }
 }

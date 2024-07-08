@@ -33,6 +33,7 @@ public partial class App : Application
         {
             Preferences.Set(Constants.KeyIpAddress, Constants.IpAddress); // Set to the HSP Default Address
         }
+
         if (!Preferences.ContainsKey(Constants.KeyPort)) // Set to the HSP Default port
         {
             Preferences.Set(Constants.KeyPort, Constants.Port);

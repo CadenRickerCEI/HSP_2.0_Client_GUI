@@ -16,17 +16,18 @@ public partial class AntenaSetUp : ContentPage
     /// </summary>
     public AntenaSetUp()
     {
-        if ( ((App)Application.Current!) != null)
+        if (((App)Application.Current!) != null)
         {
             client = ((App)Application.Current)._client;
-        }        
+        }
+
         InitializeComponent();
-        baudRateSelector.SelectedIndex      = Math.Max(baudRateSelector.SelectedIndex,  0  );
-        tariSelector.SelectedIndex          = Math.Max(tariSelector.SelectedIndex,      0 );
-        bitPatternSelector.SelectedIndex    = Math.Max(bitPatternSelector.SelectedIndex,0 );
-        LFSelector.SelectedIndex            = Math.Max(LFSelector.SelectedIndex,        0 );
-        recieverGainSelector.SelectedIndex  = Math.Max(recieverGainSelector.SelectedIndex, 0 );
-        asyncRecieverGain.SelectedIndex     = Math.Max(asyncRecieverGain.SelectedIndex, 0 );        
+        baudRateSelector.SelectedIndex = Math.Max(baudRateSelector.SelectedIndex, 0);
+        tariSelector.SelectedIndex = Math.Max(tariSelector.SelectedIndex, 0);
+        bitPatternSelector.SelectedIndex = Math.Max(bitPatternSelector.SelectedIndex, 0);
+        LFSelector.SelectedIndex = Math.Max(LFSelector.SelectedIndex, 0);
+        recieverGainSelector.SelectedIndex = Math.Max(recieverGainSelector.SelectedIndex, 0);
+        asyncRecieverGain.SelectedIndex = Math.Max(asyncRecieverGain.SelectedIndex, 0);
     }
     /// <summary>
     /// An event handler for the ReadSettings button click event. It reads the antenna status
@@ -38,7 +39,8 @@ public partial class AntenaSetUp : ContentPage
     {
         if (client != null)
         {
-            int[] settings = await client.readAntenaStatus();
+            var settings = await client.readAntenaStatus();
+
             if (settings != null && settings.Length > 5)
             {
                 baudRateSelector.SelectedIndex = settings[0];
@@ -50,6 +52,7 @@ public partial class AntenaSetUp : ContentPage
             }
         }
     }
+
     /// <summary>
     /// An event handler for the WriteSettings button click event. It writes the selected settings
     /// from the selectors to the antenna through the HSP.
@@ -58,13 +61,14 @@ public partial class AntenaSetUp : ContentPage
     /// <param name="e">The event arguments.</param>
     private async void WriteSettings_Clicked(object sender, EventArgs e)
     {
-        int [] settings = new int[6];
-        settings[0] = (int) baudRateSelector.SelectedIndex;
-        settings[1] = (int) tariSelector.SelectedIndex;
-        settings[2] = (int) bitPatternSelector.SelectedIndex;
-        settings[3] = (int) LFSelector.SelectedIndex;
-        settings[4] = (int) recieverGainSelector.SelectedIndex;
-        settings[5] = (int) asyncRecieverGain.SelectedIndex;
+        var settings = new int[6];
+        settings[0] = (int)baudRateSelector.SelectedIndex;
+        settings[1] = (int)tariSelector.SelectedIndex;
+        settings[2] = (int)bitPatternSelector.SelectedIndex;
+        settings[3] = (int)LFSelector.SelectedIndex;
+        settings[4] = (int)recieverGainSelector.SelectedIndex;
+        settings[5] = (int)asyncRecieverGain.SelectedIndex;
+
         if (client != null)
         {
             await client.writeAntenaSettigns(settings);

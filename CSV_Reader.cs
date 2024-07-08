@@ -1,6 +1,5 @@
 ﻿namespace HSPGUI.Resources
 {
-
     /// <summary>
     /// The CSVReader class provides functionality to read CSV files and return their contents as a list of string arrays.
     /// </summary>
@@ -15,10 +14,7 @@
         /// Initializes a new instance of the <see cref="CSVReader"/> class with the specified file path.
         /// </summary>
         /// <param name="filePath">The path of the CSV file to be read.</param>
-        public CSVReader(string filePath)
-        {
-            FilePath = filePath;
-        }
+        public CSVReader(string filePath) => FilePath = filePath;
 
         /// <summary>
         /// Reads the CSV file and returns its contents as a list of string arrays.
@@ -30,6 +26,7 @@
         public List<string[]>? ReadCSV()
         {
             var rows = new List<string[]>();
+
             try
             {
                 using (var reader = new StreamReader(FilePath))
@@ -37,6 +34,7 @@
                     while (!reader.EndOfStream)
                     {
                         var line = reader.ReadLine();
+
                         if (line != null)
                         {
                             var values = line.Split(',');
@@ -44,6 +42,7 @@
                         }
                     }
                 }
+
                 return rows;
             }
             catch (IOException)

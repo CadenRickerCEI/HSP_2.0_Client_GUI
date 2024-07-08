@@ -1,5 +1,4 @@
 ﻿using HSPGUI.Resources;
-using Microsoft.Maui.Controls;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -49,30 +48,29 @@ public class HSPClient
     /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
     public async void GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
     {
-        string command = "GENERATE=";
-        int i = 0;
+        var command = "GENERATE=";
+        var i = 0;
+
         foreach (var data in bufferCmdData)
         {
-            if (data != "")
-            {
-                command += dataTypes[i] + data;
-            }
+            if (data != "") command += dataTypes[i] + data;
             i++;
         }
+
         command += "NUM" + numberOfTags.ToString();
+
         if (resetBuffer)
         {
             System.Diagnostics.Debug.WriteLine("RESETBUFFER");
+
             if (_connected)
             {
                 await _client.WriteAsync("RESETBUFFER");
             }
         }
+
         System.Diagnostics.Debug.WriteLine(command);
-        if (_connected)
-        {
-            await _client.WriteAsync(command);
-        }
+        if (_connected) await _client.WriteAsync(command);
     }
 
     /// <summary>
@@ -87,40 +85,45 @@ public class HSPClient
         if (resetBuffer)
         {
             System.Diagnostics.Debug.WriteLine("RESETBUFFER");
+
             if (_connected)
             {
                 await _client.WriteAsync("RESETBUFFER");
             }
         }
+
         try
         {
-            CSVReader csvReader = new CSVReader(file);
-            List<string[]>? data = csvReader.ReadCSV();
+            var csvReader = new CSVReader(file);
+            var data = csvReader.ReadCSV();
             progress.Report(0);
-            if (data == null)
-            {
-                throw new Exception();
-            }
-            int[] lengths = new int[] { -1, -1, 8, 8, 4 };
+            if (data == null) throw new Exception();
+            var lengths = new int[] { -1, -1, 8, 8, 4 };
+
             for (int i = 1; i < data.Count; i++)
             {
-                string command = "WRITEITEM=";
+                var command = "WRITEITEM=";
+
                 for (int j = 0; j < data[i].Length; j++)
                 {
-                    int length = lengths[j] < 0 ? data[i][j].Length : lengths[j];
+                    var length = lengths[j] < 0 ? data[i][j].Length : lengths[j];
+
                     if (data[i][j].Length > 0 && validateInput(data[i][j], length, false) == false)
                     {
                         System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
                         return i;
                     }
+
                     command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] : "";
                 }
+
                 if (command != "WriteItem=")
                 {
                     if (i < -1)
                     {
                         System.Diagnostics.Debug.WriteLine(command);
                     }
+
                     if (_client.connected)
                     {
                         await _client.WriteAsync(command);
@@ -130,16 +133,15 @@ public class HSPClient
                 {
                     return i;
                 }
+
                 if (i % (data.Count / Math.Min(200, data.Count)) == 0)
                 {
-                    double progressVal = (double)i / (double)(data.Count - 1);
+                    var progressVal = (double)i / (double)(data.Count - 1);
                     progress.Report(progressVal);
-                    if (!_client.connected)
-                    {
-                        await Task.Delay(20);
-                    }
+                    if (!_client.connected) await Task.Delay(20);
                 }
             }
+
             progress.Report(1.0);
             System.Diagnostics.Debug.WriteLine("completed loading");
             return 0;
@@ -156,7 +158,7 @@ public class HSPClient
     /// <returns>An array of integers representing the antenna settings.</returns>
     public Task<int[]> readAntenaStatus()
     {
-        int[] settings = new int[6];
+        var settings = new int[6];
         return Task.FromResult(settings);
     }
 
@@ -181,25 +183,21 @@ public class HSPClient
     /// <returns>True if the input is valid; otherwise, false.</returns>
     public bool validateInput(string input, int length, bool sequential)
     {
-        string regExpresion = "^[A-Za-z0-9]*$";
-        if (sequential)
-        {
-            regExpresion = "^[A-Za-z0-9!]*$";
-        }
-        Regex regex = new Regex(regExpresion);
-        if (length > 32)
-        {
-            length = sequential ? 32 : 33;
-        }
+        var regExpresion = "^[A-Za-z0-9]*$";
+        if (sequential) regExpresion = "^[A-Za-z0-9!]*$";
+        var regex = new Regex(regExpresion);
+        if (length > 32) length = sequential ? 32 : 33;
+
         if (!regex.IsMatch(input))
         {
             System.Diagnostics.Debug.WriteLine("bad expression");
         }
+
         if (input.Length != length)
         {
             System.Diagnostics.Debug.WriteLine($"length incorrect expected length {length} found length {input.Length}");
         }
+
         return regex.IsMatch(input) && input.Length == length;
     }
 }
-

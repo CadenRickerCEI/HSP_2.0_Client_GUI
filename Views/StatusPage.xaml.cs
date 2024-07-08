@@ -1,5 +1,4 @@
-﻿
-namespace HSPGUI.Views;
+﻿namespace HSPGUI.Views;
 
 /// <summary>
 /// The StatusPage class is a .NET MAUI ContentPage that provides a user interface
@@ -22,6 +21,7 @@ public partial class StatusPage : ContentPage
         {
             client = ((App)Application.Current)._client;
         }
+
         InitializeComponent();
     }
 
@@ -30,10 +30,7 @@ public partial class StatusPage : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="args">The event arguments.</param>
-    public void OnButtonClicked(object sender, EventArgs args)
-    {
-        connectToServer();
-    }
+    public void OnButtonClicked(object sender, EventArgs args) => connectToServer();
 
     /// <summary>
     /// Asynchronously attempts to connect to the HSP server using the IP address and port
@@ -42,17 +39,16 @@ public partial class StatusPage : ContentPage
     public async void connectToServer()
     {
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
+
         if (client != null)
         {
             await client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
             System.Diagnostics.Debug.WriteLine("await finished");
+
             if (client._connected == false)
             {
-                bool tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
-                if (tryAgain)
-                {
-                    connectToServer();
-                }
+                var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
+                if (tryAgain) connectToServer();
             }
         }
     }

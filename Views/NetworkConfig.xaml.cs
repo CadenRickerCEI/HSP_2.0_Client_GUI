@@ -15,8 +15,8 @@ public partial class NetworkConfig : ContentPage
     {
         InitializeComponent();
         var octetValidation = (OctetValidationBehavior)Resources["octetValidation"];
-        string IpAddress = Preferences.Get("IpAddress", Constants.IpAddress);
-        string[] octets = IpAddress.Split(".");
+        var IpAddress = Preferences.Get("IpAddress", Constants.IpAddress);
+        var octets = IpAddress.Split(".");
         octet1.Text = octets[0];
         octet2.Text = octets[1];
         octet3.Text = octets[2];
@@ -30,10 +30,7 @@ public partial class NetworkConfig : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
-    private void octet1_Completed(object sender, EventArgs e)
-    {
-        octet2.Focus();
-    }
+    private void octet1_Completed(object sender, EventArgs e) => octet2.Focus();
 
     /// <summary>
     /// Event handler for the Completed event of the second octet entry field.
@@ -41,10 +38,7 @@ public partial class NetworkConfig : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
-    private void octet2_Completed(object sender, EventArgs e)
-    {
-        octet3.Focus();
-    }
+    private void octet2_Completed(object sender, EventArgs e) => octet3.Focus();
 
     /// <summary>
     /// Event handler for the Completed event of the third octet entry field.
@@ -52,10 +46,7 @@ public partial class NetworkConfig : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
-    private void octet3_Completed(object sender, EventArgs e)
-    {
-        octet4.Focus();
-    }
+    private void octet3_Completed(object sender, EventArgs e) => octet4.Focus();
 
     /// <summary>
     /// Event handler for the Completed event of the fourth octet entry field.
@@ -63,10 +54,7 @@ public partial class NetworkConfig : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
-    private void octet4_Completed(object sender, EventArgs e)
-    {
-        port.Focus();
-    }
+    private void octet4_Completed(object sender, EventArgs e) => port.Focus();
 
     /// <summary>
     /// Event handler for the Clicked event of the Save button.
@@ -77,12 +65,13 @@ public partial class NetworkConfig : ContentPage
     /// <param name="e">The event arguments.</param>
     private async void Button_Clicked(object sender, EventArgs e)
     {
-        int octet1_int = (octet1.Text == null) ? -1 : int.Parse(octet1.Text);
-        int octet2_int = (octet2.Text == null) ? -1 : int.Parse(octet2.Text);
-        int octet3_int = (octet3.Text == null) ? -1 : int.Parse(octet3.Text);
-        int octet4_int = (octet4.Text == null) ? -1 : int.Parse(octet4.Text);
-        int port_int = (port.Text == null) ? -1 : int.Parse(port.Text);
+        var octet1_int = (octet1.Text == null) ? -1 : int.Parse(octet1.Text);
+        var octet2_int = (octet2.Text == null) ? -1 : int.Parse(octet2.Text);
+        var octet3_int = (octet3.Text == null) ? -1 : int.Parse(octet3.Text);
+        var octet4_int = (octet4.Text == null) ? -1 : int.Parse(octet4.Text);
+        var port_int = (port.Text == null) ? -1 : int.Parse(port.Text);
         System.Diagnostics.Debug.WriteLine($"{octet1_int}.{octet2_int}.{octet3_int}.{octet4_int} port {port_int}");
+
         if (octet1_int >= 0 && octet1_int < 256 && octet2_int >= 0 && octet2_int < 256 &
             octet3_int >= 0 && octet3_int < 256 && octet4_int > 0 && octet4_int < 256 &
             port_int >= 0 && port_int < 65535)
@@ -104,8 +93,9 @@ public partial class NetworkConfig : ContentPage
     /// <param name="e">The event arguments.</param>
     private void focused(object sender, FocusEventArgs e)
     {
-        Entry entry = (Entry)sender;
+        var entry = (Entry)sender;
         entry.CursorPosition = 0;
+
         if (entry.Text != null)
         {
             entry.SelectionLength = entry.Text.Length;
