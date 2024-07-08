@@ -4,13 +4,13 @@
     {
         protected override void OnAttachedTo(Entry entry)
         {
-            entry.TextChanged += OnEntryTextChanged;
+            entry!.TextChanged += OnEntryTextChanged!;
             base.OnAttachedTo(entry);
         }
 
         protected override void OnDetachingFrom(Entry entry)
         {
-            entry.TextChanged -= OnEntryTextChanged;
+            entry!.TextChanged -= OnEntryTextChanged!;
             base.OnDetachingFrom(entry);
         }
 

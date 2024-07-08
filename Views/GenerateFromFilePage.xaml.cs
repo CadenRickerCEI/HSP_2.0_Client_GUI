@@ -6,7 +6,7 @@ using Microsoft.Maui.Graphics.Text;
 
 public partial class GenerateFromFilePage : ContentPage
 {
-    private HSPClient client ;
+    private HSPClient? client ;
     private bool EPC_Valid;
     private bool USR_Valid;
     private bool KIL_Valid;
@@ -14,7 +14,12 @@ public partial class GenerateFromFilePage : ContentPage
     private bool PCW_Valid;
     public GenerateFromFilePage()
     {
-        client = ((App)Application.Current)._client;
+        
+        if (((App)Application.Current!) != null)
+        {
+            client = ((App)Application.Current)._client ;
+        }
+        
         InitializeComponent();
         EPC_Valid = true;
         USR_Valid = true;
@@ -54,7 +59,7 @@ public partial class GenerateFromFilePage : ContentPage
     private async void readGenerateFile()
     {
         CSVReader csvReader = new CSVReader(fileLocationEntry.Text);
-        List<string[]> data = csvReader.ReadCSV();        
+        List<string[]>? data = csvReader.ReadCSV();        
         if (data != null)
         {
             foreach (var dataItem in data)
@@ -96,7 +101,7 @@ public partial class GenerateFromFilePage : ContentPage
     void OnEPC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("EPC Changed");
-        if (EPC_Entry.Text != null)
+        if (EPC_Entry.Text != null && client != null)
         {
             EPC_Valid = client.validateInput(EPC_Entry.Text, EPC_Entry.Text.Length, false); 
             EPC_Entry.TextColor = EPC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -104,7 +109,7 @@ public partial class GenerateFromFilePage : ContentPage
     }
     void OnUSR_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (UserData_Entry.Text != null)
+        if (UserData_Entry.Text != null && client != null)
         {
             USR_Valid = client.validateInput(UserData_Entry.Text, UserData_Entry.Text.Length, false);
             UserData_Entry.TextColor = USR_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -112,7 +117,7 @@ public partial class GenerateFromFilePage : ContentPage
     }
     void OnKIL_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (KillPass_Entry.Text != null)
+        if (KillPass_Entry.Text != null && client != null)
         {
             KIL_Valid = client.validateInput(KillPass_Entry.Text, 8, false);
             KillPass_Entry.TextColor = KIL_Valid ? Color.FromArgb("#00000") : Color.FromArgb("#FF0000");
@@ -120,7 +125,7 @@ public partial class GenerateFromFilePage : ContentPage
     }
     void OnACC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (AccessPass_Entry.Text != null)
+        if (AccessPass_Entry.Text != null && client != null)
         {
             ACC_Valid = client.validateInput(AccessPass_Entry.Text, 8, false);
             AccessPass_Entry.TextColor = ACC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -128,7 +133,7 @@ public partial class GenerateFromFilePage : ContentPage
     }
     void OnPCW_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (PC_Entry.Text != null)
+        if (PC_Entry.Text != null && client != null)
         {
             PCW_Valid = client.validateInput(PC_Entry.Text, 4, false);
             PC_Entry.TextColor = PCW_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -151,7 +156,11 @@ public partial class GenerateFromFilePage : ContentPage
             
             string[] bufferCmd = [EPCData, UserData, killData, AccData, PCData];
             int numofItems = GeneratorNum_Entry.Text != null ? int.Parse(GeneratorNum_Entry.Text) : -1;
-            client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
+            if (client != null)
+            {
+                client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
+            }
+            
         }
         else
         {

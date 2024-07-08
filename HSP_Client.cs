@@ -83,7 +83,7 @@ public class HSPClient
         try
         {
             CSVReader csvReader = new CSVReader(file);
-            List<string[]> data = csvReader.ReadCSV();
+            List<string[]>? data = csvReader.ReadCSV();
             progress.Report( 0);
             if (data == null)
             {
@@ -151,10 +151,10 @@ public class HSPClient
     }
     public async Task writeAntenaSettigns( int [] Settings)
     {
-        if (_client.connected)
+        if (_client != null && _client.connected)
         {
             await _client.WriteAsync("NB");
-            string message = await _client.ReadAsync();
+            //await _client.ReadAsync();
         }
         return;
     }
@@ -164,7 +164,6 @@ public class HSPClient
         if (sequential)
         {
             regExpresion = "^[A-Za-z0-9!]*$";
-
         } 
         Regex regex = new Regex(regExpresion);
         if (length > 32 )//EPC and user data both take a maximum length of 32

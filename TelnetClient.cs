@@ -3,9 +3,10 @@ using System.Text;
 
 public class TelnetClient
 {
-    private TcpClient client;
-    private StreamReader reader;
-    private StreamWriter writer;
+    private TcpClient? client;
+    private NetworkStream? stream;
+    private StreamReader? reader;
+    private StreamWriter? writer;
     public bool connected;
     public TelnetClient()
     {
@@ -21,30 +22,41 @@ public class TelnetClient
             if (client.Connected)
             {
                 connected = true;
-                var stream = client.GetStream();
+                stream = client.GetStream();
                 reader = new StreamReader(stream, Encoding.UTF8);
                 writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
             }
         }
-        catch (Exception ex)
+        catch
         {
-
             connected = false;
         }
     }
 
-    public async Task<string> ReadAsync()
+    public async Task<string?> ReadAsync()
     {
-        return await reader.ReadLineAsync();
+        if (reader != null)
+        {
+            return await reader.ReadLineAsync();
+        }else
+        {
+            return null;
+        }
     }
 
     public async Task WriteAsync(string message)
     {
-        await writer.WriteLineAsync(message);
+        if (writer != null)
+        {
+            await writer.WriteLineAsync(message);
+        }
     }
 
     public void Disconnect()
     {
-        client.Close();
+        if (client != null)
+        {
+            client.Close();
+        }        
     }
 }

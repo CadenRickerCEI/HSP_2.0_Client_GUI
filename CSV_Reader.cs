@@ -10,7 +10,7 @@
             FilePath = filePath;
         }
 
-        public List<string[]> ReadCSV()
+        public List<string[]>? ReadCSV()
         {
             var rows = new List<string[]>();
             try

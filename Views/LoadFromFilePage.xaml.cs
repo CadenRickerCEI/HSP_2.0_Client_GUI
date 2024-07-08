@@ -4,11 +4,14 @@ namespace HSPGUI.Views;
 
 public partial class LoadFromFilePage : ContentPage
 {
-    private HSPClient client;
+    private HSPClient? client;
     private Progress<double> _progress;
     public LoadFromFilePage()
     {
-        client = ((App)Application.Current)._client;
+        if (((App)Application.Current!) != null)
+        {
+            client = ((App)Application.Current)._client;
+        }        
         _progress = new Progress<double>();
         InitializeComponent();
         loadFileBtn.IsVisible = false;        
@@ -52,7 +55,7 @@ public partial class LoadFromFilePage : ContentPage
         loadFileBtn.IsEnabled = false;
         bool resetBuffer = await DisplayAlert("Clear HSP Buffer", "Press reset to clear the buffer or add to add to the buffer", "Reset", "Add");
         int loadResult = -1;
-        if (_progress != null)
+        if (_progress != null && client != null)
         {
             loadResult =  await Task.Run(() =>
             {

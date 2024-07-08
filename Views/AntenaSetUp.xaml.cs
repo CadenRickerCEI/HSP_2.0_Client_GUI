@@ -2,10 +2,13 @@
 
 public partial class AntenaSetUp : ContentPage
 {
-    private HSPClient client;
+    private HSPClient? client;
     public AntenaSetUp()
     {
-        client = ((App)Application.Current)._client;
+        if ( ((App)Application.Current!) != null)
+        {
+            client = ((App)Application.Current)._client;
+        }        
         InitializeComponent();
         baudRateSelector.SelectedIndex      = Math.Max(baudRateSelector.SelectedIndex, 0  );
         tariSelector.SelectedIndex          = Math.Max(tariSelector.SelectedIndex , 0 );
@@ -16,15 +19,18 @@ public partial class AntenaSetUp : ContentPage
     }
     private async void ReadSettings_Clicked(object sender, EventArgs e)
     {
-        int[] settings = await client.readAntenaStatus();
-        if (settings != null && settings.Length >5 )
+        if (client != null)
         {
-            baudRateSelector.SelectedIndex      = settings[0];
-            tariSelector.SelectedIndex          = settings[1];
-            bitPatternSelector.SelectedIndex    = settings[2];
-            LFSelector.SelectedIndex            = settings[3];
-            recieverGainSelector.SelectedIndex  = settings[4];
-            asyncRecieverGain.SelectedIndex     = settings[5];
+            int[] settings = await client.readAntenaStatus();
+            if (settings != null && settings.Length > 5)
+            {
+                baudRateSelector.SelectedIndex = settings[0];
+                tariSelector.SelectedIndex = settings[1];
+                bitPatternSelector.SelectedIndex = settings[2];
+                LFSelector.SelectedIndex = settings[3];
+                recieverGainSelector.SelectedIndex = settings[4];
+                asyncRecieverGain.SelectedIndex = settings[5];
+            }
         }
     }
     private async void WriteSettings_Clicked(object sender, EventArgs e)
@@ -36,6 +42,9 @@ public partial class AntenaSetUp : ContentPage
         settings[3] = (int) LFSelector.SelectedIndex;
         settings[4] = (int) recieverGainSelector.SelectedIndex;
         settings[5] = (int) asyncRecieverGain.SelectedIndex;
-        await client.writeAntenaSettigns(settings);
+        if (client != null)
+        {
+            await client.writeAntenaSettigns(settings);
+        }
     }
 }
