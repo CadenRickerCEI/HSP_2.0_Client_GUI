@@ -1,11 +1,24 @@
 ﻿//using Windows.Media.Protection.PlayReady;
 
 namespace HSPGUI.Views;
-
+/// <summary>
+/// The LoadFromFilePage class is a Xamarin.Forms ContentPage that provides a user interface
+/// for loading data from a CSV file and displaying the progress of the loading operation.
+/// </summary>
 public partial class LoadFromFilePage : ContentPage
 {
+    /// <summary>
+    /// A nullable HSPClient used to interact with the antenna.
+    /// </summary>
     private HSPClient? client;
+    /// <summary>
+    /// A Progress object to track the progress of the file loading operation.
+    /// </summary>
     private Progress<double> _progress;
+    /// <summary>
+    /// The constructor for the LoadFromFilePage class. It initializes the client field,
+    /// sets up the progress tracking, and configures the UI elements.
+    /// </summary>
     public LoadFromFilePage()
     {
         if (((App)Application.Current!) != null)
@@ -22,6 +35,12 @@ public partial class LoadFromFilePage : ContentPage
         };
 
     }
+    /// <summary>
+    /// Event handler for the Open File button click event. It allows the user to select a CSV file
+    /// and displays the file location in the Entry control.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     async void OnOpenFileClicked(object sender, EventArgs e)
     {
 
@@ -46,7 +65,12 @@ public partial class LoadFromFilePage : ContentPage
             await DisplayAlert("File Does Not Exist", "Try Selecting the file again.", "Ok");
         }
     }
-
+    /// <summary>
+    /// Event handler for the Load File button click event. It loads data from the selected CSV file
+    /// into the HSP, displaying the progress and handling any errors.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private async void loadFileBtn_Clicked(object sender, EventArgs e)
     {     
         progressBar.Progress = 0;
@@ -84,7 +108,12 @@ public partial class LoadFromFilePage : ContentPage
         progressFrame.IsVisible= false;
         loadFileBtn.IsEnabled = true;
     }
-
+    /// <summary>
+    /// Event handler for the TextChanged event of the file location entry field. It updates the visibility
+    /// of the Load File button based on whether the specified file exists.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void fileLocationEntry_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (fileLocationEntry.Text != null)

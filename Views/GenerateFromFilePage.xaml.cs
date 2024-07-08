@@ -3,15 +3,40 @@ using HSPGUI.Resources;
 using Microsoft.Maui.Graphics.Text;
 //using Windows.Media.Protection.PlayReady;
 
-
+/// <summary>
+/// The GenerateFromFilePage class is a Xamarin.Forms ContentPage that provides a user interface
+/// for generating data from a CSV file and validating user input for various fields.
+/// </summary>
 public partial class GenerateFromFilePage : ContentPage
 {
+    /// <summary>
+    /// A nullable HSPClient used to interact with the antenna.
+    /// </summary>
     private HSPClient? client ;
+    /// <value>
+    /// Boolean flags to indicate the validity of various input fields.
+    /// </value>
     private bool EPC_Valid;
+    /// <value>
+    /// Status of the USR fields validity
+    /// </value>
     private bool USR_Valid;
+    /// <value>
+    /// Status of the KIL fields validity
+    /// </value>
     private bool KIL_Valid;
+    /// <value>
+    /// Status of the ACC fields validity
+    /// </value>
     private bool ACC_Valid;
+    /// <value>
+    /// Status of the PCW fields validity
+    /// </value>
     private bool PCW_Valid;
+    /// <value>
+    /// The constructor for the GenerateFromFilePage class. It connects the HSP client variable to the one in the main app,
+    /// sets the initial validity of input fields, and configures the UI elements.
+    /// </value>
     public GenerateFromFilePage()
     {
         
@@ -30,6 +55,12 @@ public partial class GenerateFromFilePage : ContentPage
         EPC_Entry.MinimumWidthRequest = EPC_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenEPC_hex;
         UserData_Entry.MinimumWidthRequest = UserData_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenUSR_Hex;
     }
+    /// <summary>
+    /// Event handler for the Open File button click event. It allows the user to select a CSV file
+    /// and displays the file location in the Entry control.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     async void OnOpenFileClicked(object sender, EventArgs e)
     {
 
@@ -51,11 +82,19 @@ public partial class GenerateFromFilePage : ContentPage
             updateFromFileBtn.IsVisible = false;
         }
     }
-
+    /// <summary>
+    /// Event handler for the Update From File button click event. It reads data from the selected CSV file
+    /// and updates the input fields accordingly.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void updateFromFileBtn_Clicked(object sender, EventArgs e)
     {
         readGenerateFile();
     }
+    /// <summary>
+    /// Reads data from the selected CSV file and updates the input fields. Displays alerts if the file is invalid or missing.
+    /// </summary>
     private async void readGenerateFile()
     {
         CSVReader csvReader = new CSVReader(fileLocationEntry.Text);
@@ -94,10 +133,20 @@ public partial class GenerateFromFilePage : ContentPage
             await DisplayAlert("File Error", "File is open or missing. Close file and try again.", "Cancel");
         }
     }
+    /// <summary>
+    /// Event handler for the CheckedChanged event of the KillPass checkbox. It toggles the visibility of the KillPass entry field.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     void OnCheckedChanged(object sender, CheckedChangedEventArgs e)
     {
         KillPass_Entry.IsVisible = e.Value !;        
     }
+    /// <summary>
+    /// Event handler for the TextChanged event of the EPC entry field. It validates the input and updates the text color based on validity.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     void OnEPC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         System.Diagnostics.Debug.WriteLine("EPC Changed");
@@ -107,6 +156,11 @@ public partial class GenerateFromFilePage : ContentPage
             EPC_Entry.TextColor = EPC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
+    /// <summary>
+    /// Event handler for the TextChanged event of the UserData entry field. It validates the input and updates the text color based on validity.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     void OnUSR_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         if (UserData_Entry.Text != null && client != null)
@@ -115,6 +169,11 @@ public partial class GenerateFromFilePage : ContentPage
             UserData_Entry.TextColor = USR_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
+    /// <summary>
+    /// Event handler for the TextChanged event of the KillPass entry field. It validates the input and updates the text color based on validity.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     void OnKIL_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         if (KillPass_Entry.Text != null && client != null)
@@ -123,6 +182,11 @@ public partial class GenerateFromFilePage : ContentPage
             KillPass_Entry.TextColor = KIL_Valid ? Color.FromArgb("#00000") : Color.FromArgb("#FF0000");
         }
     }
+    /// <summary>
+    /// Event handler for the TextChanged event of the AccessPass entry field. It validates the input and updates the text color based on validity.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     void OnACC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         if (AccessPass_Entry.Text != null && client != null)
@@ -131,6 +195,11 @@ public partial class GenerateFromFilePage : ContentPage
             AccessPass_Entry.TextColor = ACC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
+    /// <summary>
+    /// Event handler for the TextChanged event of the PC entry field. It validates the input and updates the text color based on validity.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     void OnPCW_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         if (PC_Entry.Text != null && client != null)
@@ -139,7 +208,11 @@ public partial class GenerateFromFilePage : ContentPage
             PC_Entry.TextColor = PCW_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
-
+    /// <summary>
+    /// Event handler for the Load Buffer button click event. It validates the input fields and sends the data to the client to generate a buffer.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private async void loadBuffer_Clicked(object sender, EventArgs e)
     {
         if (EPC_Valid && USR_Valid && (KIL_Valid || killPassCheckBox.IsChecked == false) && ACC_Valid && PCW_Valid)
@@ -167,29 +240,52 @@ public partial class GenerateFromFilePage : ContentPage
             await DisplayAlert("Invalid Information", "Fix data highlighted in red", "cancel");
         }
     }
-
-
-
+    /// <summary>
+    /// Event handler for the Completed event of the EPC entry field. It sets the focus to the UserData entry field.
+    /// This functions is added to improve the flow of filling in the form.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void EPC_Entry_Completed(object sender, EventArgs e)
     {
         UserData_Entry.Focus();
     }
-
-
+    /// <summary>
+    /// Event handler for the Completed event of the UserData entry field. It sets the focus to the KillPass entry field.
+    /// This functions is added to improve the flow of filling in the form.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void UserData_Entry_Completed(object sender, EventArgs e)
     {
         KillPass_Entry.Focus();
     }
+    /// <summary>
+    /// Event handler for the Completed event of the KillPass entry field. It sets the focus to the AccessPass entry field.
+    /// This functions is added to improve the flow of filling in the form.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void KillPass_Entry_Completed(object sender, EventArgs e)
     {
         AccessPass_Entry.Focus();
     }
-
+    /// <summary>
+    /// Event handler for the Completed event of the AccessPass entry field. It sets the focus to the PC entry field.
+    /// This functions is added to improve the flow of filling in the form.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void AccessPass_Entry_Completed(object sender, EventArgs e)
     {
         PC_Entry.Focus();
     }
-
+    /// <summary>
+    /// Event handler for the Completed event of the PC entry field. It sets the focus to the GeneratorNum entry field.
+    /// This functions is added to improve the flow of filling in the form.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void PC_Entry_Completed(object sender, EventArgs e)
     {
         GeneratorNum_Entry.Focus();

@@ -1,8 +1,16 @@
 namespace HSPGUI.Views;
 using HSPGUI.Resources;
 
+/// <summary>
+/// The NetworkConfig class is a Xamarin.Forms ContentPage that provides a user interface
+/// for configuring network settings, including IP address and port.
+/// </summary>
 public partial class NetworkConfig : ContentPage
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NetworkConfig"/> class.
+    /// Sets up the initial values for the IP address and port from preferences.
+    /// </summary>
     public NetworkConfig()
     {
         InitializeComponent();
@@ -16,26 +24,57 @@ public partial class NetworkConfig : ContentPage
         port.Text = Preferences.Get(Constants.KeyPort, Constants.Port).ToString();
     }
 
+    /// <summary>
+    /// Event handler for the Completed event of the first octet entry field.
+    /// Sets the focus to the second octet entry field.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void octet1_Completed(object sender, EventArgs e)
     {
         octet2.Focus();
     }
 
+    /// <summary>
+    /// Event handler for the Completed event of the second octet entry field.
+    /// Sets the focus to the third octet entry field.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void octet2_Completed(object sender, EventArgs e)
     {
         octet3.Focus();
     }
 
+    /// <summary>
+    /// Event handler for the Completed event of the third octet entry field.
+    /// Sets the focus to the fourth octet entry field.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void octet3_Completed(object sender, EventArgs e)
     {
         octet4.Focus();
     }
+
+    /// <summary>
+    /// Event handler for the Completed event of the fourth octet entry field.
+    /// Sets the focus to the port entry field.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void octet4_Completed(object sender, EventArgs e)
     {
         port.Focus();
     }
 
-
+    /// <summary>
+    /// Event handler for the Clicked event of the Save button.
+    /// Validates the IP address and port, and saves them to preferences if valid.
+    /// Displays an alert if the IP address or port is invalid.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private async void Button_Clicked(object sender, EventArgs e)
     {
         int octet1_int = (octet1.Text == null) ? -1 : int.Parse(octet1.Text);
@@ -57,6 +96,12 @@ public partial class NetworkConfig : ContentPage
         }
     }
 
+    /// <summary>
+    /// Event handler for the Focused event of the entry fields.
+    /// Sets the cursor position to the start and selects all text in the entry field.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void focused(object sender, FocusEventArgs e)
     {
         Entry entry = (Entry)sender;
@@ -66,6 +111,4 @@ public partial class NetworkConfig : ContentPage
             entry.SelectionLength = entry.Text.Length;
         }
     }
-
-
 }

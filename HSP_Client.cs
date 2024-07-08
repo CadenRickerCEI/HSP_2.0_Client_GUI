@@ -16,7 +16,12 @@ public class HSPClient
     /// Indicates whether the client is connected to the server.
     /// </summary>
     public bool _connected { get; }
+
+    /// <summary>
+    /// Array of data types used in buffer commands.
+    /// </summary>
     private string[] dataTypes = new string[] { "EPC", "USR", "KIL", "ACC", "PCW" };
+
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
@@ -39,18 +44,17 @@ public class HSPClient
     /// <summary>
     /// Generates a buffer command data string.
     /// </summary>
-    /// <param name="bufferCmdData">["EPC", "USR", "KIL", "ACC", "PCW"].</param>
+    /// <param name="bufferCmdData">Array of command data strings.</param>
     /// <param name="numberOfTags">The number of tags to be added to the buffer.</param>
     /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
     public async void GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
     {
-        
         string command = "GENERATE=";
         int i = 0;
         foreach (var data in bufferCmdData)
         {
             if (data != "")
-            {                
+            {
                 command += dataTypes[i] + data;
             }
             i++;
@@ -70,6 +74,14 @@ public class HSPClient
             await _client.WriteAsync(command);
         }
     }
+
+    /// <summary>
+    /// Loads data from a CSV file into the HSP buffer.
+    /// </summary>
+    /// <param name="file">The path to the CSV file.</param>
+    /// <param name="progress">Progress reporter for the loading operation.</param>
+    /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
+    /// <returns>An integer indicating the result of the operation.</returns>
     public async Task<int> LoadFromFile(string file, IProgress<double> progress, bool resetBuffer)
     {
         if (resetBuffer)
@@ -84,55 +96,50 @@ public class HSPClient
         {
             CSVReader csvReader = new CSVReader(file);
             List<string[]>? data = csvReader.ReadCSV();
-            progress.Report( 0);
+            progress.Report(0);
             if (data == null)
             {
                 throw new Exception();
             }
             int[] lengths = new int[] { -1, -1, 8, 8, 4 };
-            // start i at 1 to ignore the header
-            
             for (int i = 1; i < data.Count; i++)
-            {                
+            {
                 string command = "WRITEITEM=";
                 for (int j = 0; j < data[i].Length; j++)
-                { 
+                {
                     int length = lengths[j] < 0 ? data[i][j].Length : lengths[j];
-                    if (data[i][j].Length > 0 && validateInput(data[i][j], length , false) == false)
+                    if (data[i][j].Length > 0 && validateInput(data[i][j], length, false) == false)
                     {
-                            System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
+                        System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
                         return i;
                     }
-                    command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] : "";//only add if the section is not blank
-                }                
-                if (command != "WriteItem=") //make sure we aren't adding blank tags
+                    command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] : "";
+                }
+                if (command != "WriteItem=")
                 {
                     if (i < -1)
                     {
                         System.Diagnostics.Debug.WriteLine(command);
-                    }                    
+                    }
                     if (_client.connected)
                     {
                         await _client.WriteAsync(command);
-                    }              
+                    }
                 }
                 else
                 {
                     return i;
                 }
-                
-                //System.Diagnostics.Debug.WriteLine($"row {i} total rows {data.Count} value {progressVal}");
-                if(  i % (data.Count/Math.Min(200,data.Count)) == 0)
+                if (i % (data.Count / Math.Min(200, data.Count)) == 0)
                 {
                     double progressVal = (double)i / (double)(data.Count - 1);
-                    progress.Report((double)i / (double)(data.Count - 1));
+                    progress.Report(progressVal);
                     if (!_client.connected)
                     {
                         await Task.Delay(20);
                     }
                 }
-                
-            }            
+            }
             progress.Report(1.0);
             System.Diagnostics.Debug.WriteLine("completed loading");
             return 0;
@@ -141,38 +148,52 @@ public class HSPClient
         {
             return -2;
         }
-        
     }
+
+    /// <summary>
+    /// Reads the antenna status.
+    /// </summary>
+    /// <returns>An array of integers representing the antenna settings.</returns>
     public Task<int[]> readAntenaStatus()
     {
-        int[] settings = new int[6];             
-
+        int[] settings = new int[6];
         return Task.FromResult(settings);
     }
-    public async Task writeAntenaSettigns( int [] Settings)
+
+    /// <summary>
+    /// Writes antenna settings to the HSP.
+    /// </summary>
+    /// <param name="Settings">An array of integers representing the antenna settings.</param>
+    public async Task writeAntenaSettigns(int[] Settings)
     {
         if (_client != null && _client.connected)
         {
             await _client.WriteAsync("NB");
-            //await _client.ReadAsync();
         }
-        return;
     }
-    public bool validateInput(string input,int length,bool sequential)
+
+    /// <summary>
+    /// Validates the input string based on length and whether it is sequential.
+    /// </summary>
+    /// <param name="input">The input string to validate.</param>
+    /// <param name="length">The expected length of the input string.</param>
+    /// <param name="sequential">Indicates whether the input is sequential.</param>
+    /// <returns>True if the input is valid; otherwise, false.</returns>
+    public bool validateInput(string input, int length, bool sequential)
     {
         string regExpresion = "^[A-Za-z0-9]*$";
         if (sequential)
         {
             regExpresion = "^[A-Za-z0-9!]*$";
-        } 
+        }
         Regex regex = new Regex(regExpresion);
-        if (length > 32 )//EPC and user data both take a maximum length of 32
-        {            
-            length = sequential? 32:33;//if sequential the lenght will be one longer
+        if (length > 32)
+        {
+            length = sequential ? 32 : 33;
         }
         if (!regex.IsMatch(input))
         {
-           System.Diagnostics.Debug.WriteLine("bad expression");
+            System.Diagnostics.Debug.WriteLine("bad expression");
         }
         if (input.Length != length)
         {
@@ -180,7 +201,5 @@ public class HSPClient
         }
         return regex.IsMatch(input) && input.Length == length;
     }
-
-
 }
 
