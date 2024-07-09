@@ -2,7 +2,7 @@ namespace HSPGUI.Views;
 using HSPGUI.Resources;
 
 /// <summary>
-/// The NetworkConfig class is a Xamarin.Forms ContentPage that provides a user interface
+/// The NetworkConfig class is a .net MAUI ContentPage that provides a user interface
 /// for configuring network settings, including IP address and port.
 /// </summary>
 public partial class NetworkConfig : ContentPage

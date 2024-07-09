@@ -2,7 +2,7 @@
 
 namespace HSPGUI.Views;
 /// <summary>
-/// The LoadFromFilePage class is a Xamarin.Forms ContentPage that provides a user interface
+/// The LoadFromFilePage class is a .net MAUI ContentPage that provides a user interface
 /// for loading data from a CSV file and displaying the progress of the loading operation.
 /// </summary>
 public partial class LoadFromFilePage : ContentPage

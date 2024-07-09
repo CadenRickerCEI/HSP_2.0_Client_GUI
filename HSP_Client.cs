@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 
 /// <summary>
 /// The HSPClient class is used for managing the connection and communication with a Telnet server.
+/// It also validates the data going into the database.
 /// </summary>
 public class HSPClient
 {
@@ -31,7 +32,7 @@ public class HSPClient
     }
 
     /// <summary>
-    /// Connects to the HSP server.
+    /// Connects to the HSP telnet server.
     /// </summary>
     /// <param name="IpAddress">The IP address of the server.</param>
     /// <param name="Port">The port number of the server.</param>
@@ -74,11 +75,11 @@ public class HSPClient
     }
 
     /// <summary>
-    /// Loads data from a CSV file into the HSP buffer.
+    /// Loads the indvidual tags from a CSV file into the HSP buffer.
     /// </summary>
     /// <param name="file">The path to the CSV file.</param>
     /// <param name="progress">Progress reporter for the loading operation.</param>
-    /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
+    /// <param name="resetBuffer">Indicates whether to reset the buffer of tags already on the HSP.</param>
     /// <returns>An integer indicating the result of the operation.</returns>
     public async Task<int> LoadFromFile(string file, IProgress<double> progress, bool resetBuffer)
     {
@@ -153,10 +154,10 @@ public class HSPClient
     }
 
     /// <summary>
-    /// Reads the antenna status.
+    /// Reads the the curretent antena settings from the HSP and returns them as an arrray.
     /// </summary>
     /// <returns>An array of integers representing the antenna settings.</returns>
-    public Task<int[]> readAntenaStatus()
+    public Task<int[]> readAntenaSettings()
     {
         var settings = new int[6];
         return Task.FromResult(settings);
@@ -166,7 +167,7 @@ public class HSPClient
     /// Writes antenna settings to the HSP.
     /// </summary>
     /// <param name="Settings">An array of integers representing the antenna settings.</param>
-    public async Task writeAntenaSettigns(int[] Settings)
+    public async Task writeAntenaSettings(int[] Settings)
     {
         if (_client != null && _client.connected)
         {
@@ -175,7 +176,7 @@ public class HSPClient
     }
 
     /// <summary>
-    /// Validates the input string based on length and whether it is sequential.
+    /// Validates that the tag is hexidecimal unless sequential is true then ! is allowed
     /// </summary>
     /// <param name="input">The input string to validate.</param>
     /// <param name="length">The expected length of the input string.</param>
@@ -183,8 +184,7 @@ public class HSPClient
     /// <returns>True if the input is valid; otherwise, false.</returns>
     public bool validateInput(string input, int length, bool sequential)
     {
-        var regExpresion = "^[A-Za-z0-9]*$";
-        if (sequential) regExpresion = "^[A-Za-z0-9!]*$";
+        var regExpresion = (sequential)?"^[A-Fa-f0-9!]*$": "^[A-Fa-f0-9]*$";
         var regex = new Regex(regExpresion);
         if (length > 32) length = sequential ? 32 : 33;
 
