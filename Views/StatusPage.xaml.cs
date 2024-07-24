@@ -1,4 +1,8 @@
-﻿namespace HSPGUI.Views;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Xml.Linq;
+
+namespace HSPGUI.Views;
 
 /// <summary>
 /// The StatusPage class is a .NET MAUI ContentPage that provides a user interface
@@ -10,6 +14,7 @@ public partial class StatusPage : ContentPage
     /// A nullable HSPClient used to interact with the HSP object.
     /// </summary>
     private HSPClient? client;
+    
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StatusPage"/> class.
@@ -20,9 +25,23 @@ public partial class StatusPage : ContentPage
         if (((App)Application.Current!) != null)
         {
             client = ((App)Application.Current)._client;
+            client.connectionStatusChanged += Client_connectionStatusChanged;
         }
 
         InitializeComponent();
+        
+    }
+
+    private void Client_connectionStatusChanged(bool connectionStatus)
+    {
+        if (connectionStatus)
+        {
+            connectedLabel.Text = "HSP Connected";
+        }
+        else
+        {
+            connectedLabel.Text = "HSP Definitely not Connected";
+        }
     }
 
     /// <summary>

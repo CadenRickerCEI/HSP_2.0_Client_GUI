@@ -15,7 +15,8 @@ public class HSPClient
     /// <summary>
     /// Indicates whether the client is connected to the server.
     /// </summary>
-    public bool _connected { get; }
+    public bool _connected { get; private set; }
+    public event Action<bool>? connectionStatusChanged;
 
     /// <summary>
     /// Array of data types used in buffer commands.
@@ -39,6 +40,8 @@ public class HSPClient
     public async Task connectToHSP(string IpAddress, int Port)
     {
         await _client.ConnectAsync(IpAddress, Port);
+        _connected = _client.connected;
+        connectionStatusChanged?.Invoke(_client.connected);
     }
 
     /// <summary>
@@ -200,4 +203,5 @@ public class HSPClient
 
         return regex.IsMatch(input) && input.Length == length;
     }
+
 }
