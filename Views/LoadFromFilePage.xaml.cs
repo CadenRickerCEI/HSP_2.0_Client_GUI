@@ -1,5 +1,10 @@
 ﻿// using Windows.Media.Protection.PlayReady;
 
+using CommunityToolkit.Maui.Storage;
+using System.Text;
+using System.Threading;
+using System.Xml.Linq;
+
 namespace HSPGUI.Views;
 /// <summary>
 /// The LoadFromFilePage class is a .net MAUI ContentPage that provides a user interface
@@ -15,6 +20,7 @@ public partial class LoadFromFilePage : ContentPage
     /// A Progress object to track the progress of the file loading operation.
     /// </summary>
     private Progress<double> _progress;
+    private CancellationTokenSource cancellationTokenSource;
     /// <summary>
     /// The constructor for the LoadFromFilePage class. It initializes the client field,
     /// sets up the progress tracking, and configures the UI elements.
@@ -27,6 +33,7 @@ public partial class LoadFromFilePage : ContentPage
         }
 
         _progress = new Progress<double>();
+        cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
         loadFileBtn.IsVisible = false;
 
@@ -126,6 +133,53 @@ public partial class LoadFromFilePage : ContentPage
         {
             // Display the file location in the Entry
             loadFileBtn.IsVisible = File.Exists(fileLocationEntry.Text);
+        }
+    }
+
+    /// <summary>
+    /// Event handler for the Create Sample button click event. It creates a sample file for the user to 
+    /// reference when working with the csv.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
+    async void createSample(object sender, EventArgs e)
+    {
+        var csv = new StringBuilder();
+        csv.AppendLine("EPC Data,User Data,Kill Password,Accesss Password,PC Word");
+        csv.AppendLine("486F7720646F20796F75206F72670000,616E697A652061207370616365200000,70617274,793F3F3F,3F3F");
+        csv.AppendLine("596F7520706C616E6574212048610001,48612048612048612048612048610000,CAFEFEED,DEADBEEF,ABBC");
+        csv.AppendLine("496E20746865206865617274206F0002,66207468652073696D6D6572696E0002,6720706F,742C2057,6865");
+        csv.AppendLine("7265207370696365732064616E630003,656420616E6420666C61766F72730003,20736F75,6768742C,2050");
+        csv.AppendLine("6F72665207370696365732064616E636,56420616E6420666C61766F727320736,F7567687,42C20506,F726");
+        csv.AppendLine("B206D657420436869636B656E2C20612,063756C696E61727920666174652C204,96E20612,06A616D6,2616");
+        csv.AppendLine("C6179612C207468656972206C6F76652,0746F6F6B2073686170652E0A0A506F7,26B2C207,4656E646,5722");
+        csv.AppendLine("0616E6420736561736F6E65642C20776,869737065726564206C6F772C20201C4,36869636,B656E2C2,06C6");
+        csv.AppendLine("57420197320626C656E6420696E20746,8697320737069637920666C6F772E204,F7572207,56E696F6,E2C2");
+        csv.AppendLine("0612073796D70686F6E79206F6620436,16A756E2064656C696768742C20496E2,07269636,520616E6,4207");
+        csv.AppendLine("26F75782C20776520196C6C2064616E6,365207468726F75676820746865206E6,96768742,E201D0A0,A436");
+        csv.AppendLine("869636B656E2C2066656174686572732,0727566666C65642C207265706C69656,42077697,46820676,C656");
+        csv.AppendLine("52C20201C4465617220506F726B2C206,C65742019732073697A7A6C6520696E2,06861726,D6F6E792,E205");
+        csv.AppendLine("96F757220736D6F6B79206E6F7465732,0616E64206D79207361766F727920677,26163652,C20546F6,7657");
+        csv.AppendLine("46865722C20776520196C6C206372656,17465206120737069637920656D62726,163652E2,01D0A0A4,16E6");
+        csv.AppendLine("420736F207468657920737769726C656,420696E2074686174206672616772616,E7420737,465772C2,0506");
+        csv.AppendLine("F726B20197320726963686E657373206,56E7477696E656420776974682043686,9636B656,E2019732,0687");
+        csv.AppendLine("5652E20546F6D61746F657320626C757,36865642C20616E64207065707065727,320626C6,17A65642,C204");
+        csv.AppendLine("17320746865697220666C61766F72732,06D656C6465642C206C6F76652061626,C617A652,E0A0A496,E207");
+        csv.AppendLine("46865206A616D62616C6179612019732,0737465616D79206166666169722C205,06F726B2,0616E642,0436");
+        csv.AppendLine("869636B656E20666F756E6420736F6C6,163652074686572652E2054686569722,06461746,52C20612,06D6");
+        csv.AppendLine("5646C6579206F66207A65737420616E6,420666972652C2041206C6F766520737,46F72792,073696D6,D657");
+        csv.AppendLine("265642C206E6576657220746F2074697,2652E0A536F206E6578742074696D652,0796F752,07461737,46520");
+        csv.AppendLine("7468617420737069637920626F776C2C,2052656D656D6265722074686520706F,726B2061,6E642063,68696");
+        csv.AppendLine("36B656E20197320726F6C652E20496E2,06A616D62616C61796120197320656D6,27261636,52C20746,86579");
+        csv.AppendLine("20666F756E6420626C6973732C204120,63756C696E61727920726F6D616E6365,20146120,43616A75,6E206");
+        DateTime now = DateTime.Now;
+        // Convert the CSV string to bytes
+        var csvBytes = Encoding.UTF8.GetBytes(csv.ToString());
+        using var stream = new MemoryStream(csvBytes);
+
+        {
+            var result = await FileSaver.Default.SaveAsync("LoadFileSample.csv",
+                                                            stream, cancellationTokenSource.Token);
         }
     }
 }

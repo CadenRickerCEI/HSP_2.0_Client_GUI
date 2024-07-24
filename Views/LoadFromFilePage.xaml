@@ -60,6 +60,12 @@
             </StackLayout>
 
         </Frame>
+        <Button
+    Margin="10"
+    BackgroundColor="{StaticResource Secondary}"
+    Clicked="createSample"
+    HorizontalOptions="FillAndExpand"
+    Text="Create Sample File" />
     </StackLayout>
 
 

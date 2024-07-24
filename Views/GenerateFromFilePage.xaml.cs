@@ -1,5 +1,10 @@
 ﻿namespace HSPGUI.Views;
 using HSPGUI.Resources;
+using System.Text;
+using System.IO;
+using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Storage;
+using CommunityToolkit.Maui.Storage;
 
 // using Windows.Media.Protection.PlayReady;
 
@@ -33,6 +38,7 @@ public partial class GenerateFromFilePage : ContentPage
     /// Status of the PCW fields validity
     /// </value>
     private bool PCW_Valid;
+    private CancellationTokenSource cancellationTokenSource;
     /// <value>
     /// The constructor for the GenerateFromFilePage class. It connects the HSP client variable to the one in the main app,
     /// sets the initial validity of input fields, and configures the UI elements.
@@ -44,6 +50,7 @@ public partial class GenerateFromFilePage : ContentPage
             client = ((App)Application.Current)._client;
         }
 
+        cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
         EPC_Valid = true;
         USR_Valid = true;
@@ -150,8 +157,6 @@ public partial class GenerateFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     void OnEPC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine("EPC Changed");
-
         if (EPC_Entry.Text != null && client != null)
         {
             EPC_Valid = client.validateInput(EPC_Entry.Text, EPC_Entry.Text.Length, false);
@@ -287,4 +292,31 @@ public partial class GenerateFromFilePage : ContentPage
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
     private void PC_Entry_Completed(object sender, EventArgs e) => GeneratorNum_Entry.Focus();
+
+    /// <summary>
+    /// Event handler for the Generate File button click event. It writes the data from the edit tag data section to a file for the
+    /// user to use a template or create a new file.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The event arguments.</param>
+    private async void GenerateFileClicked(object sender, EventArgs e)
+    {
+        var EPCData = EPC_Entry.Text != null ? EPC_Entry.Text : "";
+        var UserData = UserData_Entry.Text != null ? UserData_Entry.Text : "";
+        var killData = (KillPass_Entry.Text != null && killPassCheckBox.IsChecked) ? KillPass_Entry.Text : "";
+        var AccData = UserData_Entry.Text != null ? UserData_Entry.Text : "";
+        var PCData = PC_Entry.Text != null ? PC_Entry.Text : "";
+        var numofItems = GeneratorNum_Entry.Text != null ? GeneratorNum_Entry.Text : "100";
+        var csv = new StringBuilder();
+        csv.AppendLine("EPC Data,User Data,Kill Password,Accesss Password,PC Word,Number Of Tags");
+        csv.AppendLine($"{EPCData},{UserData},{killData},{AccData},{PCData},{numofItems}");
+        DateTime now = DateTime.Now;
+        // Convert the CSV string to bytes
+        var csvBytes = Encoding.UTF8.GetBytes(csv.ToString());
+        using var stream = new MemoryStream(csvBytes);
+        {
+            var result = await FileSaver.Default.SaveAsync($"GenerateTag{now.ToString("yy")}{now.ToString("MM")}{now.ToString("dd")}{now.ToString("HH")}{now.ToString("mm")}.csv",
+                                                            stream, cancellationTokenSource.Token);
+        }
+    }
 }

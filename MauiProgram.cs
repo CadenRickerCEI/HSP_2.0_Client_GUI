@@ -1,4 +1,6 @@
-﻿namespace HSPGUI;
+﻿using CommunityToolkit.Maui.Core;
+
+namespace HSPGUI;
 
 /// <summary>
 /// The MauiProgram class is responsible for configuring and creating the .NET MAUI application.
@@ -13,6 +15,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+        builder.UseMauiApp<App>().UseMauiCommunityToolkitCore();
 
         builder
 .UseMauiApp<App>()

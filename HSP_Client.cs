@@ -184,7 +184,7 @@ public class HSPClient
     /// <returns>True if the input is valid; otherwise, false.</returns>
     public bool validateInput(string input, int length, bool sequential)
     {
-        var regExpresion = (sequential)?"^[A-Fa-f0-9!]*$": "^[A-Fa-f0-9]*$";
+        var regExpresion = (sequential) ? "^[A-Fa-f0-9!]*$" : "^[A-Fa-f0-9]*$";
         var regex = new Regex(regExpresion);
         if (length > 32) length = sequential ? 32 : 33;
 
