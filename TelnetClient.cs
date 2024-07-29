@@ -26,17 +26,12 @@ public class TelnetClient
     /// </summary>
     private StreamWriter? writer;
 
-    /// <summary>
-    /// Indicates whether the client is connected to the server.
-    /// </summary>
-    public bool connected;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TelnetClient"/> class.
     /// </summary>
     public TelnetClient()
     {
-        connected = false;
         System.Diagnostics.Debug.WriteLine("TelnetClient created");
     }
 
@@ -55,7 +50,6 @@ public class TelnetClient
 
             if (client.Connected)
             {
-                connected = true;
                 stream = client.GetStream();
                 reader = new StreamReader(stream, Encoding.UTF8);
                 writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
@@ -63,7 +57,7 @@ public class TelnetClient
         }
         catch
         {
-            connected = false;
+            ;
         }
     }
 
@@ -101,5 +95,12 @@ public class TelnetClient
     public void Disconnect()
     {
         if (client != null) client.Close();
+    }
+    /// <summary>
+    /// Checks that the client is connected to HSP server.
+    /// </summary>
+    public bool IsConnected()
+    {
+        return client != null && client.Connected;
     }
 }

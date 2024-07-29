@@ -1,6 +1,7 @@
 ﻿using HSPGUI.Resources;
 using System.Text.RegularExpressions;
 
+
 /// <summary>
 /// The HSPClient class is used for managing the connection and communication with a Telnet server.
 /// It also validates the data going into the database.
@@ -12,10 +13,6 @@ public class HSPClient
     /// </summary>
     private TelnetClient _client;
 
-    /// <summary>
-    /// Indicates whether the client is connected to the server.
-    /// </summary>
-    public bool _connected { get; private set; }
     public event Action<bool>? connectionStatusChanged;
 
     /// <summary>
@@ -29,7 +26,6 @@ public class HSPClient
     public HSPClient()
     {
         _client = new TelnetClient();
-        _connected = false;
     }
 
     /// <summary>
@@ -40,8 +36,7 @@ public class HSPClient
     public async Task connectToHSP(string IpAddress, int Port)
     {
         await _client.ConnectAsync(IpAddress, Port);
-        _connected = _client.connected;
-        connectionStatusChanged?.Invoke(_client.connected);
+        connectionStatusChanged?.Invoke(isConnected());
     }
 
     /// <summary>
@@ -67,14 +62,14 @@ public class HSPClient
         {
             System.Diagnostics.Debug.WriteLine("RESETBUFFER");
 
-            if (_connected)
+            if (isConnected())
             {
                 await _client.WriteAsync("RESETBUFFER");
             }
         }
 
         System.Diagnostics.Debug.WriteLine(command);
-        if (_connected) await _client.WriteAsync(command);
+        if (isConnected()) await _client.WriteAsync(command);
     }
 
     /// <summary>
@@ -90,7 +85,7 @@ public class HSPClient
         {
             System.Diagnostics.Debug.WriteLine("RESETBUFFER");
 
-            if (_connected)
+            if (isConnected())
             {
                 await _client.WriteAsync("RESETBUFFER");
             }
@@ -128,7 +123,7 @@ public class HSPClient
                         System.Diagnostics.Debug.WriteLine(command);
                     }
 
-                    if (_client.connected)
+                    if (isConnected())
                     {
                         await _client.WriteAsync(command);
                     }
@@ -142,7 +137,7 @@ public class HSPClient
                 {
                     var progressVal = (double)i / (double)(data.Count - 1);
                     progress.Report(progressVal);
-                    if (!_client.connected) await Task.Delay(20);
+                    if (isConnected()) await Task.Delay(20);
                 }
             }
 
@@ -172,7 +167,7 @@ public class HSPClient
     /// <param name="Settings">An array of integers representing the antenna settings.</param>
     public async Task writeAntenaSettings(int[] Settings)
     {
-        if (_client != null && _client.connected)
+        if (_client != null && _client.IsConnected())
         {
             await _client.WriteAsync("NB");
         }
@@ -200,8 +195,46 @@ public class HSPClient
         {
             System.Diagnostics.Debug.WriteLine($"length incorrect expected length {length} found length {input.Length}");
         }
-
         return regex.IsMatch(input) && input.Length == length;
     }
-
+    /// <summary>
+    /// Validates that the tag is hexidecimal unless sequential is true then ! is allowed
+    /// </summary>
+    public bool isConnected()
+    {
+        var connected = _client != null && _client.IsConnected();
+        connectionStatusChanged?.Invoke(connected);
+        return connected;
+    }
+    /// <summary>
+    /// gets the current buffer count in HSP.
+    /// </summary>
+    public async Task<string> getBufferCount()
+    {
+        if (_client != null && _client.IsConnected())
+        {
+            await _client.WriteAsync("GETBUFFERCOUNT");
+            var count = await _client.ReadAsync();
+            count = count != null ? count : "0";
+            return count;
+        }
+        return "Buffer invalid";
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public async Task enableHSP()
+    {
+        if (_client != null && _client.IsConnected())
+        {
+            await _client.WriteAsync("ENGAGE");
+        }
+    }
+    public async Task disengageHSP()
+    {
+        if (_client != null && _client.IsConnected())
+        {
+            await _client.WriteAsync("DISENGAGE");
+        }
+    }
 }

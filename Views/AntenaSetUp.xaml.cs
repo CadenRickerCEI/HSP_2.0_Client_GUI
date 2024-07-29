@@ -37,7 +37,7 @@ public partial class AntenaSetUp : ContentPage
     /// <param name="e">The event arguments.</param>
     private async void ReadSettings_Clicked(object sender, EventArgs e)
     {
-        if (client != null && client._connected)
+        if (client != null && client.isConnected())
         {
             var settings = await client.readAntenaSettings();
 
@@ -69,7 +69,7 @@ public partial class AntenaSetUp : ContentPage
         settings[4] = (int)recieverGainSelector.SelectedIndex;
         settings[5] = (int)asyncRecieverGain.SelectedIndex;
 
-        if (client != null && client._connected)
+        if (client != null && client.isConnected())
         {
             await client.writeAntenaSettings(settings);
         }

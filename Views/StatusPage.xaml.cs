@@ -31,7 +31,10 @@ public partial class StatusPage : ContentPage
         InitializeComponent();
         
     }
-
+    /// <summary>
+    ///  listener for when the connection status changes on the HSP
+    /// </summary>
+    /// <param name="connectionStatus"></param>
     private void Client_connectionStatusChanged(bool connectionStatus)
     {
         if (connectionStatus)
@@ -64,11 +67,51 @@ public partial class StatusPage : ContentPage
             await client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
             System.Diagnostics.Debug.WriteLine("await finished");
 
-            if (client._connected == false)
+            if (client.isConnected() == false)
             {
                 var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
                 if (tryAgain) connectToServer();
             }
+        }
+    }
+    /// <summary>
+    /// clicked listener for get buffer count when pressed it queries the HSP for the current buffer count
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void GetBufferCount(object sender, EventArgs e)
+    {
+        if (client != null && client.isConnected())
+        {
+            bufferCount.Text = await client.getBufferCount();
+        }else
+        {
+            bufferCount.Text = "Count invalid not connected";
+        }
+    }
+    /// <summary>
+    /// Engage HSP engages the HSP if its connected.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    private async Task EngageHSP(object sender, EventArgs e)
+    {
+        if (client != null && client.isConnected())
+        {
+            await client.enableHSP();
+        }
+    }/// <summary>
+    /// Disengages the HSP  if it's connected.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    private async Task DisegageHSP(object sender, EventArgs e)
+    {
+        if (client != null && client.isConnected())
+        {
+            await client.disengageHSP();
         }
     }
 }

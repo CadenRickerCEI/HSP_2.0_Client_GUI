@@ -7,16 +7,21 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Label Text="HSP not connected" x:Name="connectedLabel" Grid.Row="0" Grid.Column="0"/>
-        <Button Text="Connect To server" Clicked="OnButtonClicked" Grid.Row="0" Grid.Column="1"/>
-        <Label Text="Buffer Count" Grid.Row="1" Grid.ColumnSpan="2" HorizontalOptions="CenterAndExpand"/>
-        <Entry Margin="5" Grid.Row="2" Grid.Column="0"/>
-        <Button Text="Get Current Buffer Count" Grid.Row="2" Grid.Column="1" Margin="5"/>
+        <Label Text="HSP not connected" x:Name="connectedLabel" Grid.Row="0" Grid.Column="0" Margin="5"/>
+        <Button Text="Connect To server" Clicked="OnButtonClicked" Grid.Row="0" Grid.Column="1" Margin="5"/>
+        <Button Text="Engage HSP" Clicked="EnageHSP" Grid.Row="1" Grid.Column="0" Margin="5"/>
+        <Button Text="Disengage HSP" Clicked="DisgageHSP"  Grid.Row="1" Grid.Column="1" BackgroundColor="{StaticResource Secondary}" Margin="5"/>
+        <Label Text="Buffer Count" Grid.Row="3" Grid.ColumnSpan="3" HorizontalOptions="CenterAndExpand"/>
+        <Button Text="Get Current Buffer Count" Clicked="GetBufferCount"  Grid.Row="4" Grid.Column="0" Margin="5"/>
+        <Entry x:Name="bufferCount"  Margin="5" Grid.Row="4" Grid.Column="1"/>
+        
 
 
     </Grid>
