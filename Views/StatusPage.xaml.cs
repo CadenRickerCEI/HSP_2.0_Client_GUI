@@ -64,7 +64,7 @@ public partial class StatusPage : ContentPage
 
         if (client != null)
         {
-            await client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
+            client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
             System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
 
             if (client.isConnected() == false)
@@ -79,11 +79,11 @@ public partial class StatusPage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private async void GetBufferCount(object sender, EventArgs e)
+    private void GetBufferCount(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            bufferCount.Text = await client.getBufferCount();
+            bufferCount.Text = client.getBufferCount();
         }
         else
         {
@@ -96,12 +96,11 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private async void EnagedHSP(object sender, EventArgs e)
+    private void EnagedHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            await client.resetbuffer();
-            //await client.enableHSP();
+            client.enableHSP();
         }
     }
     /// <summary>
@@ -110,11 +109,11 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private async void DisengageHSP(object sender, EventArgs e)
+    private void DisengageHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            await client.disengageHSP();
+            client.disengageHSP();
         }
     }
 }

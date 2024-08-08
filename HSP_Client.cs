@@ -1,5 +1,7 @@
 ﻿using HSPGUI.Resources;
+using MinimalisticTelnet;
 using System.Text.RegularExpressions;
+
 
 
 
@@ -12,7 +14,7 @@ public class HSPClient
     /// <summary>
     /// The TelnetClient object used for the connection.
     /// </summary>
-    private TelnetClient _client;
+    private TelnetConnection? _client;
 
     public event Action<bool>? connectionStatusChanged;
 
@@ -26,7 +28,7 @@ public class HSPClient
     /// </summary>
     public HSPClient()
     {
-        _client = new TelnetClient();
+        _client = null;
     }
 
     /// <summary>
@@ -34,15 +36,10 @@ public class HSPClient
     /// </summary>
     /// <param name="IpAddress">The IP address of the server.</param>
     /// <param name="Port">The port number of the server.</param>
-    public async Task connectToHSP(string IpAddress, int Port)
+    public void connectToHSP(string IpAddress, int Port)
     {
-        await _client.ConnectAsync(IpAddress, Port);
-        await _client.WriteAsync("\n");
-        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
-        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
-        await _client.WriteAsync("GETVERSIONS");
-        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
-        
+       _client = new TelnetConnection(IpAddress, Port);
+        System.Diagnostics.Debug.WriteLine(_client.Read());
         connectionStatusChanged?.Invoke(isConnected());          
 
     }
@@ -60,29 +57,36 @@ public class HSPClient
 
         foreach (var data in bufferCmdData)
         {
-            if (data != "") command += dataTypes[i] + data;
+            if (data != "") command += dataTypes[i] + data +",";
             i++;
         }
 
-        command += ",NUM" + numberOfTags.ToString();
+        command += "NUM" + numberOfTags.ToString();
 
         if (resetBuffer)
         {
             System.Diagnostics.Debug.WriteLine("RESETBUFFER");
 
-            if (isConnected())
+            if (_client is not null && isConnected())
             {
-                await _client.WriteAsync("RESETBUFFER");
-                var result = await _client.ReadAsync();
-                System.Diagnostics.Debug.WriteLine($"Reset Buffer Result {result}!");
+                _client.WriteLine("RESETBUFFER");                
+                System.Diagnostics.Debug.WriteLine(_client.Read());
             }
         }
 
         System.Diagnostics.Debug.WriteLine(command);
-        if (isConnected()) { 
-            await _client.WriteAsync($"{command}");
-            var result = await _client.ReadAsync();
-            System.Diagnostics.Debug.WriteLine($"Result of Generate {result}");
+        if (_client is not null && isConnected()) { 
+            _client.WriteLine($"{command}");
+            var result = _client.Read();
+            System.Diagnostics.Debug.Write($"{result}");
+            if ( result != null && result.Contains("GENERATED 0 RECORDS"))
+                 System.Diagnostics.Debug.WriteLine("Failed to add");
+            else
+            {
+                await Task.Delay(1000);
+                result = _client.Read();
+                System.Diagnostics.Debug.WriteLine($"{result}");
+            }
         }
     }
 
@@ -99,9 +103,9 @@ public class HSPClient
         {
             System.Diagnostics.Debug.WriteLine("RESETBUFFER");
 
-            if (isConnected())
+            if (_client is not null && isConnected())
             {
-                await _client.WriteAsync("RESETBUFFER\r\n");
+                _client.WriteLine("RESETBUFFER");
             }
         }
 
@@ -127,7 +131,7 @@ public class HSPClient
                         return i;
                     }
 
-                    command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] : "";
+                    command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] + "," : "";
                 }
 
                 if (command != "WriteItem=")
@@ -137,9 +141,12 @@ public class HSPClient
                         System.Diagnostics.Debug.WriteLine(command);
                     }
 
-                    if (isConnected())
+                    if (_client is not null && isConnected())
                     {
-                        await _client.WriteAsync($"{command}\r\n");
+                        command = command.EndsWith(",")? command.Substring(0,Math.Max( command.Length-2, 1)) : command;
+                        
+                        _client.WriteLine($"{command}");
+                        System.Diagnostics.Debug.WriteLine($"{command}\n{_client.Read()}");
                     }
                 }
                 else
@@ -179,11 +186,11 @@ public class HSPClient
     /// Writes antenna settings to the HSP.
     /// </summary>
     /// <param name="Settings">An array of integers representing the antenna settings.</param>
-    public async Task writeAntenaSettings(int[] Settings)
+    public void writeAntenaSettings(int[] Settings)
     {
-        if (_client != null && _client.IsConnected())
+        if (_client != null && isConnected())
         {
-            await _client.WriteAsync("NB");
+            _client.WriteLine("NB");
         }
     }
 
@@ -216,19 +223,19 @@ public class HSPClient
     /// </summary>
     public bool isConnected()
     {
-        var connected = _client != null && _client.IsConnected();
+        var connected = _client != null && _client.IsConnected ;
         connectionStatusChanged?.Invoke(connected);
         return connected;
     }
     /// <summary>
     /// gets the current buffer count in HSP.
     /// </summary>
-    public async Task<string> getBufferCount()
+    public string getBufferCount()
     {
-        if (_client != null && _client.IsConnected())
+        if (_client != null && isConnected())
         {
-            await _client.WriteAsync("GETBUFFERCOUNT\n");
-            var count = await _client.ReadAsync();
+            _client.WriteLine("GETBUFFERCOUNT\n");
+            var count = _client.Read();
             System.Diagnostics.Debug.WriteLine($"{count}");
             if (count != null)
             {
@@ -253,23 +260,26 @@ public class HSPClient
     /// <summary>
     /// 
     /// </summary>
-    public async Task enableHSP()
+    public void enableHSP()
     {
-        if (_client != null && _client.IsConnected())
+        if ( _client != null && isConnected())
         {
-            await _client.WriteAsync("ENGAGE");
+            _client.WriteLine("ENGAGE");
         }
     }
-    public async Task disengageHSP()
+    public void disengageHSP()
     {
-        if (_client != null && _client.IsConnected())
+        if (_client != null && isConnected())
         {
-            await _client.WriteAsync("DISENGAGE");
+            _client.WriteLine("DISENGAGE");
         }
     }
-    public async Task resetbuffer()
+    public void resetbuffer()
     {
-        await _client.WriteAsync("RESETBUFFER");
-        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
+        if (_client != null && isConnected())
+        {
+            _client.WriteLine("RESETBUFFER");
+            System.Diagnostics.Debug.WriteLine(_client.Read());
+        }
     }
 }

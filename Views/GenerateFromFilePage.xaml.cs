@@ -157,7 +157,8 @@ public partial class GenerateFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     void OnEPC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (EPC_Entry.Text != null && client != null)
+        EPC_Valid = true;
+        if (EPC_Entry.Text != null && EPC_Entry.Text != "" && client != null)
         {
             EPC_Valid = client.validateInput(EPC_Entry.Text, EPC_Entry.Text.Length, false);
             EPC_Entry.TextColor = EPC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -171,7 +172,8 @@ public partial class GenerateFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     void OnUSR_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (UserData_Entry.Text != null && client != null)
+        USR_Valid = true;
+        if (UserData_Entry.Text != null && UserData_Entry.Text != "" && client != null)
         {
             USR_Valid = client.validateInput(UserData_Entry.Text, UserData_Entry.Text.Length, false);
             UserData_Entry.TextColor = USR_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -185,7 +187,8 @@ public partial class GenerateFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     void OnKIL_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (KillPass_Entry.Text != null && client != null)
+        KIL_Valid = true;
+        if (KillPass_Entry.Text != null && KillPass_Entry.Text != "" && client != null)
         {
             KIL_Valid = client.validateInput(KillPass_Entry.Text, 8, false);
             KillPass_Entry.TextColor = KIL_Valid ? Color.FromArgb("#00000") : Color.FromArgb("#FF0000");
@@ -199,7 +202,8 @@ public partial class GenerateFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     void OnACC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (AccessPass_Entry.Text != null && client != null)
+        ACC_Valid = true;
+        if (AccessPass_Entry.Text != null && AccessPass_Entry.Text != "" && client != null)
         {
             ACC_Valid = client.validateInput(AccessPass_Entry.Text, 8, false);
             AccessPass_Entry.TextColor = ACC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -213,7 +217,8 @@ public partial class GenerateFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     void OnPCW_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (PC_Entry.Text != null && client != null)
+        PCW_Valid = true;
+        if (PC_Entry.Text != null && PC_Entry.Text != "" && client != null)
         {
             PCW_Valid = client.validateInput(PC_Entry.Text, 4, false);
             PC_Entry.TextColor = PCW_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -232,8 +237,8 @@ public partial class GenerateFromFilePage : ContentPage
             var resetBuffer = await DisplayAlert("Load Buffer", "Clear buffer in HSP before loading or add to the buffer?", "Clear Buffer", "Add to Buffer");
             var EPCData = EPC_Entry.Text != null ? EPC_Entry.Text : "";
             var UserData = UserData_Entry.Text != null ? UserData_Entry.Text : "";
-            var killData = (KillPass_Entry.Text != null && killPassCheckBox.IsChecked) ? KillPass_Entry.Text : "";
-            var AccData = UserData_Entry.Text != null ? UserData_Entry.Text : "";
+            var killData = (KillPass_Entry.Text != null && killPassCheckBox.IsChecked)  ? KillPass_Entry.Text : "";
+            var AccData = AccessPass_Entry.Text != null  ? AccessPass_Entry.Text : "";
             var PCData = PC_Entry.Text != null ? PC_Entry.Text : "";
 
             EPCData = (EPCData.Length >= 4 && EPC_SeqeuntialCheck.IsChecked) ? EPCData.Insert(EPCData.Length - 4, "!") : EPCData;

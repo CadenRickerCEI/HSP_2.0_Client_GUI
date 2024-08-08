@@ -59,7 +59,7 @@ public partial class AntenaSetUp : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
-    private async void WriteSettings_Clicked(object sender, EventArgs e)
+    private void WriteSettings_Clicked(object sender, EventArgs e)
     {
         var settings = new int[6];
         settings[0] = (int)baudRateSelector.SelectedIndex;
@@ -71,7 +71,7 @@ public partial class AntenaSetUp : ContentPage
 
         if (client != null && client.isConnected())
         {
-            await client.writeAntenaSettings(settings);
+            client.writeAntenaSettings(settings);
         }
     }
 }
