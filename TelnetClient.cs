@@ -76,7 +76,29 @@ public class TelnetClient
             return null;
         }
     }
-
+    /// <summary>
+    /// Asynchronously reads a line of data from the server.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous read operation. The value of the TResult parameter contains the read line as a string, or null if the reader is not initialized.</returns>
+    public async Task<string?> ReadAllAsync()
+    {
+        if (reader != null)
+        {
+            var result = "";
+            string? responce = await reader.ReadLineAsync();
+            while (!string.IsNullOrEmpty(responce)) 
+            {
+                await Task.Delay(1000);
+                result += responce;
+                responce = await reader.ReadLineAsync();
+            }
+            return result;
+        }
+        else
+        {
+            return null;
+        }
+    }
     /// <summary>
     /// Asynchronously writes a message to the server.
     /// </summary>

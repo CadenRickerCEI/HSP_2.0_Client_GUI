@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 
 
+
 /// <summary>
 /// The HSPClient class is used for managing the connection and communication with a Telnet server.
 /// It also validates the data going into the database.
@@ -36,7 +37,14 @@ public class HSPClient
     public async Task connectToHSP(string IpAddress, int Port)
     {
         await _client.ConnectAsync(IpAddress, Port);
-        connectionStatusChanged?.Invoke(isConnected());
+        await _client.WriteAsync("\n");
+        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
+        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
+        await _client.WriteAsync("GETVERSIONS");
+        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
+        
+        connectionStatusChanged?.Invoke(isConnected());          
+
     }
 
     /// <summary>
@@ -56,7 +64,7 @@ public class HSPClient
             i++;
         }
 
-        command += "NUM" + numberOfTags.ToString();
+        command += ",NUM" + numberOfTags.ToString();
 
         if (resetBuffer)
         {
@@ -65,11 +73,17 @@ public class HSPClient
             if (isConnected())
             {
                 await _client.WriteAsync("RESETBUFFER");
+                var result = await _client.ReadAsync();
+                System.Diagnostics.Debug.WriteLine($"Reset Buffer Result {result}!");
             }
         }
 
         System.Diagnostics.Debug.WriteLine(command);
-        if (isConnected()) await _client.WriteAsync(command);
+        if (isConnected()) { 
+            await _client.WriteAsync($"{command}");
+            var result = await _client.ReadAsync();
+            System.Diagnostics.Debug.WriteLine($"Result of Generate {result}");
+        }
     }
 
     /// <summary>
@@ -87,7 +101,7 @@ public class HSPClient
 
             if (isConnected())
             {
-                await _client.WriteAsync("RESETBUFFER");
+                await _client.WriteAsync("RESETBUFFER\r\n");
             }
         }
 
@@ -125,7 +139,7 @@ public class HSPClient
 
                     if (isConnected())
                     {
-                        await _client.WriteAsync(command);
+                        await _client.WriteAsync($"{command}\r\n");
                     }
                 }
                 else
@@ -213,9 +227,25 @@ public class HSPClient
     {
         if (_client != null && _client.IsConnected())
         {
-            await _client.WriteAsync("GETBUFFERCOUNT");
+            await _client.WriteAsync("GETBUFFERCOUNT\n");
             var count = await _client.ReadAsync();
-            count = count != null ? count : "0";
+            System.Diagnostics.Debug.WriteLine($"{count}");
+            if (count != null)
+            {
+                MatchCollection matches = Regex.Matches(count, @"\d+");
+                int sum = 0;
+
+                foreach (Match match in matches)
+                {
+                    sum += int.Parse(match.Value);
+                }
+                count = sum.ToString();
+            }
+            else
+            {
+                count = "0";
+            }
+            
             return count;
         }
         return "Buffer invalid";
@@ -236,5 +266,10 @@ public class HSPClient
         {
             await _client.WriteAsync("DISENGAGE");
         }
+    }
+    public async Task resetbuffer()
+    {
+        await _client.WriteAsync("RESETBUFFER");
+        System.Diagnostics.Debug.WriteLine(await _client.ReadAsync());
     }
 }

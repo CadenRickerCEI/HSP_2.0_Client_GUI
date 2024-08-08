@@ -65,7 +65,7 @@ public partial class StatusPage : ContentPage
         if (client != null)
         {
             await client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
-            System.Diagnostics.Debug.WriteLine("await finished");
+            System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
 
             if (client.isConnected() == false)
             {
@@ -84,7 +84,8 @@ public partial class StatusPage : ContentPage
         if (client != null && client.isConnected())
         {
             bufferCount.Text = await client.getBufferCount();
-        }else
+        }
+        else
         {
             bufferCount.Text = "Count invalid not connected";
         }
@@ -95,19 +96,21 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private async Task EngageHSP(object sender, EventArgs e)
+    private async void EnagedHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            await client.enableHSP();
+            await client.resetbuffer();
+            //await client.enableHSP();
         }
-    }/// <summary>
+    }
+    /// <summary>
     /// Disengages the HSP  if it's connected.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private async Task DisegageHSP(object sender, EventArgs e)
+    private async void DisengageHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
