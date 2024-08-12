@@ -22,10 +22,9 @@
         <Label Text="Buffer Count" Grid.Row="3" Grid.ColumnSpan="3" HorizontalOptions="CenterAndExpand"/>
         <Button Text="Get Current Buffer Count" Clicked="GetBufferCount"  Grid.Row="4" Grid.Column="0" Margin="5"/>
         <Entry x:Name="bufferCount"  Margin="5" Grid.Row="4" Grid.Column="1"/>
-        <Frame Grid.Row="5" Grid.ColumnSpan="2" MinimumHeightRequest="100" Margin="5,20">
-            <Label x:Name="dialog"></Label>
-        </Frame>
-        
+
+        <Editor x:Name="dialog" IsReadOnly="True" Grid.Row="5" Grid.ColumnSpan="2" MinimumHeightRequest="100" Margin="5"></Editor>
+
 
 
     </Grid>

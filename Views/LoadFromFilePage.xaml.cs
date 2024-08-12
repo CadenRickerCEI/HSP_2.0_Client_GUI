@@ -92,10 +92,8 @@ public partial class LoadFromFilePage : ContentPage
         {
             loadResult = await Task.Run(() =>
             {
-                return client.LoadFromFile(fileLocationEntry.Text, _progress, resetBuffer);
+                return client.LoadFromFile(fileLocationEntry.Text, _progress, resetBuffer, this);
             });
-
-            System.Diagnostics.Debug.WriteLine("file complete");
         }
         else
         {
@@ -181,5 +179,12 @@ public partial class LoadFromFilePage : ContentPage
             var result = await FileSaver.Default.SaveAsync("LoadFileSample.csv",
                                                             stream, cancellationTokenSource.Token);
         }
+    }
+    public void updateDialog(string input)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            dialog.Text = input;
+        });
     }
 }

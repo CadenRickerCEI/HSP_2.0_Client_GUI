@@ -46,27 +46,36 @@
                     Margin="0,20,0,0"
                     Padding="3"
                     BackgroundColor="DimGray"
-                    IsVisible="False"
                     CornerRadius="2"
-                    >
+                    IsVisible="False">
                     <ProgressBar
-                        x:Name="progressBar"                        
-                        ProgressColor="LawnGreen"
+                        x:Name="progressBar"
                         HorizontalOptions="FillAndExpand"
                         IsVisible="False"
                         MinimumHeightRequest="30"
-                        />
+                        ProgressColor="LawnGreen" />
                 </Frame>
             </StackLayout>
 
         </Frame>
         <Button
-    Margin="10"
-    BackgroundColor="{StaticResource Secondary}"
-    Clicked="createSample"
-    HorizontalOptions="FillAndExpand"
-    Text="Create Sample File" />
-    </StackLayout>
+            Margin="10"
+            BackgroundColor="{StaticResource Secondary}"
+            Clicked="createSample"
+            HorizontalOptions="FillAndExpand"
+            Text="Create Sample File" />
 
+        <ScrollView Orientation="Vertical" MaximumHeightRequest="200">
+            <Editor
+                x:Name="dialog"
+                Margin="10"
+                AutoSize="TextChanges"
+                HorizontalOptions="FillAndExpand"
+                IsReadOnly="True"
+                VerticalOptions="FillAndExpand" 
+                />
+        </ScrollView>
+
+    </StackLayout>
 
 </ContentPage>

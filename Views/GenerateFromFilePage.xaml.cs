@@ -6,6 +6,7 @@ using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Storage;
 using CommunityToolkit.Maui.Storage;
 
+
 // using Windows.Media.Protection.PlayReady;
 
 /// <summary>
@@ -210,6 +211,7 @@ public partial class GenerateFromFilePage : ContentPage
         }
     }
 
+
     /// <summary>
     /// Event handler for the TextChanged event of the PC entry field. It validates the input and updates the text color based on validity.
     /// </summary>
@@ -324,4 +326,5 @@ public partial class GenerateFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
+
 }

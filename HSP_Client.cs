@@ -5,8 +5,6 @@ using System.Text.RegularExpressions;
 
 
 
-
-
 /// <summary>
 /// The HSPClient class is used for managing the connection and communication with a Telnet server.
 /// It also validates the data going into the database.
@@ -45,13 +43,13 @@ public class HSPClient
         return readServerMSg();
     }
 
-    private string readServerMSg()
+    public string readServerMSg()
     {
         string? result = _client?.Read();
         if (result != null) {
             result = result.Trim();
             string pattern = @"\s*HSPSA>$";
-            return "HSPSA> " + Regex.Replace(result, pattern, "");
+            return "HSPSA>" + Regex.Replace(result, pattern, "");
         }
         return "";
     }
@@ -101,7 +99,7 @@ public class HSPClient
                 }
                 else
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(1000);//Delay to give the HSP a chance to process the data. 
                     HSPResponse += readServerMSg() + "\n";
                 }
             }           
@@ -116,8 +114,9 @@ public class HSPClient
     /// <param name="progress">Progress reporter for the loading operation.</param>
     /// <param name="resetBuffer">Indicates whether to reset the buffer of tags already on the HSP.</param>
     /// <returns>An integer indicating the result of the operation.</returns>
-    public async Task<int> LoadFromFile(string file, IProgress<double> progress, bool resetBuffer)
+    public async Task<int> LoadFromFile(string file, IProgress<double> progress, bool resetBuffer, LoadFromFilePage page)
     {
+        string HSPInfo = "";
         if (resetBuffer)
         {
             System.Diagnostics.Debug.WriteLine("RESETBUFFER");
@@ -125,6 +124,8 @@ public class HSPClient
             if (_client is not null && isConnected())
             {
                 _client.WriteLine("RESETBUFFER");
+                HSPInfo = readServerMSg() +"\n";
+                page.updateDialog(HSPInfo);
             }
         }
 
@@ -164,8 +165,6 @@ public class HSPClient
                     {
                         command = command.EndsWith(",")? command.Substring(0,Math.Max( command.Length-1, 1)) : command;                        
                         _client.WriteLine($"{command}");
-                        //var result = _client.Read();
-                        //System.Diagnostics.Debug.WriteLine($"{command}\n{result}");
                     }
                 }
                 else
@@ -178,22 +177,25 @@ public class HSPClient
                     var progressVal = (double)i / (double)(data.Count - 1);
                     progress.Report(progressVal);
                     if (!isConnected()) await Task.Delay(20);
-                    else if(_client is not null && !isConnected())
-                    {
-                        var result = _client.Read();
-                    }
+                    
                 }
             }
             if (_client is not null && isConnected())
             {
-                var result = _client.Read();
+                //string writtenMsg = Regex.Replace(readServerMSg(), @"\n{2,}", "\n") ;
+                string writtenMsg = readServerMSg();
+                // "\\r\\n\", \"\\r\", \"\\n\",\"\\n\\n\",\"\\n\\n\\n\",\"\\n\\r\\n\", \"\\r\\n\\r\\n"
+                string[] lines = writtenMsg.Split(new[] { "\n" }, StringSplitOptions.None);
+                string message = string.Join("\n", lines, 0, Math.Min(lines.Length, 100));
+                page.updateDialog(HSPInfo+message);
             }
             progress.Report(1.0);
             System.Diagnostics.Debug.WriteLine("completed loading");
             return 0;
         }
-        catch
+        catch (Exception e)
         {
+            System.Diagnostics.Debug.WriteLine(e.ToString());
             return -2;
         }
     }
@@ -264,7 +266,6 @@ public class HSPClient
             var result = readServerMSg();
             result = result is not null ? result : "";
             int count = -1;
-            //System.Diagnostics.Debug.WriteLine($"{count}");
             if (result != "")
             {
                 MatchCollection matches = Regex.Matches(result, @"\d+");
