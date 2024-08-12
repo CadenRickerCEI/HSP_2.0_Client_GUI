@@ -64,7 +64,7 @@ public partial class StatusPage : ContentPage
 
         if (client != null)
         {
-            client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
+            dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
             System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
 
             if (client.isConnected() == false)
@@ -83,11 +83,15 @@ public partial class StatusPage : ContentPage
     {
         if (client != null && client.isConnected())
         {
-            bufferCount.Text = client.getBufferCount();
+            var result = client.getBufferCount();
+            bufferCount.Text = result[0];
+            dialog.Text = result[1];
+
         }
         else
         {
-            bufferCount.Text = "Count invalid not connected";
+            bufferCount.Text = "0";
+            dialog.Text = "Count invalid not connected";
         }
     }
     /// <summary>
@@ -99,8 +103,8 @@ public partial class StatusPage : ContentPage
     private void EnagedHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
-        {
-            client.enableHSP();
+        {            
+            dialog.Text = client.EngageHSP();
         }
     }
     /// <summary>
@@ -113,7 +117,7 @@ public partial class StatusPage : ContentPage
     {
         if (client != null && client.isConnected())
         {
-            client.disengageHSP();
+            dialog.Text = client.disengageHSP();
         }
     }
 }

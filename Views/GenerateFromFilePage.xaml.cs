@@ -249,7 +249,7 @@ public partial class GenerateFromFilePage : ContentPage
 
             if (client != null)
             {
-                client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
+                dialog.Text = await client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
             }
         }
         else

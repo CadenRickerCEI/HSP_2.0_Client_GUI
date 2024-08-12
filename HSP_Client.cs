@@ -1,6 +1,8 @@
 ﻿using HSPGUI.Resources;
 using MinimalisticTelnet;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+
 
 
 
@@ -36,58 +38,75 @@ public class HSPClient
     /// </summary>
     /// <param name="IpAddress">The IP address of the server.</param>
     /// <param name="Port">The port number of the server.</param>
-    public void connectToHSP(string IpAddress, int Port)
+    public string connectToHSP(string IpAddress, int Port)
     {
-       _client = new TelnetConnection(IpAddress, Port);
-        System.Diagnostics.Debug.WriteLine(_client.Read());
-        connectionStatusChanged?.Invoke(isConnected());          
-
+       _client = new TelnetConnection(IpAddress, Port);  
+        connectionStatusChanged?.Invoke(isConnected());
+        return readServerMSg();
     }
 
+    private string readServerMSg()
+    {
+        string? result = _client?.Read();
+        if (result != null) {
+            result = result.Trim();
+            string pattern = @"\s*HSPSA>$";
+            return "HSPSA> " + Regex.Replace(result, pattern, "");
+        }
+        return "";
+    }
     /// <summary>
     /// Generates a buffer command data string.
     /// </summary>
     /// <param name="bufferCmdData">Array of command data strings.</param>
     /// <param name="numberOfTags">The number of tags to be added to the buffer.</param>
     /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
-    public async void GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
+    public async Task<String> GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
     {
-        var command = "GENERATE=";
-        var i = 0;
-
-        foreach (var data in bufferCmdData)
+        string HSPResponse = "Generate File Failed";
+        if (_client != null && _client.IsConnected)
         {
-            if (data != "") command += dataTypes[i] + data +",";
-            i++;
-        }
+            HSPResponse = "";
+            var command = "GENERATE=";
+            var i = 0;
 
-        command += "NUM" + numberOfTags.ToString();
+            foreach (var data in bufferCmdData)
+            {
+                if (data != "") command += dataTypes[i] + data + ",";
+                i++;
+            }
 
-        if (resetBuffer)
-        {
-            System.Diagnostics.Debug.WriteLine("RESETBUFFER");
+            command += "NUM" + numberOfTags.ToString();
 
+            if (resetBuffer)
+            {
+                System.Diagnostics.Debug.WriteLine("RESETBUFFER");
+
+                if (_client is not null && isConnected())
+                {
+                    _client.WriteLine("RESETBUFFER");
+                    HSPResponse += readServerMSg() +"\n";
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine(command);
             if (_client is not null && isConnected())
             {
-                _client.WriteLine("RESETBUFFER");                
-                System.Diagnostics.Debug.WriteLine(_client.Read());
-            }
+                _client.WriteLine($"{command}");
+                string result = readServerMSg();
+                System.Diagnostics.Debug.Write($"{result}");
+                if (result != null && result.Contains("GENERATED 0 RECORDS"))
+                {   
+                    HSPResponse += result + "\n";
+                }
+                else
+                {
+                    await Task.Delay(1000);
+                    HSPResponse += readServerMSg() + "\n";
+                }
+            }           
         }
-
-        System.Diagnostics.Debug.WriteLine(command);
-        if (_client is not null && isConnected()) { 
-            _client.WriteLine($"{command}");
-            var result = _client.Read();
-            System.Diagnostics.Debug.Write($"{result}");
-            if ( result != null && result.Contains("GENERATED 0 RECORDS"))
-                 System.Diagnostics.Debug.WriteLine("Failed to add");
-            else
-            {
-                await Task.Delay(1000);
-                result = _client.Read();
-                System.Diagnostics.Debug.WriteLine($"{result}");
-            }
-        }
+        return HSPResponse;
     }
 
     /// <summary>
@@ -113,7 +132,7 @@ public class HSPClient
         {
             var csvReader = new CSVReader(file);
             var data = csvReader.ReadCSV();
-            progress.Report(0);
+            progress.Report(0.001);
             if (data == null) throw new Exception();
             var lengths = new int[] { -1, -1, 8, 8, 4 };
 
@@ -143,10 +162,10 @@ public class HSPClient
 
                     if (_client is not null && isConnected())
                     {
-                        command = command.EndsWith(",")? command.Substring(0,Math.Max( command.Length-2, 1)) : command;
-                        
+                        command = command.EndsWith(",")? command.Substring(0,Math.Max( command.Length-1, 1)) : command;                        
                         _client.WriteLine($"{command}");
-                        System.Diagnostics.Debug.WriteLine($"{command}\n{_client.Read()}");
+                        //var result = _client.Read();
+                        //System.Diagnostics.Debug.WriteLine($"{command}\n{result}");
                     }
                 }
                 else
@@ -158,10 +177,17 @@ public class HSPClient
                 {
                     var progressVal = (double)i / (double)(data.Count - 1);
                     progress.Report(progressVal);
-                    if (isConnected()) await Task.Delay(20);
+                    if (!isConnected()) await Task.Delay(20);
+                    else if(_client is not null && !isConnected())
+                    {
+                        var result = _client.Read();
+                    }
                 }
             }
-
+            if (_client is not null && isConnected())
+            {
+                var result = _client.Read();
+            }
             progress.Report(1.0);
             System.Diagnostics.Debug.WriteLine("completed loading");
             return 0;
@@ -230,56 +256,63 @@ public class HSPClient
     /// <summary>
     /// gets the current buffer count in HSP.
     /// </summary>
-    public string getBufferCount()
+    public string[] getBufferCount()
     {
         if (_client != null && isConnected())
         {
             _client.WriteLine("GETBUFFERCOUNT\n");
-            var count = _client.Read();
-            System.Diagnostics.Debug.WriteLine($"{count}");
-            if (count != null)
+            var result = readServerMSg();
+            result = result is not null ? result : "";
+            int count = -1;
+            //System.Diagnostics.Debug.WriteLine($"{count}");
+            if (result != "")
             {
-                MatchCollection matches = Regex.Matches(count, @"\d+");
+                MatchCollection matches = Regex.Matches(result, @"\d+");
                 int sum = 0;
 
                 foreach (Match match in matches)
                 {
                     sum += int.Parse(match.Value);
                 }
-                count = sum.ToString();
+                count = sum;
             }
             else
             {
-                count = "0";
+                count = 0;
             }
             
-            return count;
+            return [count.ToString(), result ];
         }
-        return "Buffer invalid";
+        return ["0","Buffer invalid"];
     }
     /// <summary>
     /// 
     /// </summary>
-    public void enableHSP()
+    public string EngageHSP()
     {
         if ( _client != null && isConnected())
         {
             _client.WriteLine("ENGAGE");
+            return readServerMSg();
         }
+        return "Engage Failed Not Connected";
     }
-    public void disengageHSP()
+    public string disengageHSP()
     {
         if (_client != null && isConnected())
         {
             _client.WriteLine("DISENGAGE");
+             return readServerMSg();
         }
+        return "Disengage Failed Not Connected";
     }
-    public void resetbuffer()
+    public string resetbuffer()
     {
         if (_client != null && isConnected())
         {
             _client.WriteLine("RESETBUFFER");
-            System.Diagnostics.Debug.WriteLine(_client.Read());
+            return readServerMSg();
         }
+        return "Reset Buffer Failed Not Connected";
     }
 }

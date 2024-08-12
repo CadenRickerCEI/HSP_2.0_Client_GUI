@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
     <StackLayout>
 
-        <Frame Margin="10" Padding="20">
+        <Frame Margin="5" Padding="10">
             <StackLayout Margin="2">
                 <Label FontSize="Subtitle" Text="Select File Here" />
 
@@ -18,8 +18,6 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
-
-
                     </Grid.ColumnDefinitions>
                     <Entry
                         x:Name="fileLocationEntry"
@@ -40,7 +38,7 @@
                     Text="Read File" />
             </StackLayout>
         </Frame>
-        <Frame Margin="10" Padding="20">
+        <Frame Margin="5" Padding="10">
             <StackLayout>
                 <Label
                     Margin="2,0,0,0"
@@ -203,16 +201,18 @@
 
 
         <Button
-            Margin="10"
+            Margin="5"
             Clicked="loadBuffer_Clicked"
             HorizontalOptions="FillAndExpand"
             Text="Load HSP Buffer" />
         <Button
-            Margin="10"
+            Margin="5"
             BackgroundColor="{StaticResource Secondary}"
             Clicked="GenerateFileClicked"
             HorizontalOptions="FillAndExpand"
             Text="Save Tag Data to File" />
-
+        <Frame MinimumHeightRequest="20" Margin="5,20">
+            <Label x:Name="dialog"></Label>
+        </Frame>
     </StackLayout>
 </ContentPage>
