@@ -125,7 +125,7 @@ public class HSPClient
             {
                 _client.WriteLine("RESETBUFFER");
                 HSPInfo = readServerMSg() +"\n";
-                page.updateDialog(HSPInfo);
+                page.updatedialog(HSPInfo);
             }
         }
 
@@ -187,7 +187,7 @@ public class HSPClient
                 // "\\r\\n\", \"\\r\", \"\\n\",\"\\n\\n\",\"\\n\\n\\n\",\"\\n\\r\\n\", \"\\r\\n\\r\\n"
                 string[] lines = writtenMsg.Split(new[] { "\n" }, StringSplitOptions.None);
                 string message = string.Join("\n", lines, 0, Math.Min(lines.Length, 100));
-                page.updateDialog(HSPInfo+message);
+                page.updatedialog(HSPInfo+message);
             }
             progress.Report(1.0);
             System.Diagnostics.Debug.WriteLine("completed loading");
@@ -262,8 +262,10 @@ public class HSPClient
     {
         if (_client != null && isConnected())
         {
+            var message = readServerMSg();
             _client.WriteLine("GETBUFFERCOUNT\n");
             var result = readServerMSg();
+            message += result;
             result = result is not null ? result : "";
             int count = -1;
             if (result != "")

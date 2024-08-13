@@ -180,7 +180,7 @@ public partial class LoadFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
-    public void updateDialog(string input)
+    public void updatedialog(string input)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {

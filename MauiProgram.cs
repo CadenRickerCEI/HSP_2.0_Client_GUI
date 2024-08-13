@@ -31,7 +31,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<GenerateFromFilePage>();
         builder.Services.AddSingleton<AntenaSetUp>();
         builder.Services.AddSingleton<NetworkConfig>();
-
+        builder.Services.AddSingleton<cmdLine>();
         return builder.Build();
     }
 }

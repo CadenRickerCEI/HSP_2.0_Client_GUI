@@ -10,20 +10,22 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Label Text="HSP not connected" x:Name="connectedLabel" Grid.Row="0" Grid.Column="0" Margin="5"/>
+        <Label Text="HSP not connected" x:Name="connectedLabel" Grid.Row="0" Grid.Column="0" Margin="5"
+               FontSize="Large"/>
         <Button Text="Connect To server" Clicked="OnButtonClicked" Grid.Row="0" Grid.Column="1" Margin="5"/>
         <Button Text="Engage HSP" Clicked="EnagedHSP" Grid.Row="1" Grid.Column="0" Margin="5"/>
         <Button Text="Disengage HSP" Clicked="DisengageHSP"  Grid.Row="1" Grid.Column="1" BackgroundColor="{StaticResource Secondary}" Margin="5"/>
-        <Label Text="Buffer Count" Grid.Row="3" Grid.ColumnSpan="3" HorizontalOptions="CenterAndExpand"/>
+        <Label Text="Buffer Count" Grid.Row="3" Grid.ColumnSpan="3" HorizontalOptions="CenterAndExpand" FontSize="Subtitle"/>
         <Button Text="Get Current Buffer Count" Clicked="GetBufferCount"  Grid.Row="4" Grid.Column="0" Margin="5"/>
         <Entry x:Name="bufferCount"  Margin="5" Grid.Row="4" Grid.Column="1"/>
-
-        <Editor x:Name="dialog" IsReadOnly="True" Grid.Row="5" Grid.ColumnSpan="2" MinimumHeightRequest="100" Margin="5"></Editor>
+        <Label Text="HSP dialog" Grid.Row="5" Grid.ColumnSpan="3" HorizontalOptions="CenterAndExpand" FontSize="Subtitle"/>
+        <Editor x:Name="dialog" IsReadOnly="True" Grid.Row="6" Grid.ColumnSpan="2" MinimumHeightRequest="100" Margin="5"></Editor>
 
 
 

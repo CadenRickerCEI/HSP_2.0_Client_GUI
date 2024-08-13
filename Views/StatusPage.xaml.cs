@@ -14,7 +14,8 @@ public partial class StatusPage : ContentPage
     /// A nullable HSPClient used to interact with the HSP object.
     /// </summary>
     private HSPClient? client;
-    
+    private bool _isRunning;
+    private TimeSpan _interval = TimeSpan.FromSeconds(3);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StatusPage"/> class.
@@ -29,7 +30,7 @@ public partial class StatusPage : ContentPage
         }
 
         InitializeComponent();
-        
+
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -103,7 +104,7 @@ public partial class StatusPage : ContentPage
     private void EnagedHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
-        {            
+        {
             dialog.Text = client.EngageHSP();
         }
     }
@@ -119,5 +120,48 @@ public partial class StatusPage : ContentPage
         {
             dialog.Text = client.disengageHSP();
         }
+    }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        StartPeriodicTask();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _isRunning = false;
+    }
+
+    private void StartPeriodicTask()
+    {
+        _isRunning = true;
+        Dispatcher.StartTimer(_interval, () =>
+        {
+            if (_isRunning)
+            {
+                RunPeriodicTask();
+                return true; // Repeat again
+            }
+            return false; // Stop repeating
+        });
+    }
+    private void RunPeriodicTask()
+    {
+        // Your periodic function logic here
+        Dispatcher.Dispatch(() =>
+        {
+            if (client != null && client.isConnected())
+            {
+                var result = client.getBufferCount();
+                bufferCount.Text = result[0];
+                dialog.Text = result[1];
+            }
+            else
+            {
+                bufferCount.Text = "0";
+                dialog.Text = "Count invalid not connected";
+            }
+        });
     }
 }

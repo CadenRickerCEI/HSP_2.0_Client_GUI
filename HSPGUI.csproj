@@ -95,6 +95,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\cmdLine.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\NetworkConfig.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
