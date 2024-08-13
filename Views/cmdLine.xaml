@@ -1,10 +1,485 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="HSPGUI.Views.cmdLine"
-             Title="Command Line">
-    <VerticalStackLayout Margin="5">
-        
-        <Button Text="Connect To server" Clicked="connect" />
-    </VerticalStackLayout>
+<ContentPage
+    x:Class="HSPGUI.Views.cmdLine"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Command Line">
+    <StackLayout>
+        <Button
+            x:Name="connectionBtn"
+            Margin="5"
+            Clicked="connectBtnClicked"
+            Text="Connect to HSP" />
+        <StackLayout x:Name="StackLayout" IsVisible="False" >
+            <Label Margin="5" Text="Command Entry" FontSize="Subtitle" HorizontalOptions="Center" />
+            <Entry
+                x:Name="cmd"
+                Margin="5"
+                Completed="cmd_Completed"
+                Placeholder="Enter commands Here" />
+            <Label Margin="5" Text="HSP Dialog" FontSize="Subtitle" HorizontalOptions="Center"  />
+            <Editor
+                x:Name="dialog"
+                Margin="10"
+                IsReadOnly="True" 
+                MinimumHeightRequest="100"/>
+            <Label Margin="5" Text="Commands" FontSize="Subtitle" HorizontalOptions="Center"  />
+            <ScrollView
+                HorizontalOptions="FillAndExpand"
+                MaximumHeightRequest="250"
+                VerticalScrollBarVisibility="Always">
+                <Grid Margin="5" HorizontalOptions="FillAndExpand">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <!--  Add more rows as needed  -->
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Header  -->
+                    <Border
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor
+                            FontAttributes="Bold"
+                            IsReadOnly="True"
+                            Text="PI Command" />
+                    </Border>
+                    <Border
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor
+                            FontAttributes="Bold"
+                            IsReadOnly="True"
+                            Text="Description" />
+                    </Border>
+
+                    <!--  Data Rows  -->
+                    <Border
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="QUIT" />
+                    </Border>
+                    <Border
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Exit the program" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="SYSTEMTYPE(= TYPE)" />
+                    </Border>
+                    <Border
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Either get the current setting of THE SYSTEM temperature, set it to STA, or TR100" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="GETVERSIONS" />
+                    </Border>
+                    <Border
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="PI and TR100 firmware version" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="GETBUFFERCOUNT" />
+                    </Border>
+                    <Border
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Current number of PROG DATA RECORD loaded" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="READBUFFER" />
+                    </Border>
+                    <Border
+                        Grid.Row="5"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Display all PROG DATA RECORD loaded" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="RESETBUFFER" />
+                    </Border>
+                    <Border
+                        Grid.Row="6"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Clear PROG DATA RECORD buffer" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="7"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="WRITEITEM=&lt;DATA LIST&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="7"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Enter 1 item into PROG DATA RECORD buffer" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="8"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="GENERATE=&lt;DATALIST&gt;,NUM(count)" />
+                    </Border>
+                    <Border
+                        Grid.Row="8"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Create arbitrary number of items in PROG DATA RECORD buffer" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="9"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="AUTOCLEAR=&lt;ON or OFF&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="9"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Control clearing of PROG DATA RECORD buffer on ENGAGE" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="10"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="ENGAGE" />
+                    </Border>
+                    <Border
+                        Grid.Row="10"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="START the trigger acceptance system AND TURN ON RF" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="11"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="DISENGAGE" />
+                    </Border>
+                    <Border
+                        Grid.Row="11"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="STOP the trigger acceptance system AND TURN OFF RF" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="12"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="TR100LOADER=&lt;filename&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="12"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Updates the firmware in the attached TR100 Not yet supported" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="13"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="TR100MACROLOAD" />
+                    </Border>
+                    <Border
+                        Grid.Row="13"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="Loads the text file in the HSP_4.0 folder named Not yet supported" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="14"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor
+                            FontAttributes="Bold"
+                            IsReadOnly="True"
+                            Text="TR100 Commands" />
+                    </Border>
+                    <Border
+                        Grid.Row="14"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor
+                            FontAttributes="Bold"
+                            IsReadOnly="True"
+                            Text="Description" />
+                    </Border>
+
+                    <Border
+                        Grid.Row="15"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HC&lt;2 ASCIIHEX&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="15"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="CORRECT Minimum loop time control -units are milliseconds" />
+                    </Border>
+                    <Border
+                        Grid.Row="16"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HH&lt;2 ASCIIHEX&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="16"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HOLDOFF inhibit Trigger time control" />
+                    </Border>
+                    <Border
+                        Grid.Row="17"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HI&lt;ACTION RETRY COUNT (ASCIIHEX)&gt;&lt;OPEN RETRY COUNT(nibble)&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="17"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="ITERATE Controls looping retryparameters" />
+                    </Border>
+                    <Border
+                        Grid.Row="18"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HL&lt;OFF&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="18"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="LOCK Inhibit LOCK command inENCODE loop" />
+                    </Border>
+                    <Border
+                        Grid.Row="19"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HL&lt;LOCK PAYLOAD (5 ASCIIHEX)&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="19"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="LOCK Set the LOCK command payload" />
+                    </Border>
+                    <Border
+                        Grid.Row="20"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HP&lt;2 ASCIIHEX&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="20"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="PAUSE Delay after Trigger time control units are milliseconds" />
+                    </Border>
+                    <Border
+                        Grid.Row="21"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HQ&lt;1 ASCIIHEX&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="21"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="QUIET Delay after OPEN units are milliseconds" />
+                    </Border>
+                    <Border
+                        Grid.Row="22"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HT&lt;OFF or R or F&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="22"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="TRIGGER Control TRIGGER INPUT or edge type RISING FALLING" />
+                    </Border>
+                    <Border
+                        Grid.Row="23"
+                        Grid.Column="0"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="HW&lt;1 ASCIIHEX&gt;" />
+                    </Border>
+                    <Border
+                        Grid.Row="23"
+                        Grid.Column="1"
+                        Padding="2"
+                        Stroke="Black"
+                        StrokeThickness="1">
+                        <Editor IsReadOnly="True" Text="WAIT Override GEN2 ASYNC WAIT units are milliseconds" />
+                    </Border>
+                    <!--  Add more rows for each command  -->
+                </Grid>
+
+
+            </ScrollView>
+
+        </StackLayout>
+    </StackLayout>
 </ContentPage>

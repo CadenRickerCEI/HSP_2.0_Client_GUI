@@ -26,14 +26,10 @@ public class TelnetClient
     /// </summary>
     private StreamWriter? writer;
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TelnetClient"/> class.
     /// </summary>
-    public TelnetClient()
-    {
-        System.Diagnostics.Debug.WriteLine("TelnetClient created");
-    }
+    public TelnetClient() => System.Diagnostics.Debug.WriteLine("TelnetClient created");
 
     /// <summary>
     /// Asynchronously connects to the Telnet server.
@@ -76,6 +72,7 @@ public class TelnetClient
             return null;
         }
     }
+
     /// <summary>
     /// Asynchronously reads a line of data from the server.
     /// </summary>
@@ -86,12 +83,14 @@ public class TelnetClient
         {
             var result = "";
             string? responce = await reader.ReadLineAsync();
-            while (!string.IsNullOrEmpty(responce)) 
+
+            while (!string.IsNullOrEmpty(responce))
             {
                 await Task.Delay(1000);
                 result += responce;
                 responce = await reader.ReadLineAsync();
             }
+
             return result;
         }
         else
@@ -99,6 +98,7 @@ public class TelnetClient
             return null;
         }
     }
+
     /// <summary>
     /// Asynchronously writes a message to the server.
     /// </summary>
@@ -118,11 +118,9 @@ public class TelnetClient
     {
         if (client != null) client.Close();
     }
+
     /// <summary>
     /// Checks that the client is connected to HSP server.
     /// </summary>
-    public bool IsConnected()
-    {
-        return client != null && client.Connected;
-    }
+    public bool IsConnected() => client != null && client.Connected;
 }

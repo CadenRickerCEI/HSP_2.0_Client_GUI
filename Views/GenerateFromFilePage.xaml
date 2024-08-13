@@ -57,18 +57,12 @@
 
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <StackLayout
+
+                    <Label
                         Grid.Row="0"
                         Grid.Column="0"
-                        HorizontalOptions="FillAndExpand"
-                        Orientation="Horizontal">
-                        <Label Text="EPC Data: " VerticalOptions="CenterAndExpand" />
-                        <Label
-                            HorizontalOptions="EndAndExpand"
-                            Text="Sequential:"
-                            VerticalOptions="CenterAndExpand" />
-                        <CheckBox x:Name="EPC_SeqeuntialCheck" />
-                    </StackLayout>
+                        Text="EPC Data: "
+                        VerticalOptions="CenterAndExpand" />
 
                     <Entry
                         x:Name="EPC_Entry"
@@ -80,21 +74,13 @@
                         MaxLength="32"
                         Placeholder="Epc Data"
                         TextChanged="OnEPC_EntryTextChanged" />
-                    <StackLayout
+
+                    <Label
                         Grid.Row="0"
                         Grid.Column="1"
-                        HorizontalOptions="FillAndExpand"
-                        Orientation="Horizontal">
-                        <Label
-                            Margin="5,0,0,0"
-                            Text="User Data:"
-                            VerticalOptions="CenterAndExpand" />
-                        <Label
-                            HorizontalOptions="EndAndExpand"
-                            Text="Sequential:"
-                            VerticalOptions="CenterAndExpand" />
-                        <CheckBox x:Name="USR_SeqeuntialCheck" />
-                    </StackLayout>
+                        Margin="5,0,0,0"
+                        Text="User Data:"
+                        VerticalOptions="CenterAndExpand" />
 
                     <Entry
                         x:Name="UserData_Entry"
@@ -204,15 +190,17 @@
             Margin="5"
             Clicked="loadBuffer_Clicked"
             HorizontalOptions="FillAndExpand"
-            Text="Load HSP Buffer" />
+            Text="Load HSP Buffer"
+            x:Name="genBufferBtn"
+            IsVisible="False"/>
         <Button
             Margin="5"
             BackgroundColor="{StaticResource Secondary}"
             Clicked="GenerateFileClicked"
             HorizontalOptions="FillAndExpand"
             Text="Save Tag Data to File" />
-        <Frame MinimumHeightRequest="20" Margin="5,20">
-            <Label x:Name="dialog"></Label>
+        <Frame Margin="5,20" MinimumHeightRequest="20">
+            <Label x:Name="dialog" />
         </Frame>
     </StackLayout>
 </ContentPage>

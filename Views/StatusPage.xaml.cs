@@ -30,7 +30,6 @@ public partial class StatusPage : ContentPage
         }
 
         InitializeComponent();
-
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -38,14 +37,8 @@ public partial class StatusPage : ContentPage
     /// <param name="connectionStatus"></param>
     private void Client_connectionStatusChanged(bool connectionStatus)
     {
-        if (connectionStatus)
-        {
-            connectedLabel.Text = "HSP Connected";
-        }
-        else
-        {
-            connectedLabel.Text = "HSP Definitely not Connected";
-        }
+        connectionBtn.IsVisible = !connectionStatus;
+        statusGrid.IsVisible = connectionStatus;
     }
 
     /// <summary>
@@ -75,6 +68,7 @@ public partial class StatusPage : ContentPage
             }
         }
     }
+
     /// <summary>
     /// clicked listener for get buffer count when pressed it queries the HSP for the current buffer count
     /// </summary>
@@ -87,7 +81,6 @@ public partial class StatusPage : ContentPage
             var result = client.getBufferCount();
             bufferCount.Text = result[0];
             dialog.Text = result[1];
-
         }
         else
         {
@@ -95,6 +88,7 @@ public partial class StatusPage : ContentPage
             dialog.Text = "Count invalid not connected";
         }
     }
+
     /// <summary>
     /// Engage HSP engages the HSP if its connected.
     /// </summary>
@@ -108,6 +102,7 @@ public partial class StatusPage : ContentPage
             dialog.Text = client.EngageHSP();
         }
     }
+
     /// <summary>
     /// Disengages the HSP  if it's connected.
     /// </summary>
@@ -121,6 +116,7 @@ public partial class StatusPage : ContentPage
             dialog.Text = client.disengageHSP();
         }
     }
+
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -136,6 +132,7 @@ public partial class StatusPage : ContentPage
     private void StartPeriodicTask()
     {
         _isRunning = true;
+
         Dispatcher.StartTimer(_interval, () =>
         {
             if (_isRunning)
@@ -143,9 +140,11 @@ public partial class StatusPage : ContentPage
                 RunPeriodicTask();
                 return true; // Repeat again
             }
+
             return false; // Stop repeating
         });
     }
+
     private void RunPeriodicTask()
     {
         // Your periodic function logic here

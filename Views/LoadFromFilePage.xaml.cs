@@ -86,7 +86,7 @@ public partial class LoadFromFilePage : ContentPage
         progressBar.IsVisible = true;
         loadFileBtn.IsEnabled = false;
         var resetBuffer = await DisplayAlert("Clear HSP Buffer", "Press reset to clear the buffer or add to add to the buffer", "Reset", "Add");
-        var loadResult = -1;
+        var loadResult = "Failed to Star Loading";
 
         if (_progress != null && client != null)
         {
@@ -100,17 +100,17 @@ public partial class LoadFromFilePage : ContentPage
             System.Diagnostics.Debug.WriteLine("progress null");
         }
 
-        if (loadResult == 0)
+        if (loadResult == "")
         {
             await DisplayAlert("File Loading Complete", "File has been loaded into the HSP.", "Ok");
         }
-        else if (loadResult < 0)
+        else if (loadResult == "File is missing, open in another program, or empty.")
         {
-            await DisplayAlert("File Error", "File is missing, open in another program, or empty.", "Ok");
+            await DisplayAlert("File Error", loadResult, "Ok");
         }
         else
         {
-            await DisplayAlert("Tag Error", $"Tag error on row {loadResult}. Only tags before this row have been added.", "Ok");
+            await DisplayAlert("Tag Error", loadResult, "Ok");
         }
 
         progressBar.Progress = 0;
@@ -127,10 +127,10 @@ public partial class LoadFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     private void fileLocationEntry_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (fileLocationEntry.Text != null)
+        if (fileLocationEntry.Text != null )
         {
             // Display the file location in the Entry
-            loadFileBtn.IsVisible = File.Exists(fileLocationEntry.Text);
+            loadFileBtn.IsVisible = File.Exists(fileLocationEntry.Text) && client != null && client.isConnected();
         }
     }
 
@@ -180,6 +180,7 @@ public partial class LoadFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
+
     public void updatedialog(string input)
     {
         MainThread.BeginInvokeOnMainThread(() =>

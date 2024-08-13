@@ -6,7 +6,6 @@ using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Storage;
 using CommunityToolkit.Maui.Storage;
 
-
 // using Windows.Media.Protection.PlayReady;
 
 /// <summary>
@@ -23,22 +22,27 @@ public partial class GenerateFromFilePage : ContentPage
     /// Boolean flags to indicate the validity of various input fields.
     /// </value>
     private bool EPC_Valid;
+    private string EPC_invalidReason;
     /// <value>
     /// Status of the USR fields validity
     /// </value>
     private bool USR_Valid;
+    private string USR_invalidReason;
     /// <value>
     /// Status of the KIL fields validity
     /// </value>
     private bool KIL_Valid;
+    private string KIL_invalidReason;
     /// <value>
     /// Status of the ACC fields validity
     /// </value>
     private bool ACC_Valid;
+    private string ACC_invalidReason;
     /// <value>
     /// Status of the PCW fields validity
     /// </value>
     private bool PCW_Valid;
+    private string PCW_invalidReason;
     private CancellationTokenSource cancellationTokenSource;
     /// <value>
     /// The constructor for the GenerateFromFilePage class. It connects the HSP client variable to the one in the main app,
@@ -58,6 +62,11 @@ public partial class GenerateFromFilePage : ContentPage
         KIL_Valid = true;
         ACC_Valid = true;
         PCW_Valid = true;
+        EPC_invalidReason = "";
+        USR_invalidReason = "";
+        KIL_invalidReason = "";
+        ACC_invalidReason = "";
+        PCW_invalidReason = "";
         updateFromFileBtn.IsVisible = false;
         EPC_Entry.MinimumWidthRequest = EPC_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenEPC_hex;
         UserData_Entry.MinimumWidthRequest = UserData_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenUSR_Hex;
@@ -81,7 +90,7 @@ public partial class GenerateFromFilePage : ContentPage
         if (result != null)
         {
             // Display the file location in the Entry
-            updateFromFileBtn.IsVisible = File.Exists(result.FullPath);
+            updateFromFileBtn.IsVisible = File.Exists(result.FullPath) ;
             fileLocationEntry.Text = result.FullPath;
         }
         else
@@ -159,9 +168,11 @@ public partial class GenerateFromFilePage : ContentPage
     void OnEPC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         EPC_Valid = true;
+        EPC_invalidReason = "";
         if (EPC_Entry.Text != null && EPC_Entry.Text != "" && client != null)
-        {
-            EPC_Valid = client.validateInput(EPC_Entry.Text, EPC_Entry.Text.Length, false);
+        {            
+            EPC_invalidReason = client.validateInput(EPC_Entry.Text, EPC_Entry.Text.Length, true);
+            EPC_Valid = EPC_invalidReason == "";
             EPC_Entry.TextColor = EPC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
@@ -174,9 +185,11 @@ public partial class GenerateFromFilePage : ContentPage
     void OnUSR_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         USR_Valid = true;
+        USR_invalidReason = "";
         if (UserData_Entry.Text != null && UserData_Entry.Text != "" && client != null)
         {
-            USR_Valid = client.validateInput(UserData_Entry.Text, UserData_Entry.Text.Length, false);
+            USR_invalidReason = client.validateInput(UserData_Entry.Text, UserData_Entry.Text.Length, true);
+            USR_Valid = USR_invalidReason == "";
             UserData_Entry.TextColor = USR_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
@@ -189,9 +202,11 @@ public partial class GenerateFromFilePage : ContentPage
     void OnKIL_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         KIL_Valid = true;
+
         if (KillPass_Entry.Text != null && KillPass_Entry.Text != "" && client != null)
         {
-            KIL_Valid = client.validateInput(KillPass_Entry.Text, 8, false);
+            KIL_invalidReason = client.validateInput(KillPass_Entry.Text, 8, false);
+            KIL_Valid = KIL_invalidReason == "";
             KillPass_Entry.TextColor = KIL_Valid ? Color.FromArgb("#00000") : Color.FromArgb("#FF0000");
         }
     }
@@ -204,13 +219,14 @@ public partial class GenerateFromFilePage : ContentPage
     void OnACC_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         ACC_Valid = true;
+
         if (AccessPass_Entry.Text != null && AccessPass_Entry.Text != "" && client != null)
         {
-            ACC_Valid = client.validateInput(AccessPass_Entry.Text, 8, false);
+            ACC_invalidReason = client.validateInput(AccessPass_Entry.Text, 8, false);
+            ACC_Valid = ACC_invalidReason == "";
             AccessPass_Entry.TextColor = ACC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
-
 
     /// <summary>
     /// Event handler for the TextChanged event of the PC entry field. It validates the input and updates the text color based on validity.
@@ -220,9 +236,11 @@ public partial class GenerateFromFilePage : ContentPage
     void OnPCW_EntryTextChanged(object sender, TextChangedEventArgs e)
     {
         PCW_Valid = true;
+
         if (PC_Entry.Text != null && PC_Entry.Text != "" && client != null)
         {
-            PCW_Valid = client.validateInput(PC_Entry.Text, 4, false);
+            PCW_invalidReason = client.validateInput(PC_Entry.Text, 4, false);
+            PCW_Valid = PCW_invalidReason == "";
             PC_Entry.TextColor = PCW_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
         }
     }
@@ -239,12 +257,12 @@ public partial class GenerateFromFilePage : ContentPage
             var resetBuffer = await DisplayAlert("Load Buffer", "Clear buffer in HSP before loading or add to the buffer?", "Clear Buffer", "Add to Buffer");
             var EPCData = EPC_Entry.Text != null ? EPC_Entry.Text : "";
             var UserData = UserData_Entry.Text != null ? UserData_Entry.Text : "";
-            var killData = (KillPass_Entry.Text != null && killPassCheckBox.IsChecked)  ? KillPass_Entry.Text : "";
-            var AccData = AccessPass_Entry.Text != null  ? AccessPass_Entry.Text : "";
+            var killData = (KillPass_Entry.Text != null && killPassCheckBox.IsChecked) ? KillPass_Entry.Text : "";
+            var AccData = AccessPass_Entry.Text != null ? AccessPass_Entry.Text : "";
             var PCData = PC_Entry.Text != null ? PC_Entry.Text : "";
 
-            EPCData = (EPCData.Length >= 4 && EPC_SeqeuntialCheck.IsChecked) ? EPCData.Insert(EPCData.Length - 4, "!") : EPCData;
-            UserData = (UserData.Length >= 4 && USR_SeqeuntialCheck.IsChecked) ? UserData.Insert(UserData.Length - 4, "!") : UserData;
+            EPCData = (EPCData.Length >= 4 ) ? EPCData.Insert(EPCData.Length - 4, "!") : EPCData;
+            UserData = (UserData.Length >= 4 ) ? UserData.Insert(UserData.Length - 4, "!") : UserData;
 
             string[] bufferCmd = [EPCData, UserData, killData, AccData, PCData];
             var numofItems = GeneratorNum_Entry.Text != null ? int.Parse(GeneratorNum_Entry.Text) : -1;
@@ -256,7 +274,28 @@ public partial class GenerateFromFilePage : ContentPage
         }
         else
         {
-            await DisplayAlert("Invalid Information", "Fix data highlighted in red", "cancel");
+            string errorMessage = "";
+            if (!EPC_Valid)
+            {
+                errorMessage += $"EPC Invalid:\n{EPC_invalidReason}";
+            }
+            if (!USR_Valid)
+            {
+                errorMessage += $"USR Invalid:\n{USR_invalidReason}";
+            }
+            if (!KIL_Valid)
+            {
+                errorMessage += $"KIL Invalid:\n{KIL_invalidReason}";
+            }
+            if (!ACC_Valid)
+            {
+                errorMessage += $"ACC Invalid:\n{ACC_invalidReason}";
+            }
+            if (!PCW_Valid)
+            {
+                errorMessage += $"PCW Invalid:\n{PCW_invalidReason}";
+            }
+            await DisplayAlert("Invalid Information", errorMessage, "Cancel");
         }
     }
 
@@ -321,6 +360,7 @@ public partial class GenerateFromFilePage : ContentPage
         // Convert the CSV string to bytes
         var csvBytes = Encoding.UTF8.GetBytes(csv.ToString());
         using var stream = new MemoryStream(csvBytes);
+
         {
             var result = await FileSaver.Default.SaveAsync($"GenerateTag{now.ToString("yy")}{now.ToString("MM")}{now.ToString("dd")}{now.ToString("HH")}{now.ToString("mm")}.csv",
                                                             stream, cancellationTokenSource.Token);

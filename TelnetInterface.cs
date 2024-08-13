@@ -21,13 +21,7 @@ namespace MinimalisticTelnet
         private TcpClient? tcpSocket;
         private int TimeoutMs = 100;
 
-        public bool IsConnected
-        {
-            get
-            {
-                return tcpSocket is not null && tcpSocket.Connected;
-            }
-        }
+        public bool IsConnected => tcpSocket is not null && tcpSocket.Connected;
 
         public TelnetConnection(string hostname, int port)
         {
@@ -45,6 +39,7 @@ namespace MinimalisticTelnet
             TimeoutMs = loginTimeoutMs;
 
             string? s = Read();
+
             if (s is not null && !s.TrimEnd().EndsWith(":"))
             {
                 throw new Exception("Failed to connect : no login prompt");
@@ -53,6 +48,7 @@ namespace MinimalisticTelnet
             WriteLine(username);
 
             s += Read();
+
             if (!s.TrimEnd().EndsWith(":"))
             {
                 throw new Exception("Failed to connect : no password prompt");
@@ -67,10 +63,7 @@ namespace MinimalisticTelnet
             return s;
         }
 
-        public void WriteLine(string cmd)
-        {
-            Write(cmd + "\n");
-        }
+        public void WriteLine(string cmd) => Write(cmd + "\n");
 
         public void Write(string cmd)
         {
@@ -78,7 +71,8 @@ namespace MinimalisticTelnet
             {
                 return;
             }
-            cmd = cmd+"\r\n";
+
+            cmd = cmd + "\r\n";
             byte[] buf = ASCIIEncoding.ASCII.GetBytes(cmd.Replace("\0xFF", "\0xFF\0xFF"));
             tcpSocket.GetStream().Write(buf, 0, buf.Length);
         }
@@ -91,11 +85,11 @@ namespace MinimalisticTelnet
             }
 
             var sb = new StringBuilder();
+
             do
             {
                 ParseTelnet(sb);
                 Thread.Sleep(TimeoutMs);
-
             } while (tcpSocket.Available > 0);
 
             return sb.ToString();
@@ -106,6 +100,7 @@ namespace MinimalisticTelnet
             while (tcpSocket is not null && tcpSocket.Available > 0)
             {
                 int input = tcpSocket.GetStream().ReadByte();
+
                 switch (input)
                 {
                     case -1:
@@ -178,7 +173,6 @@ namespace MinimalisticTelnet
                 }
             }
         }
-
 
         #region Private Enums
 

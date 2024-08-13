@@ -7,7 +7,7 @@
     xmlns:views="clr-namespace:HSPGUI.Views">
 
     <ShellContent
-        Title="RIFD Status"
+        Title="RFID Status"
         ContentTemplate="{DataTemplate views:StatusPage}"
         Icon="rfid.png"
         Route="StatusPage"
@@ -24,12 +24,12 @@
         Icon="iconblank.png"
         Route="GenerateFromFilePage"
         Shell.NavBarIsVisible="true" />
-    <ShellContent
+    <!--<ShellContent
         Title="Antena Setup"
         ContentTemplate="{DataTemplate views:AntenaSetUp}"
         Icon="antena.png"
         Route="AntenaSetUp"
-        Shell.NavBarIsVisible="true" />
+        Shell.NavBarIsVisible="true" />-->
     <ShellContent
         Title="Network Config"
         ContentTemplate="{DataTemplate views:NetworkConfig}"
@@ -39,6 +39,7 @@
     <ShellContent
         Title="Command Line"
         ContentTemplate="{DataTemplate views:cmdLine}"
+        Icon="cmd.png"
         Route="cmdLine"
         Shell.NavBarIsVisible="true" />
 </Shell>

@@ -1,34 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 x:Class="HSPGUI.Views.StatusPage">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Label Text="HSP not connected" x:Name="connectedLabel" Grid.Row="0" Grid.Column="0" Margin="5"
-               FontSize="Large"/>
-        <Button Text="Connect To server" Clicked="OnButtonClicked" Grid.Row="0" Grid.Column="1" Margin="5"/>
-        <Button Text="Engage HSP" Clicked="EnagedHSP" Grid.Row="1" Grid.Column="0" Margin="5"/>
-        <Button Text="Disengage HSP" Clicked="DisengageHSP"  Grid.Row="1" Grid.Column="1" BackgroundColor="{StaticResource Secondary}" Margin="5"/>
-        <Label Text="Buffer Count" Grid.Row="3" Grid.ColumnSpan="3" HorizontalOptions="CenterAndExpand" FontSize="Subtitle"/>
-        <Button Text="Get Current Buffer Count" Clicked="GetBufferCount"  Grid.Row="4" Grid.Column="0" Margin="5"/>
-        <Entry x:Name="bufferCount"  Margin="5" Grid.Row="4" Grid.Column="1"/>
-        <Label Text="HSP dialog" Grid.Row="5" Grid.ColumnSpan="3" HorizontalOptions="CenterAndExpand" FontSize="Subtitle"/>
-        <Editor x:Name="dialog" IsReadOnly="True" Grid.Row="6" Grid.ColumnSpan="2" MinimumHeightRequest="100" Margin="5"></Editor>
+<ContentPage
+    x:Class="HSPGUI.Views.StatusPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <StackLayout>
+        <Button
+            x:Name="connectionBtn"
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="5"
+            Clicked="OnButtonClicked"
+            Text="Connect To HSP" 
+            MinimumHeightRequest="150"
+            FontSize="Large"/>
+        <Grid x:Name="statusGrid" Margin="10" IsVisible="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="5"
+            Clicked="EnagedHSP"
+            Text="Engage HSP" />
+            <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5"
+            BackgroundColor="{StaticResource Secondary}"
+            Clicked="DisengageHSP"
+            Text="Disengage HSP" />
+            <Label
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            FontSize="Subtitle"
+            HorizontalOptions="CenterAndExpand"
+            Text="Buffer Count" />
+            <Button
+            Grid.Row="4"
+            Grid.Column="0"
+            Margin="5"
+            Clicked="GetBufferCount"
+            Text="Get Current Buffer Count" />
+            <Entry
+            x:Name="bufferCount"
+            Grid.Row="4"
+            Grid.Column="1"
+            Margin="5" />
+            <Label
+            Grid.Row="5"
+            Grid.ColumnSpan="3"
+            FontSize="Subtitle"
+            HorizontalOptions="CenterAndExpand"
+            Text="HSP dialog" />
+            <Editor
+            x:Name="dialog"
+            Grid.Row="6"
+            Grid.ColumnSpan="2"
+            Margin="5"
+            IsReadOnly="True"
+            MinimumHeightRequest="100" />
+        </Grid>
+    </StackLayout>
 
-
-
-    </Grid>
 
 </ContentPage>
