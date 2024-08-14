@@ -14,7 +14,9 @@ public class HSPClient
     /// The TelnetClient object used for the connection.
     /// </summary>
     private TelnetConnection? _client;
-
+    /// <summary>
+    /// Occurs when the connection status changes.
+    /// </summary>
     public event Action<bool>? connectionStatusChanged;
 
     /// <summary>
@@ -26,7 +28,10 @@ public class HSPClient
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
     public HSPClient() => _client = null;
-
+    /// <summary>
+    /// String used when connection is lost.
+    /// </summary>
+    private string connectionLost = "Connection Lost";
     /// <summary>
     /// Connects to the HSP telnet server.
     /// </summary>
@@ -45,19 +50,27 @@ public class HSPClient
             return "HSP conncetion failed. Check that HSP is powered on.";
         }
     }
-
+    /// <summary>
+    ///  reads server message and formats the message
+    /// </summary>
+    /// <returns>Formated message from the server.</returns>
     public string readServerMSg()
     {
-        string? result = _client?.Read();
-
-        if (result != null)
+        try
         {
-            result = result.Trim();
-            string pattern = @"\s*HSPSA>$";            
-            return (result.Length > 0)?"HSPSA>" + Regex.Replace(result, pattern, ""):"";
+            string? result = _client?.Read();
+            if (result != null)
+            {
+                result = result.Trim();
+                string pattern = @"\s*HSPSA>$";
+                return (result.Length > 0) ? "HSPSA>" + Regex.Replace(result, pattern, "") : "";
+            }
+            return "";
         }
-
-        return "";
+        catch
+        {
+            return connectionLost;
+        }        
     }
 
     /// <summary>
@@ -90,16 +103,30 @@ public class HSPClient
 
                 if (_client is not null && isConnected())
                 {
-                    _client.WriteLine("RESETBUFFER");
-                    HSPResponse += readServerMSg() + "\n";
+                    try
+                    {
+                        _client.WriteLine("RESETBUFFER");
+                        HSPResponse += readServerMSg() + "\n";
+                    }
+                    catch
+                    {
+                        HSPResponse = connectionLost;
+                    }                    
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine(command);
+            //System.Diagnostics.Debug.WriteLine(command);
 
             if (_client is not null && isConnected())
             {
-                _client.WriteLine($"{command}");
+                try
+                {
+                    _client.WriteLine($"{command}");
+                }
+                catch
+                {
+                    return "Connection Lost";
+                }
                 string result = readServerMSg();
                 System.Diagnostics.Debug.Write($"{result}");
 
@@ -114,7 +141,6 @@ public class HSPClient
                 }
             }
         }
-
         return HSPResponse;
     }
 
@@ -135,7 +161,15 @@ public class HSPClient
 
             if (_client is not null && isConnected())
             {
-                _client.WriteLine("RESETBUFFER");
+                try
+                {
+                    _client.WriteLine("RESETBUFFER");
+                }
+                catch
+                {
+                    return connectionLost;
+                }
+                
                 HSPInfo = readServerMSg() + "\n";
                 page.updatedialog(HSPInfo);
             }
@@ -180,7 +214,14 @@ public class HSPClient
                     if (_client is not null && isConnected())
                     {
                         command = command.EndsWith(",") ? command.Substring(0, Math.Max(command.Length - 1, 1)) : command;
-                        _client.WriteLine($"{command}");
+                        try
+                        {
+                            _client.WriteLine($"{command}");
+                        }
+                        catch
+                        {
+                            return connectionLost;
+                        }                        
                     }
                 }
                 else
@@ -198,11 +239,18 @@ public class HSPClient
 
             if (_client is not null && isConnected())
             {
-                // string writtenMsg = Regex.Replace(readServerMSg(), @"\n{2,}", "\n") ;
+                //string writtenMsg = Regex.Replace(readServerMSg(), @"\r\n\r\n", "\n") ;
                 string writtenMsg = readServerMSg();
-                // "\\r\\n\", \"\\r\", \"\\n\",\"\\n\\n\",\"\\n\\n\\n\",\"\\n\\r\\n\", \"\\r\\n\\r\\n"
-                string[] lines = writtenMsg.Split(new[] { "\n" }, StringSplitOptions.None);
+                string[] lines = writtenMsg.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None);
                 string message = string.Join("\n", lines, 0, Math.Min(lines.Length, 100));
+                
+                if (lines.Length > 100)
+                {
+                    var secondPart = new string[100];
+                    Array.Copy(lines, lines.Length - secondPart.Length, secondPart, 0,secondPart.Length);                  
+                    
+                    message += "\n...\n" + string.Join("\n", secondPart, 0, secondPart.Length);
+                }
                 page.updatedialog(HSPInfo + message);
             }
 
@@ -251,37 +299,29 @@ public class HSPClient
         var regExpresion = (sequential) ? "^[A-Fa-f0-9!]*$" : "^[A-Fa-f0-9]*$";
         var regex = new Regex(regExpresion);
         if (length > 32) length = sequential ? 32 : 33;
-
-        if (!regex.IsMatch(input))
-        {
-            System.Diagnostics.Debug.WriteLine("bad expression");
-        }
-
-        if (input.Length != length)
-        {
-            System.Diagnostics.Debug.WriteLine($"length incorrect expected length {length} found length {input.Length}");
-        }
         bool isMultipleOfFour = (sequential  && input.Contains("!") ? input.Length - input.Count(c => c =='!') : input.Length)%4 ==0;
         string result = "";
         if (!regex.IsMatch(input))
         {
+            //System.Diagnostics.Debug.WriteLine("bad expression");
             result = "\tData contains invalid characters.\n";
         }
         if(input.Length != length)
         {
+            //System.Diagnostics.Debug.WriteLine($"length incorrect expected length {length} found length {input.Length}");
             result += $"\tLength of data must equal {length}.\n";
         }
         if(!isMultipleOfFour)
         {
             result += "\tLength of data must be a multiple of four.\n";
         }
-
         return result;
     }
 
     /// <summary>
     /// Validates that the tag is hexidecimal unless sequential is true then ! is allowed
     /// </summary>
+    /// <returns> True if it is connected to the HSP.</returns>
     public bool isConnected()
     {
         var connected = _client != null && _client.IsConnected;
@@ -290,8 +330,10 @@ public class HSPClient
     }
 
     /// <summary>
+    /// reads any lingering messages then 
     /// gets the current buffer count in HSP.
     /// </summary>
+    /// <returns> string array containing the count followed by the messages reviced.</returns>
     public string[] getBufferCount()
     {
         if (_client != null && isConnected())
@@ -302,26 +344,20 @@ public class HSPClient
             message += result;
             result = result is not null ? result : "";
             int count = -1;
-
             if (result != "")
             {
                 MatchCollection matches = Regex.Matches(result, @"\d+");
                 int sum = 0;
-
                 foreach (Match match in matches)
-                    sum += int.Parse(match.Value);
-                
-
+                    sum += int.Parse(match.Value);            
                 count = sum;
             }
             else
             {
                 count = 0;
             }
-
             return [count.ToString(), result];
         }
-
         return ["0", "Buffer invalid"];
     }
 
@@ -368,8 +404,7 @@ public class HSPClient
             var message = readServerMSg();
             Task.Delay(100).Wait();
             return message +"\n"+ readServerMSg();
-        }
-        
-            return "Not connected to HSP";
-        }
+        }        
+        return "Not connected to HSP";
+    }
 }

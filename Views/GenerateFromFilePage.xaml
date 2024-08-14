@@ -94,10 +94,6 @@
                         TextChanged="OnUSR_EntryTextChanged" />
                 </Grid>
 
-
-
-
-
                 <Grid Margin="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

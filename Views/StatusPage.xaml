@@ -13,6 +13,10 @@
             Text="Connect To HSP" 
             MinimumHeightRequest="150"
             FontSize="Large"/>
+        <ActivityIndicator x:Name="loadingIndicator" IsRunning="False" MinimumHeightRequest="200" MinimumWidthRequest="200"
+                           IsVisible="False">
+            
+        </ActivityIndicator>
         <Grid x:Name="statusGrid" Margin="10" IsVisible="False">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />

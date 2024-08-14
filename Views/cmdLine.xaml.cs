@@ -4,21 +4,35 @@ using System;
 
 public partial class cmdLine : ContentPage
 {
+    /// <summary>
+    /// A nullable HSPClient used to interact with the HSP object.
+    /// </summary>
     private HSPClient? client;
-    // private HSPClient? client;
+   
+    /// <summary>
+    /// Initializes a new instance of the cmdLine class.
+    /// </summary>
     public cmdLine()
     {
+        // Check if the current application instance is not null
         if (((App)Application.Current!) != null)
         {
+            // Retrieve the client instance from the application
             client = ((App)Application.Current)._client;
+
+            // Subscribe to the connection status changed event
             client.connectionStatusChanged += Client_connectionStatusChanged;
         }
 
+        // Initialize the component
         InitializeComponent();
+
+        // Set the visibility of the connection button based on the client's connection status
+        connectionBtn.IsVisible = client == null || !client.isConnected();
+
+        // Set the visibility of the stack layout based on the connection button's visibility
+        StackLayout.IsVisible = !connectionBtn.IsVisible;
     }
-
-    public void connectBtnClicked(object sender, EventArgs args) => connectToServer();
-
     /// <summary>
     ///  listener for when the connection status changes on the HSP
     /// </summary>
@@ -28,7 +42,16 @@ public partial class cmdLine : ContentPage
         connectionBtn.IsVisible = !connectionStatus;
         StackLayout.IsVisible = connectionStatus;
     }
+    /// <summary>
+    /// when the button is clicks it call the connect to serve.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void connectBtnClicked(object sender, EventArgs args) => connectToServer();
 
+    /// <summary>
+    /// connnects to the server. If the connection fails it will display an alert.
+    /// </summary>
     public async void connectToServer()
     {
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
@@ -36,8 +59,7 @@ public partial class cmdLine : ContentPage
         if (client != null)
         {
             dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
-            System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
-
+            //System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
             if (client.isConnected() == false)
             {
                 var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
@@ -46,18 +68,30 @@ public partial class cmdLine : ContentPage
         }
     }
 
-
-    private void cmd_Completed(object sender, EventArgs e)
+    /// <summary>
+    /// sends user command entered into the cmd entry box
+    /// to HSP and writes resonse back in dialog box back.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The event data.</param>
+    private void cmd_Entered(object sender, EventArgs e)
     {
+        // Check if the client is connected
         if (client != null && client.isConnected())
         {
+            // Retrieve the command text from the cmd control
             var cmdText = cmd.Text;
+
+            // Clear the command text box
             cmd.Text = "";
-            dialog.Text = $"USER_>{cmdText}\n{client.writeUsrCMD(cmdText)}";
+            // Update the dialog with the user command and the response from the client
+            dialog.Text = $"USER_>{cmdText}";            
+            dialog.Text = $"{dialog.Text}\n{client.writeUsrCMD(cmdText)}";
         }
         else
         {
-            dialog.Text = "Not connectd";
+            // Update the dialog to indicate that the client is not connected
+            dialog.Text = "Not connected";
         }
     }
 }

@@ -55,7 +55,6 @@ public partial class LoadFromFilePage : ContentPage
         {
             PickerTitle = "Please select a CSV file",
             FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> { { DevicePlatform.WinUI, new[] { ".csv" } } })
-
         };
 
         var result = await FilePicker.PickAsync(options);
@@ -174,13 +173,15 @@ public partial class LoadFromFilePage : ContentPage
         // Convert the CSV string to bytes
         var csvBytes = Encoding.UTF8.GetBytes(csv.ToString());
         using var stream = new MemoryStream(csvBytes);
-
         {
             var result = await FileSaver.Default.SaveAsync("LoadFileSample.csv",
                                                             stream, cancellationTokenSource.Token);
         }
     }
-
+    /// <summary>
+    /// Updates dialog box with the input
+    /// </summary>
+    /// <param name="input"> string to update dialog box</param>
     public void updatedialog(string input)
     {
         MainThread.BeginInvokeOnMainThread(() =>

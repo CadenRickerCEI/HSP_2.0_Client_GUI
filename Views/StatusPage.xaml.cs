@@ -1,6 +1,8 @@
-﻿using System.Collections.Specialized;
+﻿using Microsoft.Maui.Controls;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Linq;
+
 
 namespace HSPGUI.Views;
 
@@ -14,9 +16,14 @@ public partial class StatusPage : ContentPage
     /// A nullable HSPClient used to interact with the HSP object.
     /// </summary>
     private HSPClient? client;
+    /// <summary>
+    /// Indicates whether the process is currently running.
+    /// </summary>
     private bool _isRunning;
+    /// <summary>
+    /// The interval between each execution of the process.
+    /// </summary>
     private TimeSpan _interval = TimeSpan.FromSeconds(3);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="StatusPage"/> class.
     /// Sets up the client field and initializes the UI components.
@@ -28,8 +35,7 @@ public partial class StatusPage : ContentPage
             client = ((App)Application.Current)._client;
             client.connectionStatusChanged += Client_connectionStatusChanged;
         }
-
-        InitializeComponent();
+        InitializeComponent();        
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -46,31 +52,59 @@ public partial class StatusPage : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="args">The event arguments.</param>
-    public void OnButtonClicked(object sender, EventArgs args) => connectToServer();
-
+    public async void OnButtonClicked(object sender, EventArgs args)
+    {
+        loadingIndicator.IsVisible = true;
+        loadingIndicator.IsRunning = true;
+        await connectToServer();
+        if (client != null && client.isConnected() == false)
+        {
+            var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
+            loadingIndicator.IsRunning = false;
+            loadingIndicator.IsVisible = false;
+            if (tryAgain) await connectToServer();
+            else
+            {
+                connectionBtn.IsVisible = true;
+                statusGrid.IsVisible = false;                
+                return;
+            }
+        }
+        connectionBtn.IsVisible = false;
+        statusGrid.IsVisible = true;
+    }
     /// <summary>
     /// Asynchronously attempts to connect to the HSP server using the IP address and port
     /// stored in preferences. Displays an alert if the connection fails and offers to retry.
     /// </summary>
-    public async void connectToServer()
+    public async Task connectToServer()
     {
+        loadingIndicator.IsVisible  = true;
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
-
+        
         if (client != null)
         {
             dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
-            System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
-
-            if (client.isConnected() == false)
-            {
-                var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
-                if (tryAgain) connectToServer();
-            }
+            //dialog.Text = await Task.Run(()=>client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port)));
         }
+        loadingIndicator.IsRunning = false;
+        loadingIndicator.IsVisible = false;
     }
 
     /// <summary>
-    /// clicked listener for get buffer count when pressed it queries the HSP for the current buffer count
+    /// clicked listener for get buffer count when pressed it queries 
+    /// the HSP for the current buffer count.
+    /// This command will display the current number of 
+    /// records stored.The transfer mechanism between the 
+    /// PI, (which stores the records), and the TR100, 
+    /// (which physically modulates the RF carrier to 
+    /// write to the TAG), is a 3 stage pipeline.The 
+    /// three stages are first, the circular buffer 
+    /// in the PI. Second, a holding register in the
+    /// PI for the next record.Third, the record to 
+    /// be written at the next trigger in the TR100
+    /// holding buffer. The response to this command
+    /// shows the count of all three of these pipeline stages.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -84,13 +118,16 @@ public partial class StatusPage : ContentPage
         }
         else
         {
-            bufferCount.Text = "0";
+            bufferCount.Text = "-1";
             dialog.Text = "Count invalid not connected";
         }
     }
 
     /// <summary>
     /// Engage HSP engages the HSP if its connected.
+    /// When the ENGAGE command is issued the RF is turned 
+    /// on, and the trigger line is processed according to 
+    /// the edge control currently set(rising edge or falling edge)
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -105,6 +142,9 @@ public partial class StatusPage : ContentPage
 
     /// <summary>
     /// Disengages the HSP  if it's connected.
+    /// If the system is in disengage state, normally the RF power 
+    /// is off, and triggers are not recognized. 
+    /// If auto clear is on buffer will be cleared when
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -117,18 +157,25 @@ public partial class StatusPage : ContentPage
         }
     }
 
+    /// <summary>
+    /// when the page opens start checking the buffer count.
+    /// </summary>
     protected override void OnAppearing()
     {
         base.OnAppearing();
         StartPeriodicTask();
     }
-
+    /// <summary>
+    /// When the page is changd from this one stop checking buffer count.
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         _isRunning = false;
     }
-
+    /// <summary>
+    /// Periodically check the buffer count and writes it to the count display.
+    /// </summary>
     private void StartPeriodicTask()
     {
         _isRunning = true;
@@ -137,30 +184,28 @@ public partial class StatusPage : ContentPage
         {
             if (_isRunning)
             {
-                RunPeriodicTask();
+                // Your periodic function logic here
+                Dispatcher.Dispatch(() =>
+                {
+                    if (client != null && client.isConnected())
+                    {
+                        var result = client.getBufferCount();
+                        bufferCount.Text = result[0];
+                        dialog.Text = result[1];
+                        connectionBtn.IsVisible = false;
+                        statusGrid.IsVisible = true;
+                    }
+                    else
+                    {
+                        connectionBtn.IsVisible =true;
+                        statusGrid.IsVisible = false;
+                        bufferCount.Text = "0";
+                        dialog.Text = "Count invalid not connected";
+                    }
+                });
                 return true; // Repeat again
             }
-
             return false; // Stop repeating
-        });
-    }
-
-    private void RunPeriodicTask()
-    {
-        // Your periodic function logic here
-        Dispatcher.Dispatch(() =>
-        {
-            if (client != null && client.isConnected())
-            {
-                var result = client.getBufferCount();
-                bufferCount.Text = result[0];
-                dialog.Text = result[1];
-            }
-            else
-            {
-                bufferCount.Text = "0";
-                dialog.Text = "Count invalid not connected";
-            }
         });
     }
 }

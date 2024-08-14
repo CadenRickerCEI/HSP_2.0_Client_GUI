@@ -74,7 +74,15 @@ namespace MinimalisticTelnet
 
             cmd = cmd + "\r\n";
             byte[] buf = ASCIIEncoding.ASCII.GetBytes(cmd.Replace("\0xFF", "\0xFF\0xFF"));
-            tcpSocket.GetStream().Write(buf, 0, buf.Length);
+
+            try
+            {
+                tcpSocket.GetStream().Write(buf, 0, buf.Length);
+            }
+            catch
+            {
+                return ;
+            }           
         }
 
         public string? Read()
