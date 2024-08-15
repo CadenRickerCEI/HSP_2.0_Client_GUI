@@ -22,13 +22,34 @@ namespace MinimalisticTelnet
         private int TimeoutMs = 100;
 
         public bool IsConnected => tcpSocket is not null && tcpSocket.Connected;
-
-        public TelnetConnection(string hostname, int port)
+        private static TelnetConnection? _instance;
+        private static readonly object _lock = new object();
+        private TelnetConnection(string hostname, int port)
         {
             tcpSocket = new TcpClient(hostname, port);
         }
-
-        ~TelnetConnection()
+        public static TelnetConnection Instance(string hostname, int port)
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        try
+                        {
+                            _instance = new TelnetConnection(hostname, port);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex); 
+                        }
+                    }
+                }
+            }
+            return _instance;
+        }
+            ~TelnetConnection()
         {
             Dispose(false);
         }

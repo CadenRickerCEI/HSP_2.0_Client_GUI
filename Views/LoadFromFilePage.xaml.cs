@@ -29,7 +29,7 @@ public partial class LoadFromFilePage : ContentPage
     {
         if (((App)Application.Current!) != null)
         {
-            client = ((App)Application.Current)._client;
+            client = HSPClient.Instance;
         }
 
         _progress = new Progress<double>();

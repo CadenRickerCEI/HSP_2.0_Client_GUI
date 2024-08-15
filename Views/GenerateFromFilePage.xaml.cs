@@ -52,7 +52,7 @@ public partial class GenerateFromFilePage : ContentPage
     {
         if (((App)Application.Current!) != null)
         {
-            client = ((App)Application.Current)._client;
+            client = HSPClient.Instance;
         }
 
         cancellationTokenSource = new CancellationTokenSource();

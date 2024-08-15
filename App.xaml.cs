@@ -20,7 +20,7 @@ public partial class App : Application
 
         MainPage = new AppShell();
         MainPage.Title = "HSP 4.0";
-        _client = new HSPClient();
+        _client = HSPClient.Instance;
     }
 
     /// <summary>

@@ -23,11 +23,38 @@ public class HSPClient
     /// Array of data types used in buffer commands.
     /// </summary>
     private string[] dataTypes = new string[] { "EPC", "USR", "KIL", "ACC", "PCW" };
-
+    /// <summary>
+    /// The single instance of the HSPClient class.
+    /// </summary>
+    private static HSPClient? _instance;
+    /// <summary>
+    /// Lock object for thread safety.
+    /// </summary>
+    private static readonly object _lock = new object();
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
-    public HSPClient() => _client = null;
+    private HSPClient() => _client = null;
+    /// <summary>
+    /// Gets the single instance of the HSPClient class.
+    /// </summary>
+    public static HSPClient Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new HSPClient();
+                    }
+                }
+            }
+            return _instance;
+        }
+    }
     /// <summary>
     /// String used when connection is lost.
     /// </summary>
@@ -41,7 +68,7 @@ public class HSPClient
     {
         try
         {
-            _client = new TelnetConnection(IpAddress, Port);
+            _client = TelnetConnection.Instance(IpAddress,Port);
             connectionStatusChanged?.Invoke(isConnected());
             return readServerMSg();
         }

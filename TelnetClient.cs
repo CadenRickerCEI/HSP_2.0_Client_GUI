@@ -25,12 +25,39 @@ public class TelnetClient
     /// The stream writer used for writing data to the server.
     /// </summary>
     private StreamWriter? writer;
+    /// <summary>
+    /// The single instance of the TelnetClient class.
+    /// </summary>
+    private static TelnetClient? _instance;
 
+    /// <summary>
+    /// Lock object for thread safety.
+    /// </summary>
+    private static readonly object _lock = new object();
     /// <summary>
     /// Initializes a new instance of the <see cref="TelnetClient"/> class.
     /// </summary>
-    public TelnetClient() => System.Diagnostics.Debug.WriteLine("TelnetClient created");
-
+    private TelnetClient() => System.Diagnostics.Debug.WriteLine("TelnetClient created");
+    /// <summary>
+    /// Gets the single instance of the TelnetClient class.
+    /// </summary>
+    public static TelnetClient Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new TelnetClient();
+                    }
+                }
+            }
+            return _instance;
+        }
+    }
     /// <summary>
     /// Asynchronously connects to the Telnet server.
     /// </summary>

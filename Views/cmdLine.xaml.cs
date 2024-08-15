@@ -18,7 +18,7 @@ public partial class cmdLine : ContentPage
         if (((App)Application.Current!) != null)
         {
             // Retrieve the client instance from the application
-            client = ((App)Application.Current)._client;
+            client = HSPClient.Instance;
 
             // Subscribe to the connection status changed event
             client.connectionStatusChanged += Client_connectionStatusChanged;

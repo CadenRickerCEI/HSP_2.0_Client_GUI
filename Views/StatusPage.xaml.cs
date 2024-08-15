@@ -32,7 +32,7 @@ public partial class StatusPage : ContentPage
     {
         if (((App)Application.Current!) != null)
         {
-            client = ((App)Application.Current)._client;
+            client = HSPClient.Instance;
             client.connectionStatusChanged += Client_connectionStatusChanged;
         }
         InitializeComponent();        
@@ -56,15 +56,19 @@ public partial class StatusPage : ContentPage
     {
         loadingIndicator.IsVisible = true;
         loadingIndicator.IsRunning = true;
-        await connectToServer();
+        var orignalBtnText = connectionBtn.Text;
+        connectionBtn.Text = "Connnecting to HSP";
+        await Task.Delay(10);
+        connectToServer();
+        connectionBtn.Text = orignalBtnText;
         if (client != null && client.isConnected() == false)
         {
             var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
             loadingIndicator.IsRunning = false;
             loadingIndicator.IsVisible = false;
-            if (tryAgain) await connectToServer();
+            if (tryAgain) connectToServer();
             else
-            {
+            {                
                 connectionBtn.IsVisible = true;
                 statusGrid.IsVisible = false;                
                 return;
@@ -77,15 +81,26 @@ public partial class StatusPage : ContentPage
     /// Asynchronously attempts to connect to the HSP server using the IP address and port
     /// stored in preferences. Displays an alert if the connection fails and offers to retry.
     /// </summary>
-    public async Task connectToServer()
+    public void connectToServer()
     {
         loadingIndicator.IsVisible  = true;
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
         
         if (client != null)
         {
-            dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
-            //dialog.Text = await Task.Run(()=>client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port)));
+            //dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
+            string IPAdrress = Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress);
+            int port = Preferences.Get(Constants.KeyPort, Constants.Port);
+            var message = "";
+            try
+            {
+                message = client.connectToHSP(IPAdrress, port);
+            }
+            catch (System.Runtime.InteropServices.COMException ex) {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+            dialog.Text = message;
+            
         }
         loadingIndicator.IsRunning = false;
         loadingIndicator.IsVisible = false;
