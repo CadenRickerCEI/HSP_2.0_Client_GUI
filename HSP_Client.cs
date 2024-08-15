@@ -1,4 +1,5 @@
 ﻿using HSPGUI.Resources;
+using Microsoft.Maui.Controls;
 using MinimalisticTelnet;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -6,7 +7,7 @@ using System.Text.RegularExpressions;
 
 /// <summary>
 /// The HSPClient class is used for managing the connection and communication with a Telnet server.
-/// It also validates the data going into the database.
+/// It also validates the data going into the HSP Buffer.
 /// </summary>
 public class HSPClient
 {
@@ -18,7 +19,6 @@ public class HSPClient
     /// Occurs when the connection status changes.
     /// </summary>
     public event Action<bool>? connectionStatusChanged;
-
     /// <summary>
     /// Array of data types used in buffer commands.
     /// </summary>
@@ -52,6 +52,7 @@ public class HSPClient
                     }
                 }
             }
+
             return _instance;
         }
     }
@@ -68,7 +69,7 @@ public class HSPClient
     {
         try
         {
-            _client = TelnetConnection.Instance(IpAddress,Port);
+            _client = TelnetConnection.Instance(IpAddress, Port);
             connectionStatusChanged?.Invoke(isConnected());
             return readServerMSg();
         }
@@ -77,6 +78,7 @@ public class HSPClient
             return "HSP conncetion failed. Check that HSP is powered on.";
         }
     }
+
     /// <summary>
     ///  reads server message and formats the message
     /// </summary>
@@ -86,18 +88,20 @@ public class HSPClient
         try
         {
             string? result = _client?.Read();
+
             if (result != null)
             {
                 result = result.Trim();
                 string pattern = @"\s*HSPSA>$";
                 return (result.Length > 0) ? "HSPSA>" + Regex.Replace(result, pattern, "") : "";
             }
+
             return "";
         }
         catch
         {
             return connectionLost;
-        }        
+        }
     }
 
     /// <summary>
@@ -138,11 +142,9 @@ public class HSPClient
                     catch
                     {
                         HSPResponse = connectionLost;
-                    }                    
+                    }
                 }
             }
-
-            //System.Diagnostics.Debug.WriteLine(command);
 
             if (_client is not null && isConnected())
             {
@@ -154,8 +156,9 @@ public class HSPClient
                 {
                     return "Connection Lost";
                 }
+
                 string result = readServerMSg();
-                System.Diagnostics.Debug.Write($"{result}");
+                // System.Diagnostics.Debug.Write($"{result}");
 
                 if (result != null && result.Contains("GENERATED 0 RECORDS"))
                 {
@@ -168,6 +171,7 @@ public class HSPClient
                 }
             }
         }
+
         return HSPResponse;
     }
 
@@ -184,8 +188,6 @@ public class HSPClient
 
         if (resetBuffer)
         {
-            System.Diagnostics.Debug.WriteLine("RESETBUFFER");
-
             if (_client is not null && isConnected())
             {
                 try
@@ -196,7 +198,7 @@ public class HSPClient
                 {
                     return connectionLost;
                 }
-                
+
                 HSPInfo = readServerMSg() + "\n";
                 page.updatedialog(HSPInfo);
             }
@@ -220,11 +222,12 @@ public class HSPClient
 
                     if (data[i][j].Length > 0)
                     {
-                        string errMessage = validateInput(data[i][j], length, false); 
+                        string errMessage = validateInput(data[i][j], length, false);
+
                         if (errMessage != "")
                         {
-                            //System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
-                            return  $"File loading halted.\nError on Line {i}\n {dataTypes[j]} {errMessage}\n";
+                            // System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
+                            return $"File loading halted.\nError on Line {i}\n {dataTypes[j]} {errMessage}\n";
                         }
                     }
 
@@ -241,6 +244,7 @@ public class HSPClient
                     if (_client is not null && isConnected())
                     {
                         command = command.EndsWith(",") ? command.Substring(0, Math.Max(command.Length - 1, 1)) : command;
+
                         try
                         {
                             _client.WriteLine($"{command}");
@@ -248,7 +252,7 @@ public class HSPClient
                         catch
                         {
                             return connectionLost;
-                        }                        
+                        }
                     }
                 }
                 else
@@ -266,18 +270,19 @@ public class HSPClient
 
             if (_client is not null && isConnected())
             {
-                //string writtenMsg = Regex.Replace(readServerMSg(), @"\r\n\r\n", "\n") ;
+                // string writtenMsg = Regex.Replace(readServerMSg(), @"\r\n\r\n", "\n") ;
                 string writtenMsg = readServerMSg();
                 string[] lines = writtenMsg.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None);
                 string message = string.Join("\n", lines, 0, Math.Min(lines.Length, 100));
-                
+
                 if (lines.Length > 100)
                 {
                     var secondPart = new string[100];
-                    Array.Copy(lines, lines.Length - secondPart.Length, secondPart, 0,secondPart.Length);                  
-                    
+                    Array.Copy(lines, lines.Length - secondPart.Length, secondPart, 0, secondPart.Length);
+
                     message += "\n...\n" + string.Join("\n", secondPart, 0, secondPart.Length);
                 }
+
                 page.updatedialog(HSPInfo + message);
             }
 
@@ -321,27 +326,29 @@ public class HSPClient
     /// <param name="length">The expected length of the input string.</param>
     /// <param name="sequential">Indicates whether the input is sequential.</param>
     /// <returns>True if the input is valid; otherwise, false.</returns>
-    public String validateInput(string input, int length, bool sequential)
+    public string validateInput(string input, int length, bool sequential)
     {
         var regExpresion = (sequential) ? "^[A-Fa-f0-9!]*$" : "^[A-Fa-f0-9]*$";
         var regex = new Regex(regExpresion);
         if (length > 32) length = sequential ? 32 : 33;
-        bool isMultipleOfFour = (sequential  && input.Contains("!") ? input.Length - input.Count(c => c =='!') : input.Length)%4 ==0;
+        bool isMultipleOfFour = (sequential && input.Contains("!") ? input.Length - input.Count(c => c == '!') : input.Length) % 4 == 0;
         string result = "";
+
         if (!regex.IsMatch(input))
         {
-            //System.Diagnostics.Debug.WriteLine("bad expression");
             result = "\tData contains invalid characters.\n";
         }
-        if(input.Length != length)
+
+        if (input.Length != length)
         {
-            //System.Diagnostics.Debug.WriteLine($"length incorrect expected length {length} found length {input.Length}");
             result += $"\tLength of data must equal {length}.\n";
         }
-        if(!isMultipleOfFour)
+
+        if (!isMultipleOfFour)
         {
             result += "\tLength of data must be a multiple of four.\n";
         }
+
         return result;
     }
 
@@ -371,26 +378,34 @@ public class HSPClient
             message += result;
             result = result is not null ? result : "";
             int count = -1;
+
             if (result != "")
             {
                 MatchCollection matches = Regex.Matches(result, @"\d+");
                 int sum = 0;
+
                 foreach (Match match in matches)
-                    sum += int.Parse(match.Value);            
+                    sum += int.Parse(match.Value);
+
                 count = sum;
             }
             else
             {
                 count = 0;
             }
+
             return [count.ToString(), result];
         }
+
         return ["0", "Buffer invalid"];
     }
 
     /// <summary>
-    /// 
+    /// When the ENGAGE command is issued the RF is turned 
+    /// on, and the trigger line is processed according to
+    /// the edge control currently set(rising edge or falling edge).
     /// </summary>
+    /// <returns>Server response</returns>
     public string EngageHSP()
     {
         if (_client != null && isConnected())
@@ -402,6 +417,14 @@ public class HSPClient
         return "Engage Failed Not Connected";
     }
 
+    /// <summary>
+    /// From a reset the system is in DISENGAGE state. The ENGAGE 
+    /// command must be issued before a programming run.When a 
+    /// programming run is complete, the disengage command 
+    /// should be issued to turn RF power off, and return the 
+    /// system to idle state.
+    /// </summary>
+    /// <returns>Server response</returns>
     public string disengageHSP()
     {
         if (_client != null && isConnected())
@@ -413,6 +436,11 @@ public class HSPClient
         return "Disengage Failed Not Connected";
     }
 
+    /// <summary>
+    /// command will delete all records, and the buffer count
+    /// will be set to zero.
+    /// </summary>
+    /// <returns>Server Message</returns>
     public string resetbuffer()
     {
         if (_client != null && isConnected())
@@ -423,6 +451,12 @@ public class HSPClient
 
         return "Reset Buffer Failed Not Connected";
     }
+
+    /// <summary>
+    /// Writes user command directly to the HSP.
+    /// </summary>
+    /// <param name="cmd">command</param>
+    /// <returns>User command followed</returns>
     public string writeUsrCMD(string cmd)
     {
         if (_client != null && isConnected())
@@ -430,8 +464,9 @@ public class HSPClient
             _client.WriteLine($"{cmd}");
             var message = readServerMSg();
             Task.Delay(100).Wait();
-            return message +"\n"+ readServerMSg();
-        }        
+            return message + "\n" + readServerMSg();
+        }
+
         return "Not connected to HSP";
     }
 }

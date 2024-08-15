@@ -42,14 +42,16 @@ namespace MinimalisticTelnet
                         }
                         catch (Exception ex)
                         {
-                            System.Diagnostics.Debug.WriteLine(ex); 
+                            System.Diagnostics.Debug.WriteLine(ex);
                         }
                     }
                 }
             }
+
             return _instance;
         }
-            ~TelnetConnection()
+
+        ~TelnetConnection()
         {
             Dispose(false);
         }
@@ -88,10 +90,7 @@ namespace MinimalisticTelnet
 
         public void Write(string cmd)
         {
-            if (tcpSocket is null || !tcpSocket.Connected)
-            {
-                return;
-            }
+            if (tcpSocket is null || !tcpSocket.Connected) return;
 
             cmd = cmd + "\r\n";
             byte[] buf = ASCIIEncoding.ASCII.GetBytes(cmd.Replace("\0xFF", "\0xFF\0xFF"));
@@ -102,8 +101,8 @@ namespace MinimalisticTelnet
             }
             catch
             {
-                return ;
-            }           
+                return;
+            }
         }
 
         public string? Read()
@@ -138,10 +137,7 @@ namespace MinimalisticTelnet
                     case (int)Verbs.Iac:
                         // interpret as command
                         int inputVerb = tcpSocket.GetStream().ReadByte();
-                        if (inputVerb == -1)
-                        {
-                            break;
-                        }
+                        if (inputVerb == -1) break;
 
                         switch (inputVerb)
                         {
@@ -156,10 +152,7 @@ namespace MinimalisticTelnet
                             case (int)Verbs.Wont:
                                 // reply to all commands with "WONT", unless it is SGA (suppres go ahead)
                                 int inputoption = tcpSocket.GetStream().ReadByte();
-                                if (inputoption == -1)
-                                {
-                                    break;
-                                }
+                                if (inputoption == -1) break;
 
                                 tcpSocket.GetStream().WriteByte((byte)Verbs.Iac);
 

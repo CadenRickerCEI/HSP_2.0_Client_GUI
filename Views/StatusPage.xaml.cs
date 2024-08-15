@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Linq;
 
-
 namespace HSPGUI.Views;
 
 /// <summary>
@@ -30,12 +29,9 @@ public partial class StatusPage : ContentPage
     /// </summary>
     public StatusPage()
     {
-        if (((App)Application.Current!) != null)
-        {
-            client = HSPClient.Instance;
-            client.connectionStatusChanged += Client_connectionStatusChanged;
-        }
-        InitializeComponent();        
+        client = HSPClient.Instance;
+        client.connectionStatusChanged += Client_connectionStatusChanged;
+        InitializeComponent();
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -61,47 +57,54 @@ public partial class StatusPage : ContentPage
         await Task.Delay(10);
         connectToServer();
         connectionBtn.Text = orignalBtnText;
+
         if (client != null && client.isConnected() == false)
         {
             var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
             loadingIndicator.IsRunning = false;
             loadingIndicator.IsVisible = false;
+
             if (tryAgain) connectToServer();
             else
-            {                
+            {
                 connectionBtn.IsVisible = true;
-                statusGrid.IsVisible = false;                
+                statusGrid.IsVisible = false;
                 return;
             }
         }
+
         connectionBtn.IsVisible = false;
         statusGrid.IsVisible = true;
     }
+
     /// <summary>
     /// Asynchronously attempts to connect to the HSP server using the IP address and port
     /// stored in preferences. Displays an alert if the connection fails and offers to retry.
     /// </summary>
     public void connectToServer()
     {
-        loadingIndicator.IsVisible  = true;
+        loadingIndicator.IsVisible = true;
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
-        
+
         if (client != null)
         {
-            //dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
+            // dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
             string IPAdrress = Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress);
             int port = Preferences.Get(Constants.KeyPort, Constants.Port);
             var message = "";
+
             try
             {
                 message = client.connectToHSP(IPAdrress, port);
             }
-            catch (System.Runtime.InteropServices.COMException ex) {
+            catch (System.Runtime.InteropServices.COMException ex)
+            {
                 System.Diagnostics.Debug.WriteLine(ex);
             }
+
             dialog.Text = message;
-            
         }
+
         loadingIndicator.IsRunning = false;
         loadingIndicator.IsVisible = false;
     }
@@ -180,6 +183,7 @@ public partial class StatusPage : ContentPage
         base.OnAppearing();
         StartPeriodicTask();
     }
+
     /// <summary>
     /// When the page is changd from this one stop checking buffer count.
     /// </summary>
@@ -188,6 +192,7 @@ public partial class StatusPage : ContentPage
         base.OnDisappearing();
         _isRunning = false;
     }
+
     /// <summary>
     /// Periodically check the buffer count and writes it to the count display.
     /// </summary>
@@ -212,14 +217,16 @@ public partial class StatusPage : ContentPage
                     }
                     else
                     {
-                        connectionBtn.IsVisible =true;
+                        connectionBtn.IsVisible = true;
                         statusGrid.IsVisible = false;
                         bufferCount.Text = "0";
                         dialog.Text = "Count invalid not connected";
                     }
                 });
+
                 return true; // Repeat again
             }
+
             return false; // Stop repeating
         });
     }

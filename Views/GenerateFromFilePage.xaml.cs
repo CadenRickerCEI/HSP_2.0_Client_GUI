@@ -50,10 +50,7 @@ public partial class GenerateFromFilePage : ContentPage
     /// </value>
     public GenerateFromFilePage()
     {
-        if (((App)Application.Current!) != null)
-        {
-            client = HSPClient.Instance;
-        }
+        client = HSPClient.Instance;
 
         cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
@@ -90,7 +87,7 @@ public partial class GenerateFromFilePage : ContentPage
         if (result != null)
         {
             // Display the file location in the Entry
-            updateFromFileBtn.IsVisible = File.Exists(result.FullPath) ;
+            updateFromFileBtn.IsVisible = File.Exists(result.FullPath);
             fileLocationEntry.Text = result.FullPath;
         }
         else
@@ -169,8 +166,9 @@ public partial class GenerateFromFilePage : ContentPage
     {
         EPC_Valid = true;
         EPC_invalidReason = "";
+
         if (EPC_Entry.Text != null && EPC_Entry.Text != "" && client != null)
-        {            
+        {
             EPC_invalidReason = client.validateInput(EPC_Entry.Text, EPC_Entry.Text.Length, true);
             EPC_Valid = EPC_invalidReason == "";
             EPC_Entry.TextColor = EPC_Valid ? Color.FromArgb("#000000") : Color.FromArgb("#FF0000");
@@ -186,6 +184,7 @@ public partial class GenerateFromFilePage : ContentPage
     {
         USR_Valid = true;
         USR_invalidReason = "";
+
         if (UserData_Entry.Text != null && UserData_Entry.Text != "" && client != null)
         {
             USR_invalidReason = client.validateInput(UserData_Entry.Text, UserData_Entry.Text.Length, true);
@@ -261,8 +260,8 @@ public partial class GenerateFromFilePage : ContentPage
             var AccData = AccessPass_Entry.Text != null ? AccessPass_Entry.Text : "";
             var PCData = PC_Entry.Text != null ? PC_Entry.Text : "";
 
-            EPCData = (EPCData.Length >= 4 ) ? EPCData.Insert(EPCData.Length - 4, "!") : EPCData;
-            UserData = (UserData.Length >= 4 ) ? UserData.Insert(UserData.Length - 4, "!") : UserData;
+            EPCData = (EPCData.Length >= 4) ? EPCData.Insert(EPCData.Length - 4, "!") : EPCData;
+            UserData = (UserData.Length >= 4) ? UserData.Insert(UserData.Length - 4, "!") : UserData;
 
             string[] bufferCmd = [EPCData, UserData, killData, AccData, PCData];
             var numofItems = GeneratorNum_Entry.Text != null ? int.Parse(GeneratorNum_Entry.Text) : -1;
@@ -275,26 +274,32 @@ public partial class GenerateFromFilePage : ContentPage
         else
         {
             string errorMessage = "";
+
             if (!EPC_Valid)
             {
                 errorMessage += $"EPC Invalid:\n{EPC_invalidReason}";
             }
+
             if (!USR_Valid)
             {
                 errorMessage += $"USR Invalid:\n{USR_invalidReason}";
             }
+
             if (!KIL_Valid)
             {
                 errorMessage += $"KIL Invalid:\n{KIL_invalidReason}";
             }
+
             if (!ACC_Valid)
             {
                 errorMessage += $"ACC Invalid:\n{ACC_invalidReason}";
             }
+
             if (!PCW_Valid)
             {
                 errorMessage += $"PCW Invalid:\n{PCW_invalidReason}";
             }
+
             await DisplayAlert("Invalid Information", errorMessage, "Cancel");
         }
     }
@@ -366,5 +371,4 @@ public partial class GenerateFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
-
 }

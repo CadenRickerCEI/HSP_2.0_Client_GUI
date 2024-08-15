@@ -27,11 +27,7 @@ public partial class LoadFromFilePage : ContentPage
     /// </summary>
     public LoadFromFilePage()
     {
-        if (((App)Application.Current!) != null)
-        {
-            client = HSPClient.Instance;
-        }
-
+        client = HSPClient.Instance;
         _progress = new Progress<double>();
         cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
@@ -39,7 +35,6 @@ public partial class LoadFromFilePage : ContentPage
 
         _progress.ProgressChanged += (s, e) =>
         {
-            // System.Diagnostics.Debug.WriteLine(e);
             progressBar.Progress = e;
         };
     }
@@ -85,7 +80,7 @@ public partial class LoadFromFilePage : ContentPage
         progressBar.IsVisible = true;
         loadFileBtn.IsEnabled = false;
         var resetBuffer = await DisplayAlert("Clear HSP Buffer", "Press reset to clear the buffer or add to add to the buffer", "Reset", "Add");
-        var loadResult = "Failed to Star Loading";
+        var loadResult = "Failed to Start Loading";
 
         if (_progress != null && client != null)
         {
@@ -126,7 +121,7 @@ public partial class LoadFromFilePage : ContentPage
     /// <param name="e">The event arguments.</param>
     private void fileLocationEntry_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (fileLocationEntry.Text != null )
+        if (fileLocationEntry.Text != null)
         {
             // Display the file location in the Entry
             loadFileBtn.IsVisible = File.Exists(fileLocationEntry.Text) && client != null && client.isConnected();
@@ -173,11 +168,13 @@ public partial class LoadFromFilePage : ContentPage
         // Convert the CSV string to bytes
         var csvBytes = Encoding.UTF8.GetBytes(csv.ToString());
         using var stream = new MemoryStream(csvBytes);
+
         {
             var result = await FileSaver.Default.SaveAsync("LoadFileSample.csv",
                                                             stream, cancellationTokenSource.Token);
         }
     }
+
     /// <summary>
     /// Updates dialog box with the input
     /// </summary>

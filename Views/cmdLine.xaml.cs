@@ -8,22 +8,16 @@ public partial class cmdLine : ContentPage
     /// A nullable HSPClient used to interact with the HSP object.
     /// </summary>
     private HSPClient? client;
-   
+
     /// <summary>
     /// Initializes a new instance of the cmdLine class.
     /// </summary>
     public cmdLine()
     {
-        // Check if the current application instance is not null
-        if (((App)Application.Current!) != null)
-        {
-            // Retrieve the client instance from the application
-            client = HSPClient.Instance;
-
-            // Subscribe to the connection status changed event
-            client.connectionStatusChanged += Client_connectionStatusChanged;
-        }
-
+        // Retrieve the client instance from the application
+        client = HSPClient.Instance;
+        // Subscribe to the connection status changed event
+        client.connectionStatusChanged += Client_connectionStatusChanged;
         // Initialize the component
         InitializeComponent();
 
@@ -42,6 +36,7 @@ public partial class cmdLine : ContentPage
         connectionBtn.IsVisible = !connectionStatus;
         StackLayout.IsVisible = connectionStatus;
     }
+
     /// <summary>
     /// when the button is clicks it call the connect to serve.
     /// </summary>
@@ -59,7 +54,7 @@ public partial class cmdLine : ContentPage
         if (client != null)
         {
             dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
-            //System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
+            // System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
             if (client.isConnected() == false)
             {
                 var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
@@ -85,7 +80,7 @@ public partial class cmdLine : ContentPage
             // Clear the command text box
             cmd.Text = "";
             // Update the dialog with the user command and the response from the client
-            dialog.Text = $"USER_>{cmdText}";            
+            dialog.Text = $"USER_>{cmdText}";
             dialog.Text = $"{dialog.Text}\n{client.writeUsrCMD(cmdText)}";
         }
         else

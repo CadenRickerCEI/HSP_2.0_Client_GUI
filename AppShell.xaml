@@ -13,16 +13,16 @@
         Route="StatusPage"
         Shell.NavBarIsVisible="true" />
     <ShellContent
-        Title="Load From File"
-        ContentTemplate="{DataTemplate views:LoadFromFilePage}"
-        Icon="fileplus.png"
-        Route="LoadFromFilePage"
-        Shell.NavBarIsVisible="true" />
-    <ShellContent
         Title="Generate From File"
         ContentTemplate="{DataTemplate views:GenerateFromFilePage}"
         Icon="iconblank.png"
         Route="GenerateFromFilePage"
+        Shell.NavBarIsVisible="true" />
+    <ShellContent
+        Title="Load From File"
+        ContentTemplate="{DataTemplate views:LoadFromFilePage}"
+        Icon="fileplus.png"
+        Route="LoadFromFilePage"
         Shell.NavBarIsVisible="true" />
     <!--<ShellContent
         Title="Antena Setup"
@@ -31,15 +31,15 @@
         Route="AntenaSetUp"
         Shell.NavBarIsVisible="true" />-->
     <ShellContent
-        Title="Network Config"
-        ContentTemplate="{DataTemplate views:NetworkConfig}"
-        Icon="etherneticon.png"
-        Route="NetworkConfig"
-        Shell.NavBarIsVisible="true" />
-    <ShellContent
         Title="Command Line"
         ContentTemplate="{DataTemplate views:cmdLine}"
         Icon="cmd.png"
         Route="cmdLine"
+        Shell.NavBarIsVisible="true" />
+    <ShellContent
+        Title="Network Config"
+        ContentTemplate="{DataTemplate views:NetworkConfig}"
+        Icon="etherneticon.png"
+        Route="NetworkConfig"
         Shell.NavBarIsVisible="true" />
 </Shell>

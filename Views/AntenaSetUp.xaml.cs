@@ -16,10 +16,7 @@ public partial class AntenaSetUp : ContentPage
     /// </summary>
     public AntenaSetUp()
     {
-        if (((App)Application.Current!) != null)
-        {
-            client = ((App)Application.Current)._client;
-        }
+        client = HSPClient.Instance;
 
         InitializeComponent();
         baudRateSelector.SelectedIndex = Math.Max(baudRateSelector.SelectedIndex, 0);
