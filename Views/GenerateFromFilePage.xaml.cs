@@ -53,6 +53,7 @@ public partial class GenerateFromFilePage : ContentPage
         client = HSPClient.Instance;
 
         cancellationTokenSource = new CancellationTokenSource();
+        client.dialogUpdated += dialogDialogUpdtated;
         InitializeComponent();
         EPC_Valid = true;
         USR_Valid = true;
@@ -67,6 +68,12 @@ public partial class GenerateFromFilePage : ContentPage
         updateFromFileBtn.IsVisible = false;
         EPC_Entry.MinimumWidthRequest = EPC_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenEPC_hex;
         UserData_Entry.MinimumWidthRequest = UserData_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenUSR_Hex;
+        
+        if (client != null)
+        {
+            dialogDIAG.Text = client.dialogbuffer;
+            dialogDIAG.CursorPosition += dialogDIAG.Text.Length;
+        }
     }
     /// <summary>
     /// Event handler for the Open File button click event. It allows the user to select a CSV file
@@ -371,4 +378,13 @@ public partial class GenerateFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
+    private void dialogDialogUpdtated(bool updated)
+    {
+        if (updated && client != null)
+        {
+            dialogDIAG.Text = client.dialogbuffer;
+            dialogDIAG.CursorPosition += dialogDIAG.Text.Length;
+        }
+    }
+
 }

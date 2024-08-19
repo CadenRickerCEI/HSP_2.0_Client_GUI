@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Linq;
@@ -31,7 +32,16 @@ public partial class StatusPage : ContentPage
     {
         client = HSPClient.Instance;
         client.connectionStatusChanged += Client_connectionStatusChanged;
+        client.dataUpdated += dialogDataUpdtated;
+        client.dialogUpdated += dialogDialogUpdtated;
         InitializeComponent();
+        if (client != null)
+        {
+            dialogData.Text = client.dialogbuffer;
+            dialogData.CursorPosition += dialogData.Text.Length;
+            dialogDIAG.Text = client.dialogbuffer;
+            dialogDIAG.CursorPosition += dialogDIAG.Text.Length+1000000000;
+        }
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -42,7 +52,23 @@ public partial class StatusPage : ContentPage
         connectionBtn.IsVisible = !connectionStatus;
         statusGrid.IsVisible = connectionStatus;
     }
-
+    private void dialogDialogUpdtated(bool updated)
+    {
+        if (updated && client != null)
+        {
+            dialogDIAG.Text = client.dialogbuffer;
+            dialogDIAG.CursorPosition += dialogDIAG.Text.Length+10000;
+            
+        }
+    }
+    private void dialogDataUpdtated(bool updated)
+    {
+        if (updated && client != null)
+        {
+            dialogData.Text = client.dataBuffer;
+            dialogData.CursorPosition +=dialogData.Text.Length;
+        }
+    }
     /// <summary>
     /// Event handler for the button click event. Initiates the connection to the HSP server.
     /// </summary>
@@ -91,11 +117,13 @@ public partial class StatusPage : ContentPage
             // dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
             string IPAdrress = Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress);
             int port = Preferences.Get(Constants.KeyPort, Constants.Port);
+            int portDIAG = Preferences.Get(Constants.KeyPortDIAG, Constants.PortDIAG);
+            int portData = Preferences.Get(Constants.KeyPortDATA, Constants.PortDATA);
             var message = "";
 
             try
             {
-                message = client.connectToHSP(IPAdrress, port);
+                message = client.connectToHSP(IPAdrress, port, portDIAG, portData );
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {

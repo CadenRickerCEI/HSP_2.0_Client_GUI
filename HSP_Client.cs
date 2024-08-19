@@ -3,6 +3,7 @@ using Microsoft.Maui.Controls;
 using MinimalisticTelnet;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -14,15 +15,30 @@ public class HSPClient
     /// <summary>
     /// The TelnetClient object used for the connection.
     /// </summary>
-    private TelnetConnection? _client;
+    private TelnetConnection? _clientCMD;
+    private TelnetConnection? _clientDATA; //5001
+    private TelnetConnection? _clientDIAG; //5003
+
     /// <summary>
     /// Occurs when the connection status changes.
     /// </summary>
     public event Action<bool>? connectionStatusChanged;
+    public event Action<bool>? dialogUpdated;
+    public event Action<bool>? dataUpdated;
     /// <summary>
     /// Array of data types used in buffer commands.
     /// </summary>
     private string[] dataTypes = new string[] { "EPC", "USR", "KIL", "ACC", "PCW" };
+    private Queue<string> dialog = new Queue<string>();
+    /// <summary>
+    /// last 100 lines of dialog from the HSP.
+    /// </summary>
+    public string dialogbuffer = "";
+    private Queue<string> data = new Queue<string>();
+    /// <summary>
+    /// last 100 lines of Data from the HSP.
+    /// </summary>
+    public string dataBuffer = "";
     /// <summary>
     /// The single instance of the HSPClient class.
     /// </summary>
@@ -34,7 +50,11 @@ public class HSPClient
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
-    private HSPClient() => _client = null;
+    private HSPClient() { 
+        _clientCMD = null;
+        _clientDATA = null;
+        _clientDIAG = null;
+    }
     /// <summary>
     /// Gets the single instance of the HSPClient class.
     /// </summary>
@@ -61,16 +81,23 @@ public class HSPClient
     /// </summary>
     private string connectionLost = "Connection Lost";
     /// <summary>
-    /// Connects to the HSP telnet server.
+    /// Connects to the HSP Server
     /// </summary>
-    /// <param name="IpAddress">The IP address of the server.</param>
-    /// <param name="Port">The port number of the server.</param>
-    public string connectToHSP(string IpAddress, int Port)
+    /// <param name="IPAddress"></param>
+    /// <param name="PortCMD"></param>
+    /// <param name="PortDiag"></param>
+    /// <param name="PortDATA"></param>
+    /// <returns>String containg message from the HSP or Failed to conect</returns>
+    public string connectToHSP(string IPAddress, int PortCMD,
+                                int PortDiag, int PortDATA )
     {
         try
         {
-            _client = TelnetConnection.Instance(IpAddress, Port);
+            _clientCMD = new TelnetConnection(IPAddress, PortCMD);
+            _clientDIAG = new TelnetConnection(IPAddress, PortDiag);
+            _clientDATA = new TelnetConnection(IPAddress, PortDATA);
             connectionStatusChanged?.Invoke(isConnected());
+            
             return readServerMSg();
         }
         catch
@@ -87,7 +114,7 @@ public class HSPClient
     {
         try
         {
-            string? result = _client?.Read();
+            string? result = _clientCMD?.Read();
 
             if (result != null)
             {
@@ -114,7 +141,7 @@ public class HSPClient
     {
         string HSPResponse = "Generate File Failed";
 
-        if (_client != null && _client.IsConnected)
+        if (_clientCMD != null && _clientCMD.IsConnected)
         {
             HSPResponse = "";
             var command = "GENERATE=";
@@ -132,11 +159,11 @@ public class HSPClient
             {
                 System.Diagnostics.Debug.WriteLine("RESETBUFFER");
 
-                if (_client is not null && isConnected())
+                if (_clientCMD is not null && isConnected())
                 {
                     try
                     {
-                        _client.WriteLine("RESETBUFFER");
+                        _clientCMD.WriteLine("RESETBUFFER");
                         HSPResponse += readServerMSg() + "\n";
                     }
                     catch
@@ -146,11 +173,11 @@ public class HSPClient
                 }
             }
 
-            if (_client is not null && isConnected())
+            if (_clientCMD is not null && isConnected())
             {
                 try
                 {
-                    _client.WriteLine($"{command}");
+                    _clientCMD.WriteLine($"{command}");
                 }
                 catch
                 {
@@ -167,7 +194,7 @@ public class HSPClient
                 else
                 {
                     await Task.Delay(1000);//Delay to give the HSP a chance to process the data. 
-                    HSPResponse += readServerMSg() + "\n";
+                    HSPResponse += result == ""? "":$"{result}\n"+ readServerMSg() + "\n";
                 }
             }
         }
@@ -188,11 +215,11 @@ public class HSPClient
 
         if (resetBuffer)
         {
-            if (_client is not null && isConnected())
+            if (_clientCMD is not null && isConnected())
             {
                 try
                 {
-                    _client.WriteLine("RESETBUFFER");
+                    _clientCMD.WriteLine("RESETBUFFER");
                 }
                 catch
                 {
@@ -241,13 +268,13 @@ public class HSPClient
                         System.Diagnostics.Debug.WriteLine(command);
                     }
 
-                    if (_client is not null && isConnected())
+                    if (_clientCMD is not null && isConnected())
                     {
                         command = command.EndsWith(",") ? command.Substring(0, Math.Max(command.Length - 1, 1)) : command;
 
                         try
                         {
-                            _client.WriteLine($"{command}");
+                            _clientCMD.WriteLine($"{command}");
                         }
                         catch
                         {
@@ -268,7 +295,7 @@ public class HSPClient
                 }
             }
 
-            if (_client is not null && isConnected())
+            if (_clientCMD is not null && isConnected())
             {
                 // string writtenMsg = Regex.Replace(readServerMSg(), @"\r\n\r\n", "\n") ;
                 string writtenMsg = readServerMSg();
@@ -313,9 +340,9 @@ public class HSPClient
     /// <param name="Settings">An array of integers representing the antenna settings.</param>
     public void writeAntenaSettings(int[] Settings)
     {
-        if (_client != null && isConnected())
+        if (_clientCMD != null && isConnected())
         {
-            _client.WriteLine("NB");
+            _clientCMD.WriteLine("NB");
         }
     }
 
@@ -358,7 +385,7 @@ public class HSPClient
     /// <returns> True if it is connected to the HSP.</returns>
     public bool isConnected()
     {
-        var connected = _client != null && _client.IsConnected;
+        var connected = _clientCMD != null && _clientCMD.IsConnected;
         connectionStatusChanged?.Invoke(connected);
         return connected;
     }
@@ -370,10 +397,10 @@ public class HSPClient
     /// <returns> string array containing the count followed by the messages reviced.</returns>
     public string[] getBufferCount()
     {
-        if (_client != null && isConnected())
+        if (_clientCMD != null && isConnected())
         {
             var message = readServerMSg();
-            _client.WriteLine("GETBUFFERCOUNT\n");
+            _clientCMD.WriteLine("GETBUFFERCOUNT\n");
             var result = readServerMSg();
             message += result;
             result = result is not null ? result : "";
@@ -408,9 +435,9 @@ public class HSPClient
     /// <returns>Server response</returns>
     public string EngageHSP()
     {
-        if (_client != null && isConnected())
+        if (_clientCMD != null && isConnected())
         {
-            _client.WriteLine("ENGAGE");
+            _clientCMD.WriteLine("ENGAGE");
             return readServerMSg();
         }
 
@@ -427,9 +454,9 @@ public class HSPClient
     /// <returns>Server response</returns>
     public string disengageHSP()
     {
-        if (_client != null && isConnected())
+        if (_clientCMD != null && isConnected())
         {
-            _client.WriteLine("DISENGAGE");
+            _clientCMD.WriteLine("DISENGAGE");
             return readServerMSg();
         }
 
@@ -443,9 +470,9 @@ public class HSPClient
     /// <returns>Server Message</returns>
     public string resetbuffer()
     {
-        if (_client != null && isConnected())
+        if (_clientCMD != null && isConnected())
         {
-            _client.WriteLine("RESETBUFFER");
+            _clientCMD.WriteLine("RESETBUFFER");
             return readServerMSg();
         }
 
@@ -459,14 +486,80 @@ public class HSPClient
     /// <returns>User command followed</returns>
     public string writeUsrCMD(string cmd)
     {
-        if (_client != null && isConnected())
+        if (_clientCMD != null && isConnected())
         {
-            _client.WriteLine($"{cmd}");
+            _clientCMD.WriteLine($"{cmd}");
             var message = readServerMSg();
             Task.Delay(100).Wait();
             return message + "\n" + readServerMSg();
         }
 
         return "Not connected to HSP";
+    }
+    public void disconect()
+    {
+        if (_clientCMD is not null) {
+            _clientCMD.Dispose(); }
+        if (_clientDATA is not null)
+        {
+            _clientDATA.Dispose();
+        }
+        if (_clientDATA is not null)
+        {
+            _clientDATA.Dispose();
+        }
+        if (_clientDIAG is not null)
+        {
+            _clientDIAG.Dispose();
+        }
+
+    }
+
+    public async Task readDialogPorts()
+    {
+        var oldDataBuffer = dataBuffer;
+        dataBuffer = await readClient(_clientDATA, data,48);        
+        dataUpdated?.Invoke(dataBuffer != oldDataBuffer);
+        var oldDialogBuffer = dialogbuffer;
+        dialogbuffer = await readClient(_clientDIAG, dialog,300);
+        dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer);
+        await Task.Delay(10);
+        dialogUpdated?.Invoke(false);
+        dataUpdated?.Invoke(false);
+    }
+    private async Task<string> readClient(TelnetConnection? client, Queue<string> queue, int quesize)
+    {
+        if (client is not null)
+        {
+            string? msg = null;
+            try
+            {
+               msg = client.Read();
+            }
+            catch { }
+            if (msg != null) {
+                await Task.Run(() =>
+                {
+                    var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
+                    foreach (var line in newLines)
+                    {
+                        var item = line.Trim();
+                        if (item != "")
+                        {
+                            queue.Enqueue(item);
+                        }                        
+                        while (queue.Count > quesize)
+                        {
+                            queue.Dequeue();
+                        }
+                    }
+                    
+                    msg = string.Join("\n", queue);
+                });
+                return msg;
+            }
+
+        }
+        return "";
     }
 }

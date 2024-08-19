@@ -1,4 +1,6 @@
-﻿namespace HSPGUI;
+﻿using PrimS.Telnet;
+
+namespace HSPGUI;
 /// <summary>
 /// The App class is the main application class for a .NET MAUI application.
 /// It initializes the main page and sets up the HSP client.
@@ -37,6 +39,44 @@ public partial class App : Application
         if (!Preferences.ContainsKey(Constants.KeyPort)) // Set to the HSP Default port
         {
             Preferences.Set(Constants.KeyPort, Constants.Port);
+        }
+        if (Preferences.ContainsKey(Constants.KeyPortDATA))
+        {
+            Preferences.Set(Constants.KeyPortDATA, Constants.PortDATA);
+        }
+        if (Preferences.ContainsKey(Constants.KeyPortDIAG))
+        {
+            Preferences.Set(Constants.KeyPortDIAG, Constants.PortDIAG);
+        }
+
+
+        var _ = StartReadingPortsAsync();
+    }
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var window = base.CreateWindow(activationState);
+        window.Destroying += OnAppClosing;
+        return window;
+    }
+
+    private void OnAppClosing(object? sender, EventArgs e)
+    {
+        // Your code to run when the app is closing
+        Debug.WriteLine("App is closing. Running cleanup code...");
+        _client.disconect();
+        System.Diagnostics.Debug.WriteLine("closing Connections");
+    }
+    async Task StartReadingPortsAsync()
+    {
+        //System.Diagnostics.Debug.WriteLine("reading clinet");
+        while (true)
+        {
+            if (_client != null && _client.isConnected())
+            {
+                //System.Diagnostics.Debug.WriteLine("reading clinet");
+                await _client.readDialogPorts();
+            }
+            await Task.Delay(1000); // Wait for 1 second
         }
     }
 }

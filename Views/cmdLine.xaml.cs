@@ -53,7 +53,10 @@ public partial class cmdLine : ContentPage
 
         if (client != null)
         {
-            dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
+            string IPAddress = Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress);
+            dialog.Text = client.connectToHSP(IPAddress, Preferences.Get(Constants.KeyPort, Constants.Port),
+                                                Preferences.Get(Constants.KeyPortDIAG,Constants.PortDIAG),
+                                                Preferences.Get(Constants.KeyPortDATA,Constants.PortDATA));
             // System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
             if (client.isConnected() == false)
             {

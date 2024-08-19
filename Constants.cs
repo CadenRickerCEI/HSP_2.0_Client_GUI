@@ -25,7 +25,23 @@
         /// The default port for the HSP server.
         /// </summary>
         public const int Port = 5000;
+        /// <summary>
+        /// The key for storing the port in preferences.
+        /// </summary>
+        public const string KeyPortDATA = "PortDATA";
 
+        /// <summary>
+        /// The default port for the HSP server.
+        /// </summary>
+        public const int PortDATA = 5001;
+        /// <summary>
+        /// The key for storing the port in preferences.
+        /// </summary>
+        public const string KeyPortDIAG= "PortDIAG";
+        /// <summary>
+        /// The default port for the HSP server.
+        /// </summary>
+        public const int PortDIAG = 5003;
         /// <summary>
         /// The maximum number of hexadecimal digits for the EPC (Electronic Product Code).
         /// </summary>
