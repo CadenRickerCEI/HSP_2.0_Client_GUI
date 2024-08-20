@@ -21,7 +21,9 @@ public partial class NetworkConfig : ContentPage
         octet2.Text = octets[1];
         octet3.Text = octets[2];
         octet4.Text = octets[3];
-        port.Text = Preferences.Get(Constants.KeyPort, Constants.Port).ToString();
+        portCMD.Text = Preferences.Get(Constants.KeyPort, Constants.Port).ToString();
+        portDIAG.Text = Preferences.Get(Constants.KeyPortDIAG, Constants.PortDIAG).ToString();
+        portDATA.Text = Preferences.Get(Constants.KeyPortDATA, Constants.PortDATA).ToString();
     }
 
     /// <summary>
@@ -54,7 +56,7 @@ public partial class NetworkConfig : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
-    private void octet4_Completed(object sender, EventArgs e) => port.Focus();
+    private void octet4_Completed(object sender, EventArgs e) => portCMD.Focus();
 
     /// <summary>
     /// Event handler for the Clicked event of the Save button.
@@ -69,15 +71,18 @@ public partial class NetworkConfig : ContentPage
         var octet2_int = (octet2.Text == null) ? -1 : int.Parse(octet2.Text);
         var octet3_int = (octet3.Text == null) ? -1 : int.Parse(octet3.Text);
         var octet4_int = (octet4.Text == null) ? -1 : int.Parse(octet4.Text);
-        var port_int = (port.Text == null) ? -1 : int.Parse(port.Text);
-        System.Diagnostics.Debug.WriteLine($"{octet1_int}.{octet2_int}.{octet3_int}.{octet4_int} port {port_int}");
+        var portCMD_int = (portCMD.Text == null) ? -1 : int.Parse(portCMD.Text);
+        var portDATA_int = (portDATA.Text == null) ? -1 : int.Parse(portDATA.Text);
+        var portDIAG_int = (portDIAG.Text == null) ? -1 : int.Parse(portDIAG.Text);
+        System.Diagnostics.Debug.WriteLine($"{octet1_int}.{octet2_int}.{octet3_int}.{octet4_int} port {portCMD_int}");
 
         if (octet1_int >= 0 && octet1_int < 256 && octet2_int >= 0 && octet2_int < 256 &
             octet3_int >= 0 && octet3_int < 256 && octet4_int > 0 && octet4_int < 256 &
-            port_int >= 0 && port_int < 65535)
+            portCMD_int >= 0 && portCMD_int < 65535 && portDATA_int >= 0 && portDATA_int < 65535 &&
+            portDIAG_int >= 0 && portDIAG_int < 65535)
         {
             Preferences.Set(Constants.KeyIpAddress, octet1.Text + "." + octet2.Text + "." + octet3.Text + "." + octet4.Text);
-            Preferences.Set(Constants.KeyPort, port_int);
+            Preferences.Set(Constants.KeyPort, portCMD_int);
         }
         else
         {
@@ -101,4 +106,13 @@ public partial class NetworkConfig : ContentPage
             entry.SelectionLength = entry.Text.Length;
         }
     }
+    private void portCMD_Completed(object sender, EventArgs e)
+    {
+        portDATA.Focus();
+    }
+    private void portDATA_Completed(object sender, EventArgs e)
+    {
+        portDIAG.Focus();
+    }
+    
 }

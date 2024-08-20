@@ -37,10 +37,10 @@ public partial class StatusPage : ContentPage
         InitializeComponent();
         if (client != null)
         {
-            dialogData.Text = client.dialogbuffer;
-            dialogData.CursorPosition += dialogData.Text.Length;
+            dialogData.Text = client.dataBuffer;            
             dialogDIAG.Text = client.dialogbuffer;
-            dialogDIAG.CursorPosition += dialogDIAG.Text.Length+1000000000;
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
+            var i = scrollDATA.ScrollToAsync(0, dialogData.Height, true);
         }
     }
     /// <summary>
@@ -55,10 +55,10 @@ public partial class StatusPage : ContentPage
     private void dialogDialogUpdtated(bool updated)
     {
         if (updated && client != null)
-        {
+        {            
             dialogDIAG.Text = client.dialogbuffer;
-            dialogDIAG.CursorPosition += dialogDIAG.Text.Length+10000;
-            
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, false);
+
         }
     }
     private void dialogDataUpdtated(bool updated)
@@ -66,7 +66,7 @@ public partial class StatusPage : ContentPage
         if (updated && client != null)
         {
             dialogData.Text = client.dataBuffer;
-            dialogData.CursorPosition +=dialogData.Text.Length;
+            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height, false); 
         }
     }
     /// <summary>

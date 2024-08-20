@@ -65,17 +65,29 @@
             HorizontalOptions="FillAndExpand"
             Text="Create Sample File" />
 
-        <ScrollView Orientation="Vertical" MaximumHeightRequest="200">
+        <ScrollView MaximumHeightRequest="200" Orientation="Vertical">
             <Editor
                 x:Name="dialog"
                 Margin="10"
                 AutoSize="TextChanges"
                 HorizontalOptions="FillAndExpand"
                 IsReadOnly="True"
-                VerticalOptions="FillAndExpand" 
-                />
+                VerticalOptions="FillAndExpand" />
         </ScrollView>
-
+        
+        <Label
+            FontSize="Subtitle"
+            HorizontalOptions="CenterAndExpand"
+            Text="Dialog" />
+        <Frame Margin="5">
+            <ScrollView
+                x:Name="scrollDIAG"
+                MaximumHeightRequest="75"
+                MinimumHeightRequest="75">
+                <Label x:Name="dialogDIAG" />
+            </ScrollView>
+        </Frame>
+        
     </StackLayout>
 
 </ContentPage>

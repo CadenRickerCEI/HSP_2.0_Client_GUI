@@ -18,7 +18,7 @@ public class HSPClient
     private TelnetConnection? _clientCMD;
     private TelnetConnection? _clientDATA; //5001
     private TelnetConnection? _clientDIAG; //5003
-
+    private bool busy;
     /// <summary>
     /// Occurs when the connection status changes.
     /// </summary>
@@ -54,6 +54,7 @@ public class HSPClient
         _clientCMD = null;
         _clientDATA = null;
         _clientDIAG = null;
+        busy = false;
     }
     /// <summary>
     /// Gets the single instance of the HSPClient class.
@@ -97,7 +98,7 @@ public class HSPClient
             _clientDIAG = new TelnetConnection(IPAddress, PortDiag);
             _clientDATA = new TelnetConnection(IPAddress, PortDATA);
             connectionStatusChanged?.Invoke(isConnected());
-            
+            busy = false;
             return readServerMSg();
         }
         catch
@@ -139,6 +140,7 @@ public class HSPClient
     /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
     public async Task<string> GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
     {
+        busy = true;
         string HSPResponse = "Generate File Failed";
 
         if (_clientCMD != null && _clientCMD.IsConnected)
@@ -181,24 +183,26 @@ public class HSPClient
                 }
                 catch
                 {
+                    busy = false;
                     return "Connection Lost";
                 }
 
                 string result = readServerMSg();
-                // System.Diagnostics.Debug.Write($"{result}");
+                //System.Diagnostics.Debug.Write($"{result}");
 
-                if (result != null && result.Contains("GENERATED 0 RECORDS"))
+                if (result.Contains("GENERATED 0 RECORDS"))
                 {
                     HSPResponse += result + "\n";
                 }
                 else
                 {
-                    await Task.Delay(1000);//Delay to give the HSP a chance to process the data. 
-                    HSPResponse += result == ""? "":$"{result}\n"+ readServerMSg() + "\n";
+                    await Task.Delay(2000);//Delay to give the HSP a chance to process the data. 
+                    var result2 = readServerMSg();                    
+                    HSPResponse += result == ""? "":$"{result}\n"+ result2 != result ? $"{result2}\n":"";
                 }
             }
         }
-
+        busy = false;
         return HSPResponse;
     }
 
@@ -212,7 +216,7 @@ public class HSPClient
     public async Task<string> LoadFromFile(string file, IProgress<double> progress, bool resetBuffer, LoadFromFilePage page)
     {
         string HSPInfo = "";
-
+        busy = true;
         if (resetBuffer)
         {
             if (_clientCMD is not null && isConnected())
@@ -223,6 +227,7 @@ public class HSPClient
                 }
                 catch
                 {
+                    busy = false;
                     return connectionLost;
                 }
 
@@ -254,10 +259,10 @@ public class HSPClient
                         if (errMessage != "")
                         {
                             // System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
+                            busy = false;
                             return $"File loading halted.\nError on Line {i}\n {dataTypes[j]} {errMessage}\n";
                         }
                     }
-
                     command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] + "," : "";
                 }
 
@@ -278,12 +283,14 @@ public class HSPClient
                         }
                         catch
                         {
+                            busy = false;
                             return connectionLost;
                         }
                     }
                 }
                 else
                 {
+                    busy = false;
                     return $"Line {i} is Empty or invalid";
                 }
 
@@ -315,11 +322,13 @@ public class HSPClient
 
             progress.Report(1.0);
             System.Diagnostics.Debug.WriteLine("completed loading");
+            busy = false;
             return "";
         }
         catch (Exception e)
         {
             System.Diagnostics.Debug.WriteLine(e.ToString());
+            busy = false;
             return "File is missing, open in another program, or empty.";
         }
     }
@@ -517,15 +526,19 @@ public class HSPClient
 
     public async Task readDialogPorts()
     {
-        var oldDataBuffer = dataBuffer;
-        dataBuffer = await readClient(_clientDATA, data,48);        
-        dataUpdated?.Invoke(dataBuffer != oldDataBuffer);
-        var oldDialogBuffer = dialogbuffer;
-        dialogbuffer = await readClient(_clientDIAG, dialog,300);
-        dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer);
-        await Task.Delay(10);
-        dialogUpdated?.Invoke(false);
-        dataUpdated?.Invoke(false);
+        busy = false;
+        if (!busy)
+        {
+            var oldDataBuffer = dataBuffer;
+            dataBuffer = await readClient(_clientDATA, data, 48);
+            dataUpdated?.Invoke(dataBuffer != oldDataBuffer);
+            var oldDialogBuffer = dialogbuffer;
+            dialogbuffer = await readClient(_clientDIAG, dialog, 300);
+            dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer);
+            await Task.Delay(10);
+            dialogUpdated?.Invoke(false);
+            dataUpdated?.Invoke(false);
+        }        
     }
     private async Task<string> readClient(TelnetConnection? client, Queue<string> queue, int quesize)
     {

@@ -11,9 +11,9 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <StackLayout>
-        <Frame Margin="5" CornerRadius="5" >
+        <Frame Margin="5" CornerRadius="5">
             <StackLayout>
-                <Label                    
+                <Label
                     FontSize="Subtitle"
                     HorizontalOptions="FillAndExpand"
                     Text="IP Address For HSP"
@@ -21,7 +21,6 @@
 
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -32,9 +31,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        
+
                     </Grid.ColumnDefinitions>
                     <Entry
                         x:Name="octet1"
@@ -92,7 +89,7 @@
                         Grid.Column="5"
                         Margin="10"
                         Text="."
-                        VerticalOptions="Center"  />
+                        VerticalOptions="Center" />
                     <Entry
                         x:Name="octet4"
                         Grid.Row="0"
@@ -100,32 +97,73 @@
                         Completed="octet4_Completed"
                         Focused="focused"
                         Keyboard="Numeric"
-                        MaxLength="3" >
+                        MaxLength="3">
                         <Entry.Behaviors>
                             <local:OctetValidationBehavior />
                         </Entry.Behaviors>
                     </Entry>
+                </Grid>
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <Label
                         Grid.Row="0"
-                        Grid.Column="7"
-                        Margin="10"
-                        Text="Port"
-                        VerticalOptions="Center" />
-                    <Entry
-                        x:Name="port"
-                        Grid.Row="0"
-                        Grid.Column="8"
-                        Focused="focused"
-                        Keyboard="Numeric"                        
-                        MaxLength="4" />
-                    <Button
-                        Grid.Row="1"
                         Grid.Column="0"
-                        Grid.ColumnSpan="9"
-                        Margin="0,10,0,0"
-                        Clicked="Button_Clicked"
-                        Text="Update IP Address" />
+                        Margin="10"
+                        Text="Command Port"
+                        VerticalOptions="Center" 
+                        HorizontalOptions="End"/>
+                    <Entry
+                        x:Name="portCMD"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Completed="portCMD_Completed"
+                        Focused="focused"
+                        Keyboard="Numeric"
+                        MaxLength="4" />
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Margin="10"
+                        Text="Data Port"
+                        VerticalOptions="Center"
+                        HorizontalOptions="End"/>
+                    <Entry
+                        x:Name="portDATA"
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        Completed="portDATA_Completed"
+                        Focused="focused"
+                        Keyboard="Numeric"
+                        MaxLength="4" />
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="4"
+                        Text="Dialog Port"
+                        Margin="10"
+                        VerticalOptions="Center" 
+                        HorizontalOptions="End"/>
+                    <Entry
+                        x:Name="portDIAG"
+                        Grid.Row="0"
+                        Grid.Column="5"
+                        Focused="focused"
+                        Keyboard="Numeric"
+                        MaxLength="4" />
                 </Grid>
+                <Button
+                    Margin="0,10,0,0"
+                    Clicked="Button_Clicked"
+                    Text="Update IP Address" />
             </StackLayout>
         </Frame>
     </StackLayout>

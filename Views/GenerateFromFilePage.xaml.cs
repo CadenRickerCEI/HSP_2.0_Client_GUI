@@ -72,7 +72,7 @@ public partial class GenerateFromFilePage : ContentPage
         if (client != null)
         {
             dialogDIAG.Text = client.dialogbuffer;
-            dialogDIAG.CursorPosition += dialogDIAG.Text.Length;
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
         }
     }
     /// <summary>
@@ -275,7 +275,7 @@ public partial class GenerateFromFilePage : ContentPage
 
             if (client != null)
             {
-                dialog.Text = await client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
+                var _ = await client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
             }
         }
         else
@@ -383,7 +383,7 @@ public partial class GenerateFromFilePage : ContentPage
         if (updated && client != null)
         {
             dialogDIAG.Text = client.dialogbuffer;
-            dialogDIAG.CursorPosition += dialogDIAG.Text.Length;
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height ,true);
         }
     }
 

@@ -21,6 +21,8 @@ public partial class LoadFromFilePage : ContentPage
     /// </summary>
     private Progress<double> _progress;
     private CancellationTokenSource cancellationTokenSource;
+
+
     /// <summary>
     /// The constructor for the LoadFromFilePage class. It initializes the client field,
     /// sets up the progress tracking, and configures the UI elements.
@@ -32,11 +34,16 @@ public partial class LoadFromFilePage : ContentPage
         cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
         loadFileBtn.IsVisible = false;
-
+        client.dialogUpdated += dialogDialogUpdtated;
         _progress.ProgressChanged += (s, e) =>
         {
             progressBar.Progress = e;
         };
+        if (client != null)
+        {
+            dialogDIAG.Text = client.dialogbuffer;
+            scrollDIAG.ScrollToAsync(0,dialogDIAG.Height,true);
+        }
     }
     /// <summary>
     /// Event handler for the Open File button click event. It allows the user to select a CSV file
@@ -185,5 +192,13 @@ public partial class LoadFromFilePage : ContentPage
         {
             dialog.Text = input;
         });
+    }
+    private void dialogDialogUpdtated(bool updated)
+    {
+        if (updated && client != null)
+        {
+            dialogDIAG.Text = client.dialogbuffer;
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
+        }
     }
 }

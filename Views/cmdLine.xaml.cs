@@ -92,4 +92,21 @@ public partial class cmdLine : ContentPage
             dialog.Text = "Not connected";
         }
     }
+    private void dialogDialogUpdtated(bool updated)
+    {
+        if (updated && client != null)
+        {
+            dialogDIAG.Text = client.dialogbuffer;
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, false);
+
+        }
+    }
+    private void dialogDataUpdtated(bool updated)
+    {
+        if (updated && client != null)
+        {
+            dialogData.Text = client.dataBuffer;
+            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height, false);
+        }
+    }
 }

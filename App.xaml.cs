@@ -40,11 +40,11 @@ public partial class App : Application
         {
             Preferences.Set(Constants.KeyPort, Constants.Port);
         }
-        if (Preferences.ContainsKey(Constants.KeyPortDATA))
+        if (!Preferences.ContainsKey(Constants.KeyPortDATA))
         {
             Preferences.Set(Constants.KeyPortDATA, Constants.PortDATA);
         }
-        if (Preferences.ContainsKey(Constants.KeyPortDIAG))
+        if (!Preferences.ContainsKey(Constants.KeyPortDIAG))
         {
             Preferences.Set(Constants.KeyPortDIAG, Constants.PortDIAG);
         }

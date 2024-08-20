@@ -194,20 +194,20 @@
             Clicked="GenerateFileClicked"
             HorizontalOptions="FillAndExpand"
             Text="Save Tag Data to File" />
-        <Label
-            FontSize="Subtitle"
-            HorizontalOptions="CenterAndExpand"
-            Text="Command Dialog" />
-        <Editor x:Name="dialog" IsReadOnly="True" MaximumHeightRequest="50" />
+
         <Label
             FontSize="Subtitle"
             HorizontalOptions="CenterAndExpand"
             Text="Dialog" />
-        <Editor
-            x:Name="dialogDIAG"
-            Margin="5"
-            IsReadOnly="True"
-            MaximumHeightRequest="200"
-            MinimumHeightRequest="200" />
+        <Frame Margin="5">
+            <ScrollView
+                x:Name="scrollDIAG"
+                MaximumHeightRequest="75"
+                MinimumHeightRequest="75">
+                <Label x:Name="dialogDIAG" />
+            </ScrollView>
+        </Frame>
+
+
     </StackLayout>
 </ContentPage>

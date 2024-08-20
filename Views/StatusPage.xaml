@@ -81,6 +81,7 @@
                 Grid.Row="6"
                 Grid.ColumnSpan="2"
                 Margin="5"
+                AutoSize="Disabled"
                 IsReadOnly="True"
                 MinimumHeightRequest="50" />
             <Label
@@ -89,28 +90,30 @@
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
                 Text="Data Dialog" />
-            <Editor
-                x:Name="dialogData"
-                Grid.Row="8"
-                Grid.ColumnSpan="2"
-                Margin="5"
-                IsReadOnly="True"
-                MaximumHeightRequest="245"
-                MinimumHeightRequest="245" />
+            <Frame Grid.Row="8" Grid.ColumnSpan="2">
+                <ScrollView
+                    x:Name="scrollDATA"
+                    MaximumHeightRequest="115"
+                    MinimumHeightRequest="115">
+                    <Label x:Name="dialogData" />
+                </ScrollView>
+            </Frame>
+
             <Label
                 Grid.Row="9"
                 Grid.ColumnSpan="3"
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
                 Text="Dialog" />
-            <Editor
-                x:Name="dialogDIAG"
-                Grid.Row="10"
-                Grid.ColumnSpan="2"
-                Margin="5"
-                IsReadOnly="True"
-                MaximumHeightRequest="130"
-                MinimumHeightRequest="130" />
+            <Frame Grid.Row="10" Grid.ColumnSpan="2">
+                <ScrollView
+                    x:Name="scrollDIAG"
+                    MaximumHeightRequest="135"
+                    MinimumHeightRequest="135">
+                    <Label x:Name="dialogDIAG" />
+                </ScrollView>
+            </Frame>
+
         </Grid>
     </StackLayout>
 
