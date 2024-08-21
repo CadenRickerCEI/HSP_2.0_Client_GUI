@@ -76,14 +76,13 @@
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
                 Text="HSP Command Dialog" />
-            <Editor
-                x:Name="dialog"
-                Grid.Row="6"
-                Grid.ColumnSpan="2"
-                Margin="5"
-                AutoSize="Disabled"
-                IsReadOnly="True"
-                MinimumHeightRequest="50" />
+            <Frame Grid.Row="6" Grid.ColumnSpan="2" Margin="5" MinimumHeightRequest="50">
+                <ScrollView x:Name="scrollCMD" MaximumHeightRequest="100">
+                    <Label
+                        x:Name="dialog"                        
+                         />
+                </ScrollView>
+            </Frame>
             <Label
                 Grid.Row="7"
                 Grid.ColumnSpan="3"

@@ -41,6 +41,7 @@ public partial class StatusPage : ContentPage
             dialogDIAG.Text = client.dialogbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
             var i = scrollDATA.ScrollToAsync(0, dialogData.Height, true);
+            var j = scrollCMD.ScrollToAsync(0, dialog.Height, true);
         }
     }
     /// <summary>
@@ -57,7 +58,7 @@ public partial class StatusPage : ContentPage
         if (updated && client != null)
         {            
             dialogDIAG.Text = client.dialogbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, false);
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
 
         }
     }
@@ -66,7 +67,7 @@ public partial class StatusPage : ContentPage
         if (updated && client != null)
         {
             dialogData.Text = client.dataBuffer;
-            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height, false); 
+            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height+scrollDATA.Height, true); 
         }
     }
     /// <summary>
@@ -81,7 +82,7 @@ public partial class StatusPage : ContentPage
         var orignalBtnText = connectionBtn.Text;
         connectionBtn.Text = "Connnecting to HSP";
         await Task.Delay(10);
-        connectToServer();
+        await connectToServer();
         connectionBtn.Text = orignalBtnText;
 
         if (client != null && client.isConnected() == false)
@@ -90,7 +91,7 @@ public partial class StatusPage : ContentPage
             loadingIndicator.IsRunning = false;
             loadingIndicator.IsVisible = false;
 
-            if (tryAgain) connectToServer();
+            if (tryAgain) await connectToServer();
             else
             {
                 connectionBtn.IsVisible = true;
@@ -107,7 +108,7 @@ public partial class StatusPage : ContentPage
     /// Asynchronously attempts to connect to the HSP server using the IP address and port
     /// stored in preferences. Displays an alert if the connection fails and offers to retry.
     /// </summary>
-    public void connectToServer()
+    public async Task connectToServer()
     {
         loadingIndicator.IsVisible = true;
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
@@ -120,10 +121,10 @@ public partial class StatusPage : ContentPage
             int portDIAG = Preferences.Get(Constants.KeyPortDIAG, Constants.PortDIAG);
             int portData = Preferences.Get(Constants.KeyPortDATA, Constants.PortDATA);
             var message = "";
-
+            await Task.Delay(10);
             try
             {
-                message = client.connectToHSP(IPAdrress, port, portDIAG, portData );
+                message = await client.connectToHSP(IPAdrress, port, portDIAG, portData );
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
@@ -132,7 +133,7 @@ public partial class StatusPage : ContentPage
 
             dialog.Text = message;
         }
-
+        var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
         loadingIndicator.IsRunning = false;
         loadingIndicator.IsVisible = false;
     }
@@ -154,11 +155,11 @@ public partial class StatusPage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void GetBufferCount(object sender, EventArgs e)
+    private async void GetBufferCount(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            var result = client.getBufferCount();
+            var result = await client.getBufferCount();
             bufferCount.Text = result[0];
             dialog.Text = result[1];
         }
@@ -167,6 +168,7 @@ public partial class StatusPage : ContentPage
             bufferCount.Text = "-1";
             dialog.Text = "Count invalid not connected";
         }
+        var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
     }
 
     /// <summary>
@@ -178,11 +180,12 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private void EnagedHSP(object sender, EventArgs e)
+    private async void EnagedHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            dialog.Text = client.EngageHSP();
+            dialog.Text = await client.EngageHSP();
+            var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
         }
     }
 
@@ -195,11 +198,12 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private void DisengageHSP(object sender, EventArgs e)
+    private async void DisengageHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            dialog.Text = client.disengageHSP();
+            dialog.Text = await client.disengageHSP();
+            var _ = scrollCMD.ScrollToAsync(0, dialog.Height , true);
         }
     }
 
@@ -233,11 +237,11 @@ public partial class StatusPage : ContentPage
             if (_isRunning)
             {
                 // Your periodic function logic here
-                Dispatcher.Dispatch(() =>
+                Dispatcher.Dispatch(async () =>
                 {
                     if (client != null && client.isConnected())
                     {
-                        var result = client.getBufferCount();
+                        var result = await client.getBufferCount();
                         bufferCount.Text = result[0];
                         dialog.Text = result[1];
                         connectionBtn.IsVisible = false;
@@ -250,11 +254,10 @@ public partial class StatusPage : ContentPage
                         bufferCount.Text = "0";
                         dialog.Text = "Count invalid not connected";
                     }
+                    var _ = scrollCMD.ScrollToAsync(0,dialog.Height,true);
                 });
-
                 return true; // Repeat again
             }
-
             return false; // Stop repeating
         });
     }

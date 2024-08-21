@@ -42,7 +42,9 @@ public partial class LoadFromFilePage : ContentPage
         if (client != null)
         {
             dialogDIAG.Text = client.dialogbuffer;
-            scrollDIAG.ScrollToAsync(0,dialogDIAG.Height,true);
+            dialog.Text = client.cmdbuffer;
+            scrollDIAG.ScrollToAsync(0,dialogDIAG.Height ,true);
+            scrollCMD.ScrollToAsync(0,dialog.Height,true);
         }
     }
     /// <summary>
@@ -191,6 +193,7 @@ public partial class LoadFromFilePage : ContentPage
         MainThread.BeginInvokeOnMainThread(() =>
         {
             dialog.Text = input;
+            scrollCMD.ScrollToAsync(0, dialog.Height , true);
         });
     }
     private void dialogDialogUpdtated(bool updated)

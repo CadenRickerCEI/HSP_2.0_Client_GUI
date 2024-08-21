@@ -64,17 +64,17 @@
             Clicked="createSample"
             HorizontalOptions="FillAndExpand"
             Text="Create Sample File" />
+        <Label
+            FontSize="Subtitle"
+            HorizontalOptions="CenterAndExpand"
+            Text="Command Dialog" />
 
-        <ScrollView MaximumHeightRequest="200" Orientation="Vertical">
-            <Editor
-                x:Name="dialog"
-                Margin="10"
-                AutoSize="TextChanges"
-                HorizontalOptions="FillAndExpand"
-                IsReadOnly="True"
-                VerticalOptions="FillAndExpand" />
-        </ScrollView>
-        
+        <Frame Margin="5">
+            <ScrollView MaximumHeightRequest="100" MinimumHeightRequest="100" x:Name="scrollCMD">
+                <Label x:Name="dialog" />
+            </ScrollView>
+        </Frame>
+            
         <Label
             FontSize="Subtitle"
             HorizontalOptions="CenterAndExpand"
@@ -87,7 +87,7 @@
                 <Label x:Name="dialogDIAG" />
             </ScrollView>
         </Frame>
-        
+
     </StackLayout>
 
 </ContentPage>

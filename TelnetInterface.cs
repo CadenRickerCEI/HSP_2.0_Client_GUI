@@ -25,7 +25,14 @@ namespace MinimalisticTelnet
 
         public TelnetConnection(string hostname, int port)
         {
-            tcpSocket = new TcpClient(hostname, port);
+            try
+            {
+                tcpSocket = new TcpClient(hostname, port);
+            }
+            catch (Exception ex) { 
+               throw ex;
+            }
+            
         }
 
 

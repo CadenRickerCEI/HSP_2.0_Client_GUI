@@ -26,16 +26,11 @@
                 FontSize="Subtitle"
                 HorizontalOptions="Center"
                 Text="HSP Dialog" />
-            <Editor
-                x:Name="dialog"
-                Margin="10"
-                IsReadOnly="True"
-                MinimumHeightRequest="100" />
-            <Label
-                Margin="5"
-                FontSize="Subtitle"
-                HorizontalOptions="Center"
-                Text="Commands" />
+            <Frame>
+                <ScrollView x:Name="scrollCMD" MaximumHeightRequest="100" MinimumHeightRequest="100">
+                    <Label x:Name="dialog" />
+                </ScrollView>
+            </Frame>    
             <Label
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
@@ -61,6 +56,11 @@
                 </ScrollView>
             </Frame>
         </StackLayout>
+        <Label
+            Margin="5"
+            FontSize="Subtitle"
+            HorizontalOptions="Center"
+            Text="Commands" />
         <ScrollView
             HorizontalOptions="FillAndExpand"
             MaximumHeightRequest="110"

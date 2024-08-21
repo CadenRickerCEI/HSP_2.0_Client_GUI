@@ -26,6 +26,15 @@ public partial class cmdLine : ContentPage
 
         // Set the visibility of the stack layout based on the connection button's visibility
         StackLayout.IsVisible = !connectionBtn.IsVisible;
+        if (client != null)
+        {
+            dialogData.Text = client.dataBuffer;
+            dialogDIAG.Text = client.dialogbuffer;
+            dialog.Text = client.cmdbuffer;
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
+            var i = scrollDATA.ScrollToAsync(0, dialogData.Height, true);
+            var j = scrollCMD.ScrollToAsync(0, dialog.Height, true);
+        }
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -42,26 +51,27 @@ public partial class cmdLine : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public void connectBtnClicked(object sender, EventArgs args) => connectToServer();
+    public async void connectBtnClicked(object sender, EventArgs args) => await connectToServer();
 
     /// <summary>
     /// connnects to the server. If the connection fails it will display an alert.
     /// </summary>
-    public async void connectToServer()
+    public async Task connectToServer()
     {
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
 
         if (client != null)
         {
             string IPAddress = Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress);
-            dialog.Text = client.connectToHSP(IPAddress, Preferences.Get(Constants.KeyPort, Constants.Port),
+            dialog.Text = await client.connectToHSP(IPAddress, Preferences.Get(Constants.KeyPort, Constants.Port),
                                                 Preferences.Get(Constants.KeyPortDIAG,Constants.PortDIAG),
                                                 Preferences.Get(Constants.KeyPortDATA,Constants.PortDATA));
+            var _ =scrollCMD.ScrollToAsync(0,dialog.Height+10,true);
             // System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
             if (client.isConnected() == false)
             {
                 var tryAgain = await DisplayAlert("Connection Error", "Connection to HSP failed. Try again?", "Try Again", "Cancel");
-                if (tryAgain) connectToServer();
+                if (tryAgain) await connectToServer();
             }
         }
     }
