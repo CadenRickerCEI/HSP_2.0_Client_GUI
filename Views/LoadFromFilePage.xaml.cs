@@ -177,7 +177,6 @@ public partial class LoadFromFilePage : ContentPage
         // Convert the CSV string to bytes
         var csvBytes = Encoding.UTF8.GetBytes(csv.ToString());
         using var stream = new MemoryStream(csvBytes);
-
         {
             var result = await FileSaver.Default.SaveAsync("LoadFileSample.csv",
                                                             stream, cancellationTokenSource.Token);

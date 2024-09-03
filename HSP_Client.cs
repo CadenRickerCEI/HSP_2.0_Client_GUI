@@ -94,7 +94,6 @@ public class HSPClient
                     }
                 }
             }
-
             return _instance;
         }
     }
@@ -507,6 +506,7 @@ public class HSPClient
         if (_clientCMD != null && isConnected())
         {
             _clientCMD.WriteLine($"{cmd}");
+            cmdQueue.Enqueue($"USER_>{cmd}");
             await Task.Delay(100);
             return await readServerMSg(true);
         }

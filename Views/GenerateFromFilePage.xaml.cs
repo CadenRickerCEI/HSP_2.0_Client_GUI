@@ -9,7 +9,7 @@ using CommunityToolkit.Maui.Storage;
 // using Windows.Media.Protection.PlayReady;
 
 /// <summary>
-/// The GenerateFromFilePage class is a Xamarin.Forms ContentPage that provides a user interface
+/// The GenerateFromFilePage class is a xaml.Forms ContentPage that provides a user interface
 /// for generating data from a CSV file and validating user input for various fields.
 /// </summary>
 public partial class GenerateFromFilePage : ContentPage

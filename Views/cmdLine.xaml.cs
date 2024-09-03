@@ -66,7 +66,7 @@ public partial class cmdLine : ContentPage
             dialog.Text = await client.connectToHSP(IPAddress, Preferences.Get(Constants.KeyPort, Constants.Port),
                                                 Preferences.Get(Constants.KeyPortDIAG,Constants.PortDIAG),
                                                 Preferences.Get(Constants.KeyPortDATA,Constants.PortDATA));
-            var _ =scrollCMD.ScrollToAsync(0,dialog.Height+10,true);
+            var _ = scrollCMD.ScrollToAsync(0,dialog.Height+10,true);
             // System.Diagnostics.Debug.WriteLine("Connection Attempt Finished");
             if (client.isConnected() == false)
             {
@@ -82,7 +82,7 @@ public partial class cmdLine : ContentPage
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The event data.</param>
-    private void cmd_Entered(object sender, EventArgs e)
+    private async void cmd_Entered(object sender, EventArgs e)
     {
         // Check if the client is connected
         if (client != null && client.isConnected())
@@ -94,7 +94,7 @@ public partial class cmdLine : ContentPage
             cmd.Text = "";
             // Update the dialog with the user command and the response from the client
             dialog.Text = $"USER_>{cmdText}";
-            dialog.Text = $"{dialog.Text}\n{client.writeUsrCMD(cmdText)}";
+            dialog.Text = $"{await client.writeUsrCMD(cmdText)}";
         }
         else
         {
@@ -108,7 +108,6 @@ public partial class cmdLine : ContentPage
         {
             dialogDIAG.Text = client.dialogbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, false);
-
         }
     }
     private void dialogDataUpdtated(bool updated)
