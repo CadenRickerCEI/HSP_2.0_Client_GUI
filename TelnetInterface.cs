@@ -28,6 +28,11 @@ namespace MinimalisticTelnet
             try
             {
                 tcpSocket = new TcpClient(hostname, port);
+                var clientSocket = tcpSocket.Client;
+                //clientSocket.Blocking = false;
+                clientSocket.SendTimeout = 50;
+                // Set LingerState to ensure the socket is closed immediately
+                //clientSocket.LingerState = new LingerOption(true, 0);
             }
             catch (Exception ex) { 
                throw ex;
@@ -84,8 +89,9 @@ namespace MinimalisticTelnet
             {
                 tcpSocket.GetStream().Write(buf, 0, buf.Length);
             }
-            catch
+            catch(Exception ex) 
             {
+                System.Diagnostics.Debug.WriteLine(ex);
                 return;
             }
         }

@@ -31,9 +31,9 @@ public partial class cmdLine : ContentPage
             dialogData.Text = client.dataBuffer;
             dialogDIAG.Text = client.dialogbuffer;
             dialog.Text = client.cmdbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
-            var i = scrollDATA.ScrollToAsync(0, dialogData.Height, true);
-            var j = scrollCMD.ScrollToAsync(0, dialog.Height, true);
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height+scrollDIAG.Height, false);
+            var i = scrollDATA.ScrollToAsync(0, dialogData.Height+ scrollDATA.Height, false);
+            var j = scrollCMD.ScrollToAsync(0, dialog.Height+scrollCMD.Height, false);
         }
     }
     /// <summary>
@@ -95,6 +95,7 @@ public partial class cmdLine : ContentPage
             // Update the dialog with the user command and the response from the client
             dialog.Text = $"USER_>{cmdText}";
             dialog.Text = $"{await client.writeUsrCMD(cmdText)}";
+            await scrollCMD.ScrollToAsync(0, dialog.Height+scrollCMD.Height,true);
         }
         else
         {
@@ -102,20 +103,35 @@ public partial class cmdLine : ContentPage
             dialog.Text = "Not connected";
         }
     }
+    /// <summary>
+    /// Updates the dialog display if the dialog data has been updated.
+    /// </summary>
+    /// <param name="updated">Indicates whether the dialog data has been updated.</param>
     private void dialogDialogUpdtated(bool updated)
     {
         if (updated && client != null)
         {
+            // Update the dialog display with the new dialog buffer
             dialogDIAG.Text = client.dialogbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, false);
+
+            // Scroll to the bottom of the dialog display
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height+ scrollDIAG.Height, false);
         }
     }
+
+    /// <summary>
+    /// Updates the data display if the data has been updated.
+    /// </summary>
+    /// <param name="updated">Indicates whether the data has been updated.</param>
     private void dialogDataUpdtated(bool updated)
     {
         if (updated && client != null)
         {
+            // Update the data display with the new data buffer
             dialogData.Text = client.dataBuffer;
-            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height, false);
+
+            // Scroll to the bottom of the data display
+            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
         }
     }
 }

@@ -6,7 +6,6 @@ using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Storage;
 using CommunityToolkit.Maui.Storage;
 
-// using Windows.Media.Protection.PlayReady;
 
 /// <summary>
 /// The GenerateFromFilePage class is a xaml.Forms ContentPage that provides a user interface

@@ -26,11 +26,26 @@
                 FontSize="Subtitle"
                 HorizontalOptions="Center"
                 Text="HSP Dialog" />
-            <Frame>
-                <ScrollView x:Name="scrollCMD" MaximumHeightRequest="100" MinimumHeightRequest="100">
+            <Frame Margin="5">
+                <ScrollView
+                    x:Name="scrollCMD"
+                    MaximumHeightRequest="100"
+                    MinimumHeightRequest="100">
                     <Label x:Name="dialog" />
                 </ScrollView>
-            </Frame>    
+            </Frame>
+            <Label
+                FontSize="Subtitle"
+                HorizontalOptions="CenterAndExpand"
+                Text="Data Dialog" />
+            <Frame Margin="5">
+                <ScrollView
+                    x:Name="scrollDATA"
+                    MaximumHeightRequest="75"
+                    MinimumHeightRequest="75">
+                    <Label x:Name="dialogData" />
+                </ScrollView>
+            </Frame>
             <Label
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
@@ -41,18 +56,6 @@
                     MaximumHeightRequest="75"
                     MinimumHeightRequest="75">
                     <Label x:Name="dialogDIAG" />
-                </ScrollView>
-            </Frame>
-            <Label
-                FontSize="Subtitle"
-                HorizontalOptions="CenterAndExpand"
-                Text="Data Dialog" />
-            <Frame>
-                <ScrollView
-                    x:Name="scrollDATA"
-                    MaximumHeightRequest="75"
-                    MinimumHeightRequest="75">
-                    <Label x:Name="dialogData" />
                 </ScrollView>
             </Frame>
         </StackLayout>

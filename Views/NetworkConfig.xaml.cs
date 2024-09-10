@@ -106,13 +106,26 @@ public partial class NetworkConfig : ContentPage
             entry.SelectionLength = entry.Text.Length;
         }
     }
+    /// <summary>
+    /// Handles the completion event for the CMD port and sets focus to the DATA port.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The event data.</param>
     private void portCMD_Completed(object sender, EventArgs e)
     {
+        // Set focus to the DATA port
         portDATA.Focus();
     }
+
+    /// <summary>
+    /// Handles the completion event for the DATA port and sets focus to the DIAG port.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The event data.</param>
     private void portDATA_Completed(object sender, EventArgs e)
     {
+        // Set focus to the DIAG port
         portDIAG.Focus();
     }
-    
+
 }

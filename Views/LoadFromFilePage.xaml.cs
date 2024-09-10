@@ -200,7 +200,7 @@ public partial class LoadFromFilePage : ContentPage
         if (updated && client != null)
         {
             dialogDIAG.Text = client.dialogbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height + scrollDIAG.Height, true);
         }
     }
 }

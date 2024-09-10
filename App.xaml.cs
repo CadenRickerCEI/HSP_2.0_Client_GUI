@@ -52,31 +52,57 @@ public partial class App : Application
 
         var _ = StartReadingPortsAsync();
     }
+    /// <summary>
+    /// Creates a new window and attaches an event handler for the window's destroying event.
+    /// </summary>
+    /// <param name="activationState">The activation state of the application.</param>
+    /// <returns>The created window.</returns>
     protected override Window CreateWindow(IActivationState? activationState)
     {
+        // Create the window using the base class implementation
         var window = base.CreateWindow(activationState);
+
+        // Attach the OnAppClosing event handler to the window's Destroying event
         window.Destroying += OnAppClosing;
+
+        // Return the created window
         return window;
     }
 
+    /// <summary>
+    /// Handles the application closing event and performs cleanup operations.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The event data.</param>
     private void OnAppClosing(object? sender, EventArgs e)
     {
-        // Your code to run when the app is closing
+        // Log the app closing event
         Debug.WriteLine("App is closing. Running cleanup code...");
+
+        // Disconnect the client
         _client.disconect();
+
+        // Log the disconnection
         System.Diagnostics.Debug.WriteLine("closing Connections");
     }
+
+    /// <summary>
+    /// Continuously reads data from the ports as long as the client is connected.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     async Task StartReadingPortsAsync()
     {
-        //System.Diagnostics.Debug.WriteLine("reading clinet");
+        // Continuously read data from the ports
         while (true)
         {
-            if (_client != null && _client.isConnected())
+            if (_client != null && _client.isConnected() && !_client.busy)
             {
-                //System.Diagnostics.Debug.WriteLine("reading clinet");
+                // Read data from the dialog ports
                 await _client.readDialogPorts();
             }
-            await Task.Delay(1000); // Wait for 1 second
+
+            // Wait for 1 second before the next read operation
+            await Task.Delay(1000);
         }
     }
 }

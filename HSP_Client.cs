@@ -5,6 +5,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Serilog;
+using System.Net;
+using System.IO.Pipes;
+
 
 /// <summary>
 /// The HSPClient class is used for managing the connection and communication with a Telnet server.
@@ -18,7 +22,7 @@ public class HSPClient
     private TelnetConnection? _clientCMD;
     private TelnetConnection? _clientDATA; //5001
     private TelnetConnection? _clientDIAG; //5003
-    private bool busy;
+    public bool busy;
     /// <summary>
     /// Occurs when the connection status changes.
     /// </summary>
@@ -67,6 +71,12 @@ public class HSPClient
     /// Lock object for thread safety.
     /// </summary>
     private static readonly object _lock = new object();
+    
+    private int _portData = 5001;
+    
+    private int _portDiag = 5003;
+    private string _IpAddress = "192.168.50.124";
+    
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
@@ -76,6 +86,16 @@ public class HSPClient
         _clientDATA = null;
         _clientDIAG = null;
         busy = false;
+        var downloadsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "YourAppLogs");
+
+        if (!Directory.Exists(downloadsDirectory))
+        {
+            Directory.CreateDirectory(downloadsDirectory);
+        }
+
+        var logFilePath = Path.Combine(downloadsDirectory, "app.log");
+        Log.Logger = new LoggerConfiguration().WriteTo
+            .File(logFilePath, rollingInterval: RollingInterval.Day).CreateLogger(); 
     }
     /// <summary>
     /// Gets the single instance of the HSPClient class.
@@ -107,16 +127,19 @@ public class HSPClient
     /// <param name="IPAddress"></param>
     /// <param name="PortCMD"></param>
     /// <param name="PortDiag"></param>
-    /// <param name="PortDATA"></param>
+    /// <param name="PortData"></param>
     /// <returns>String containg message from the HSP or Failed to conect</returns>
     public async Task<string> connectToHSP(string IPAddress, int PortCMD,
-                                int PortDiag, int PortDATA)
+                                int PortDiag, int PortData)
     {
         try
         {
+            _portData = PortData;
+            _portDiag = PortDiag;
+            _IpAddress = IPAddress;
             _clientCMD = new TelnetConnection(IPAddress, PortCMD);
             _clientDIAG = new TelnetConnection(IPAddress, PortDiag);
-            _clientDATA = new TelnetConnection(IPAddress, PortDATA);
+            _clientDATA = new TelnetConnection(IPAddress, PortData);
             connectionStatusChanged?.Invoke(isConnected());
             busy = false;
             return await readServerMSg(true);
@@ -146,7 +169,7 @@ public class HSPClient
                     var msg = "HSPSA>" + Regex.Replace(result, pattern, "");
                     if (useQueue)
                     {
-                        cmdbuffer = await parseMsg(msg, cmdQueue, 20);
+                        cmdbuffer = await parseMsg(msg, cmdQueue, 20, false);
                         return cmdbuffer;
                     }
                     else
@@ -173,7 +196,7 @@ public class HSPClient
     /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
     public async Task<string> GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
     {
-        busy = true;
+        busy = false;
         string HSPResponse = "Generate File Failed";
 
         if (_clientCMD != null && _clientCMD.IsConnected)
@@ -254,7 +277,7 @@ public class HSPClient
                     return connectionLost;
                 }
                 HSPInfo = await readServerMSg(false);
-                page.updatedialog(HSPInfo);
+                page.updatedialog(HSPInfo +"\n");
             }
         }
 
@@ -265,7 +288,6 @@ public class HSPClient
             progress.Report(0.001);
             if (data == null) throw new Exception();
             var lengths = new int[] { -1, -1, 8, 8, 4 };
-
             for (int i = 1; i < data.Count; i++)
             {
                 var command = "WRITEITEM=";
@@ -279,8 +301,7 @@ public class HSPClient
                         string errMessage = validateInput(data[i][j], length, false);
 
                         if (errMessage != "")
-                        {
-                            // System.Diagnostics.Debug.WriteLine($"Invalid entry {dataTypes[j]} on row {i}");
+                        {                            
                             busy = false;
                             return $"File loading halted.\nError on Line {i}\n {dataTypes[j]} {errMessage}\n";
                         }
@@ -301,10 +322,17 @@ public class HSPClient
 
                         try
                         {
+                            if (i % 50==0)
+                            {
+                                await Task.Delay(1);
+                            }
+                            
                             _clientCMD.WriteLine($"{command}");
+                            
                         }
-                        catch
+                        catch(Exception ex)
                         {
+                            System.Diagnostics.Debug.WriteLine(ex);
                             busy = false;
                             return connectionLost;
                         }
@@ -513,6 +541,9 @@ public class HSPClient
 
         return "Not connected to HSP";
     }
+    /// <summary>
+    /// Disconnects and disposes of all client connections.
+    /// </summary>
     public void disconect()
     {
         if (_clientCMD is not null)
@@ -534,38 +565,76 @@ public class HSPClient
 
     }
 
+    /// <summary>
+    /// Reads data from dialog ports and updates the buffers accordingly.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task readDialogPorts()
     {
-        busy = false;
-        if (!busy)
+        
+        if (true)
         {
+            // Store the current data buffer
             var oldDataBuffer = dataBuffer;
-            dataBuffer = await readClient(_clientDATA, data, 48);
-            dataUpdated?.Invoke(dataBuffer != oldDataBuffer);
+            /*if (_clientDATA is null)     {
+                
+                _clientDATA = new TelnetConnection(_IpAddress, _portData);
+            }*/
+            // Read data from the client and update the data buffer
+            dataBuffer = await readClient(_clientDATA, data, 48, false);
+
+            // Invoke the dataUpdated event if the data buffer has changed
+            dataUpdated?.Invoke(dataBuffer != oldDataBuffer && !busy);
+            /*if(_clientDIAG is null){
+                _clientDIAG = new TelnetConnection(_IpAddress, _portDiag);
+            }*/
+            
+            // Store the current dialog buffer
             var oldDialogBuffer = dialogbuffer;
-            dialogbuffer = await readClient(_clientDIAG, dialog, 300);
-            dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer);
+
+            // Read data from the dialog client and update the dialog buffer
+            dialogbuffer = await readClient(_clientDIAG, dialog, 300, true);
+
+            // Invoke the dialogUpdated event if the dialog buffer has changed
+            dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer && !busy);
+
+            // Introduce a short delay
             await Task.Delay(10);
+
+            // Invoke the update events with false to indicate completion
             dialogUpdated?.Invoke(false);
             dataUpdated?.Invoke(false);
         }
     }
-    private async Task<string> readClient(TelnetConnection? client, Queue<string> queue, int quesize)
+    /// <summary>
+    /// Reads a message from the Telnet client and processes it.
+    /// </summary>
+    /// <param name="client">The Telnet client connection.</param>
+    /// <param name="queue">The queue to store parsed messages.</param>
+    /// <param name="quesize">The maximum size of the queue.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the processed message.</returns>
+    private async Task<string> readClient(TelnetConnection? client, Queue<string> queue,
+                                            int quesize, bool addToLog)
     {
         if (client is not null)
         {
             string? msg = null;
             try
             {
+                // Attempt to read a message from the client
                 msg = client.Read();
             }
-            catch { }
+            catch
+            {
+                // Handle any exceptions that occur during the read operation
+            }
             if (msg != null)
             {
-                return await parseMsg(msg,queue, quesize);                 
+                // If a message was successfully read, process it
+                return await parseMsg(msg, queue, quesize,addToLog);
             }
-
         }
+        // Return an empty string if no message was read or the client is null
         return "";
     }
     /// <summary>
@@ -577,11 +646,12 @@ public class HSPClient
     /// <param name="queue">queue</param>
     /// <param name="quesize">maximum number of elements in the queue</param>
     /// <returns>the queue as joined as a string</returns>
-    private async Task <string> parseMsg(string msg, Queue<string> queue, int quesize)
+    private async Task <string> parseMsg(string msg, Queue<string> queue, int quesize, bool addToLog)
     {
         await Task.Run(() =>
         {
             var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
+            //Log.Logger.Information(string.Join("\n", newLines));
             foreach (var line in newLines)
             {
                 var item = line.Trim();
@@ -598,5 +668,5 @@ public class HSPClient
             msg = string.Join("\n", queue);
         });
         return msg;
-    }
+    }    
 }
