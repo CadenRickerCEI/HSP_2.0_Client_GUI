@@ -129,7 +129,7 @@ public partial class NetworkConfig : ContentPage
         // Set focus to the DIAG port
         portDIAG.Focus();
     }
-
+    
     private void demoMode_Clicked(object sender, EventArgs e)
     {
         bool demoMode = Preferences.Get(Constants.demoMode, false);

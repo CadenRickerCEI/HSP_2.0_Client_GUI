@@ -36,7 +36,7 @@ public partial class StatusPage : ContentPage
         client.dialogUpdated += dialogDialogUpdtated;
         InitializeComponent();
         if (client != null)
-        {
+        {            
             dialogData.Text = client.dataBuffer;            
             dialogDIAG.Text = client.dialogbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
@@ -52,7 +52,7 @@ public partial class StatusPage : ContentPage
     {
         bool demoMode = Preferences.Get(Constants.demoMode, false);
         connectionBtn.IsVisible = !connectionStatus && !demoMode;
-        statusGrid.IsVisible = connectionStatus || demoMode;
+        statusGrid.IsVisible = connectionStatus  || demoMode ;
     }
     /// <summary>
     /// Updates the dialog display if the dialog data has been updated.
@@ -91,7 +91,7 @@ public partial class StatusPage : ContentPage
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="args">The event arguments.</param>
     public async void OnButtonClicked(object sender, EventArgs args)
-    {
+    {        
         loadingIndicator.IsVisible = true;
         loadingIndicator.IsRunning = true;
         var orignalBtnText = connectionBtn.Text;
@@ -116,7 +116,7 @@ public partial class StatusPage : ContentPage
         }
 
         connectionBtn.IsVisible = false;
-        statusGrid.IsVisible = true;
+        statusGrid.IsVisible = true;        
     }
 
     /// <summary>
@@ -124,13 +124,13 @@ public partial class StatusPage : ContentPage
     /// stored in preferences. Displays an alert if the connection fails and offers to retry.
     /// </summary>
     public async Task connectToServer()
-    {
+    {        
         loadingIndicator.IsVisible = true;
         System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
 
         if (client != null)
         {
-            // dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
+            //dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
             string IPAdrress = Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress);
             int port = Preferences.Get(Constants.KeyPort, Constants.Port);
             int portDIAG = Preferences.Get(Constants.KeyPortDIAG, Constants.PortDIAG);
@@ -150,7 +150,7 @@ public partial class StatusPage : ContentPage
         }
         var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
         loadingIndicator.IsRunning = false;
-        loadingIndicator.IsVisible = false;
+        loadingIndicator.IsVisible = false;        
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public partial class StatusPage : ContentPage
     /// <param name="e"></param>
     private async void GetBufferCount(object sender, EventArgs e)
     {
-        if (client != null && client.isConnected())
+                if (client != null && client.isConnected())
         {
             var result = await client.getBufferCount();
             bufferCount.Text = result[0];
@@ -183,7 +183,7 @@ public partial class StatusPage : ContentPage
             bufferCount.Text = "-1";
             dialog.Text = "Count invalid not connected";
         }
-        var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
+        var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);        
     }
 
     /// <summary>
@@ -246,9 +246,9 @@ public partial class StatusPage : ContentPage
     private void StartPeriodicTask()
     {
         _isRunning = true;
-
         Dispatcher.StartTimer(_interval, () =>
         {
+            
             if (_isRunning)
             {
                 // Your periodic function logic here

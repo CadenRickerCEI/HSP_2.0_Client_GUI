@@ -119,9 +119,9 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Margin="10"
+                        HorizontalOptions="End"
                         Text="Command Port"
-                        VerticalOptions="Center" 
-                        HorizontalOptions="End"/>
+                        VerticalOptions="Center" />
                     <Entry
                         x:Name="portCMD"
                         Grid.Row="0"
@@ -134,9 +134,9 @@
                         Grid.Row="0"
                         Grid.Column="2"
                         Margin="10"
+                        HorizontalOptions="End"
                         Text="Data Port"
-                        VerticalOptions="Center"
-                        HorizontalOptions="End"/>
+                        VerticalOptions="Center" />
                     <Entry
                         x:Name="portDATA"
                         Grid.Row="0"
@@ -148,10 +148,10 @@
                     <Label
                         Grid.Row="0"
                         Grid.Column="4"
-                        Text="Dialog Port"
                         Margin="10"
-                        VerticalOptions="Center" 
-                        HorizontalOptions="End"/>
+                        HorizontalOptions="End"
+                        Text="Dialog Port"
+                        VerticalOptions="Center" />
                     <Entry
                         x:Name="portDIAG"
                         Grid.Row="0"
@@ -166,7 +166,12 @@
                     Text="Update IP Address" />
             </StackLayout>
         </Frame>
-        <Button x:Name="demoModeBtn" Clicked="demoMode_Clicked" Margin="5,200" VerticalOptions="End" HorizontalOptions="Start">            
-        </Button>
+        
+        <Button
+            x:Name="demoModeBtn"
+            Margin="5,200"
+            Clicked="demoMode_Clicked"
+            HorizontalOptions="Start"
+            VerticalOptions="End" />
     </StackLayout>
 </ContentPage>
