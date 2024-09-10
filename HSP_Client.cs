@@ -95,7 +95,7 @@ public class HSPClient
 
         var logFilePath = Path.Combine(downloadsDirectory, "app.log");
         Log.Logger = new LoggerConfiguration().WriteTo
-            .File(logFilePath, rollingInterval: RollingInterval.Day).CreateLogger(); 
+            .File(logFilePath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7).CreateLogger(); 
     }
     /// <summary>
     /// Gets the single instance of the HSPClient class.
@@ -321,14 +321,12 @@ public class HSPClient
                         command = command.EndsWith(",") ? command.Substring(0, Math.Max(command.Length - 1, 1)) : command;
 
                         try
-                        {
-                            if (i % 50==0)
-                            {
-                                await Task.Delay(1);
-                            }
-                            
+                        {  
                             _clientCMD.WriteLine($"{command}");
-                            
+                            if (i % 432 == 0)
+                            {
+                                await readDialogPorts();
+                            }
                         }
                         catch(Exception ex)
                         {
@@ -576,34 +574,34 @@ public class HSPClient
         {
             // Store the current data buffer
             var oldDataBuffer = dataBuffer;
-            /*if (_clientDATA is null)     {
-                
-                _clientDATA = new TelnetConnection(_IpAddress, _portData);
-            }*/
-            // Read data from the client and update the data buffer
-            dataBuffer = await readClient(_clientDATA, data, 48, false);
-
-            // Invoke the dataUpdated event if the data buffer has changed
-            dataUpdated?.Invoke(dataBuffer != oldDataBuffer && !busy);
-            /*if(_clientDIAG is null){
-                _clientDIAG = new TelnetConnection(_IpAddress, _portDiag);
-            }*/
-            
             // Store the current dialog buffer
             var oldDialogBuffer = dialogbuffer;
 
-            // Read data from the dialog client and update the dialog buffer
-            dialogbuffer = await readClient(_clientDIAG, dialog, 300, true);
+            // Read data from the client and update the data buffer
+            var taskData = readClient(_clientDATA, data, 48, false);
 
+            // Read data from the dialog client and update the dialog buffer
+            var taskDialog = readClient(_clientDIAG, dialog, 300, true);
+            await Task.WhenAll(taskData, taskDialog);
+            dataBuffer = await taskData;
+            dialogbuffer = await taskDialog;
             // Invoke the dialogUpdated event if the dialog buffer has changed
-            dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer && !busy);
+
 
             // Introduce a short delay
-            await Task.Delay(10);
+            if (!busy)
+            {
+                // Invoke the dataUpdated event if the data buffer has changed
+                dataUpdated?.Invoke(dataBuffer != oldDataBuffer);
+                dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer);
+                await Task.Delay(10);
+                // Invoke the update events with false to indicate completion
+                dialogUpdated?.Invoke(false);
+                dataUpdated?.Invoke(false);
+            }
+            
 
-            // Invoke the update events with false to indicate completion
-            dialogUpdated?.Invoke(false);
-            dataUpdated?.Invoke(false);
+
         }
     }
     /// <summary>
@@ -648,11 +646,15 @@ public class HSPClient
     /// <returns>the queue as joined as a string</returns>
     private async Task <string> parseMsg(string msg, Queue<string> queue, int quesize, bool addToLog)
     {
+        var parsedMsg = "";
         await Task.Run(() =>
         {
             var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
-            //Log.Logger.Information(string.Join("\n", newLines));
-            foreach (var line in newLines)
+            if( addToLog)
+            {
+                Log.Logger.Information(string.Join("\n", newLines));
+            }            
+            foreach (var line in newLines.TakeLast(Math.Min(quesize,newLines.Length)))
             {
                 var item = line.Trim();
                 if (item != "")
@@ -664,9 +666,8 @@ public class HSPClient
                     queue.Dequeue();
                 }
             }
-
-            msg = string.Join("\n", queue);
+                parsedMsg = string.Join("\n", queue);
         });
-        return msg;
+        return parsedMsg;
     }    
 }

@@ -56,5 +56,6 @@
         /// The scale factor used to convert font size to width.
         /// </summary>
         public const double fontToWidthScale = 0.65;
+        public const string demoMode = "demoMode";
     }
 }

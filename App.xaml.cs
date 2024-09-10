@@ -48,6 +48,10 @@ public partial class App : Application
         {
             Preferences.Set(Constants.KeyPortDIAG, Constants.PortDIAG);
         }
+        if (!Preferences.ContainsKey(Constants.demoMode))
+        {
+            Preferences.Set(Constants.demoMode, false);
+        }
 
 
         var _ = StartReadingPortsAsync();

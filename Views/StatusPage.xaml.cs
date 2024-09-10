@@ -50,8 +50,9 @@ public partial class StatusPage : ContentPage
     /// <param name="connectionStatus"></param>
     private void Client_connectionStatusChanged(bool connectionStatus)
     {
-        connectionBtn.IsVisible = !connectionStatus;
-        statusGrid.IsVisible = connectionStatus;
+        bool demoMode = Preferences.Get(Constants.demoMode, false);
+        connectionBtn.IsVisible = !connectionStatus && !demoMode;
+        statusGrid.IsVisible = connectionStatus || demoMode;
     }
     /// <summary>
     /// Updates the dialog display if the dialog data has been updated.
@@ -263,8 +264,9 @@ public partial class StatusPage : ContentPage
                     }
                     else
                     {
-                        connectionBtn.IsVisible = true;
-                        statusGrid.IsVisible = false;
+                        bool demoMode = Preferences.Get(Constants.demoMode, false);
+                        connectionBtn.IsVisible = !demoMode;
+                        statusGrid.IsVisible = demoMode ;
                         bufferCount.Text = "0";
                         dialog.Text = "Count invalid not connected";
                     }

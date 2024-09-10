@@ -35,6 +35,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -89,7 +90,7 @@
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
                 Text="Data Dialog" />
-            <Frame Grid.Row="8" Grid.ColumnSpan="2">
+            <Frame Grid.Row="8" Grid.ColumnSpan="2" Margin="5">
                 <ScrollView
                     x:Name="scrollDATA"
                     MaximumHeightRequest="115"
@@ -104,7 +105,7 @@
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
                 Text="Dialog" />
-            <Frame Grid.Row="10" Grid.ColumnSpan="2">
+            <Frame Grid.Row="10" Grid.ColumnSpan="2" Margin="5">
                 <ScrollView
                     x:Name="scrollDIAG"
                     MaximumHeightRequest="135"
@@ -112,7 +113,9 @@
                     <Label x:Name="dialogDIAG" />
                 </ScrollView>
             </Frame>
-
+            <ImageButton Grid.Row="11" Source="helpcirc.png" MinimumHeightRequest="100" MinimumWidthRequest="100">
+                
+            </ImageButton>
         </Grid>
     </StackLayout>
 

@@ -24,6 +24,8 @@ public partial class NetworkConfig : ContentPage
         portCMD.Text = Preferences.Get(Constants.KeyPort, Constants.Port).ToString();
         portDIAG.Text = Preferences.Get(Constants.KeyPortDIAG, Constants.PortDIAG).ToString();
         portDATA.Text = Preferences.Get(Constants.KeyPortDATA, Constants.PortDATA).ToString();
+        
+        demoModeBtn.Text = Preferences.Get(Constants.demoMode,false) ? "Demo Mode" : "Normal Mode";
     }
 
     /// <summary>
@@ -128,4 +130,11 @@ public partial class NetworkConfig : ContentPage
         portDIAG.Focus();
     }
 
+    private void demoMode_Clicked(object sender, EventArgs e)
+    {
+        bool demoMode = Preferences.Get(Constants.demoMode, false);
+        Preferences.Set(Constants.demoMode,!demoMode);
+        demoModeBtn.Text = !demoMode?"Demo Mode":"Normal Mode";
+
+    }
 }

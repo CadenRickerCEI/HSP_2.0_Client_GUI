@@ -166,5 +166,7 @@
                     Text="Update IP Address" />
             </StackLayout>
         </Frame>
+        <Button x:Name="demoModeBtn" Clicked="demoMode_Clicked" Margin="5,200" VerticalOptions="End" HorizontalOptions="Start">            
+        </Button>
     </StackLayout>
 </ContentPage>

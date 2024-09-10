@@ -120,6 +120,7 @@ public partial class LoadFromFilePage : ContentPage
         progressBar.IsVisible = false;
         progressFrame.IsVisible = false;
         loadFileBtn.IsEnabled = true;
+        await scrollCMD.ScrollToAsync(0,dialog.Height+scrollCMD.Height,false);
     }
 
     /// <summary>

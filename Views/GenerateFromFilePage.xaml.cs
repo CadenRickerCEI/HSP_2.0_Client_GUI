@@ -386,4 +386,28 @@ public partial class GenerateFromFilePage : ContentPage
         }
     }
 
+    private async void tagDataHelp_Clicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Help: Edit Tag Data", "Tag data may be eddited here before " +
+            "loading the HSP or saving to file.\nDefinitions:\n" +
+            "EPC Data: Data area for storing " +
+            "identification information. May contain 0-9, A-F, and !. " +
+            "The four characters following an ! will be incremented by one on every tag.\n" +
+            "USR Data: Data for the user area of the tag. May contain 0-9, A-F, and !. " +
+            "The four characters following an ! will be incremented by one on every tag.\n" +
+            "Kill Password: Permanently disables the tag with the correct password, " +
+            "after which it stops responding to any further commands or reads.\n" +
+            "Access Password: Locks the tag from unauthorized reading.\n" +
+            "PC Word: Specifies the length of the EPC. Optional.\n" +
+            "Number of Tags to Generate: Determines how many tags will be added to the buffer."
+            , "Done");
+    }
+
+    private async void fileSelectHelp_Clicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Help: File Select", "Press 'Select File' to choose a file as a source.\n" +
+            "After selecting a file, read file will load the file into the edit tag data section.\n" +
+            "Once the tag data has been validated it is ready to be loaded to the HSP by pressing" +
+            " 'Load to HSP Buffer' or saved to a file by pressing 'Save Tag Data to file'", "Done");
+    }
 }
