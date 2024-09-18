@@ -1,4 +1,5 @@
-﻿namespace HSPGUI
+﻿
+namespace HSPGUI
 {
     /// <summary>
     /// The Constants class holds constant values used throughout the HSPGUI application.
@@ -57,5 +58,6 @@
         /// </summary>
         public const double fontToWidthScale = 0.65;
         public const string demoMode = "demoMode";
+        public const string disableDiag = "disDiag";
     }
 }

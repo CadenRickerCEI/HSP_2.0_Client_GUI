@@ -52,6 +52,10 @@ public partial class App : Application
         {
             Preferences.Set(Constants.demoMode, false);
         }
+        if (!Preferences.ContainsKey(Constants.disableDiag))
+        {
+            Preferences.Set(Constants.disableDiag, true);
+        }
 
 
         var _ = StartReadingPortsAsync();

@@ -23,13 +23,15 @@ public partial class cmdLine : ContentPage
 
         // Set the visibility of the connection button based on the client's connection status
         connectionBtn.IsVisible = client == null || !client.isConnected();
-
+        
         // Set the visibility of the stack layout based on the connection button's visibility
         StackLayout.IsVisible = !connectionBtn.IsVisible;
         if (client != null)
         {
             dialogData.Text = client.dataBuffer;
             dialogDIAG.Text = client.dialogbuffer;
+            client.dataUpdated += dialogDataUpdtated;
+            client.dialogUpdated += dialogDialogUpdtated;
             dialog.Text = client.cmdbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height+scrollDIAG.Height, false);
             var i = scrollDATA.ScrollToAsync(0, dialogData.Height+ scrollDATA.Height, false);

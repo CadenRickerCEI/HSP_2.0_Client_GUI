@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Serilog;
 using System.Net;
 using System.IO.Pipes;
+using HSPGUI;
 
 
 /// <summary>
@@ -138,7 +139,10 @@ public class HSPClient
             _portDiag = PortDiag;
             _IpAddress = IPAddress;
             _clientCMD = new TelnetConnection(IPAddress, PortCMD);
-            _clientDIAG = new TelnetConnection(IPAddress, PortDiag);
+            if (!Preferences.Get(Constants.disableDiag, false))
+            {
+                _clientDIAG = new TelnetConnection(IPAddress, PortDiag);
+            }               
             _clientDATA = new TelnetConnection(IPAddress, PortData);
             connectionStatusChanged?.Invoke(isConnected());
             busy = false;
@@ -577,14 +581,26 @@ public class HSPClient
             // Store the current dialog buffer
             var oldDialogBuffer = dialogbuffer;
 
-            // Read data from the client and update the data buffer
-            var taskData = readClient(_clientDATA, data, 48, false);
+            
+            if ( !Preferences.Get(Constants.disableDiag, false))
+            {
+                // Read data from the client and update the data buffer
+                var taskData = readClient(_clientDATA, data, 48, false);
 
-            // Read data from the dialog client and update the dialog buffer
-            var taskDialog = readClient(_clientDIAG, dialog, 300, true);
-            await Task.WhenAll(taskData, taskDialog);
-            dataBuffer = await taskData;
-            dialogbuffer = await taskDialog;
+                // Read data from the dialog client and update the dialog buffer
+                var taskDialog = readClient(_clientDIAG, dialog, 300, true);
+
+                await Task.WhenAll(taskData, taskDialog);
+                dataBuffer = await taskData;
+                dialogbuffer = await taskDialog;
+            }
+            else
+            {
+                // Read data from the client and update the data buffer
+                dataBuffer = await readClient(_clientDATA, data, 48, false);
+            }
+            
+            
             // Invoke the dialogUpdated event if the dialog buffer has changed
 
 
@@ -650,7 +666,7 @@ public class HSPClient
         await Task.Run(() =>
         {
             var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
-            if( addToLog)
+            if( addToLog && false)
             {
                 Log.Logger.Information(string.Join("\n", newLines));
             }            
