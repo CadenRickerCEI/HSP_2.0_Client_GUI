@@ -110,10 +110,7 @@
                     MinimumHeightRequest="135">
                     <Label x:Name="dialogDIAG" />
                 </ScrollView>
-            </Frame>
-            <ImageButton Grid.Row="11" Source="helpcirc.png" MinimumHeightRequest="100" MinimumWidthRequest="100">
-
-            </ImageButton>
+            </Frame>            
         </Grid>
     </StackLayout>
 

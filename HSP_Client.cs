@@ -585,7 +585,7 @@ public class HSPClient
             if ( !Preferences.Get(Constants.disableDiag, false))
             {
                 // Read data from the client and update the data buffer
-                var taskData = readClient(_clientDATA, data, 48, false);
+                var taskData = readClient(_clientDATA, data, 300, false);
 
                 // Read data from the dialog client and update the dialog buffer
                 var taskDialog = readClient(_clientDIAG, dialog, 300, true);
@@ -597,7 +597,7 @@ public class HSPClient
             else
             {
                 // Read data from the client and update the data buffer
-                dataBuffer = await readClient(_clientDATA, data, 48, false);
+                dataBuffer = await readClient(_clientDATA, data, 300, false);
             }
             
             
