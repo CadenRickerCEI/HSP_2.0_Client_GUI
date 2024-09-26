@@ -34,16 +34,16 @@ public partial class LoadFromFilePage : ContentPage
         cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
         loadFileBtn.IsVisible = false;
-        client.dialogUpdated += dialogDialogUpdtated;
+        client.cmdUpdated += cmdDialogUpdtated;
         _progress.ProgressChanged += (s, e) =>
         {
             progressBar.Progress = e;
         };
         if (client != null)
         {
-            dialogDIAG.Text = client.dialogbuffer;
+            cmdDIAG.Text = client.dialogbuffer;
             dialog.Text = client.cmdbuffer;
-            scrollDIAG.ScrollToAsync(0,dialogDIAG.Height ,true);
+            scrollDIAG.ScrollToAsync(0,cmdDIAG.Height ,true);
             scrollCMD.ScrollToAsync(0,dialog.Height,true);
         }
     }
@@ -196,12 +196,12 @@ public partial class LoadFromFilePage : ContentPage
             scrollCMD.ScrollToAsync(0, dialog.Height , true);
         });
     }
-    private void dialogDialogUpdtated(bool updated)
+    private void cmdDialogUpdtated(bool updated)
     {
         if (updated && client != null)
         {
-            dialogDIAG.Text = client.dialogbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height + scrollDIAG.Height, true);
+            cmdDIAG.Text = client.cmdbuffer;
+            var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height + scrollDIAG.Height, true);
         }
     }
 }

@@ -209,13 +209,13 @@
         <Label
             FontSize="Subtitle"
             HorizontalOptions="CenterAndExpand"
-            Text="Dialog" />
+            Text="CMD Dialog" />
         <Frame Margin="5">
             <ScrollView
                 x:Name="scrollDIAG"
                 MaximumHeightRequest="75"
                 MinimumHeightRequest="75">
-                <Label x:Name="dialogDIAG" />
+                <Label x:Name="cmdDIAG" />
             </ScrollView>
         </Frame>
 

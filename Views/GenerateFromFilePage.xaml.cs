@@ -52,7 +52,7 @@ public partial class GenerateFromFilePage : ContentPage
         client = HSPClient.Instance;
 
         cancellationTokenSource = new CancellationTokenSource();
-        client.dialogUpdated += dialogDialogUpdtated;
+        client.cmdUpdated += cmdDataUpdated;
         InitializeComponent();
         EPC_Valid = true;
         USR_Valid = true;
@@ -70,8 +70,8 @@ public partial class GenerateFromFilePage : ContentPage
         
         if (client != null)
         {
-            dialogDIAG.Text = client.dialogbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
+            cmdDIAG.Text = client.cmdbuffer;
+            var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
         }
     }
     /// <summary>
@@ -275,6 +275,8 @@ public partial class GenerateFromFilePage : ContentPage
             if (client != null)
             {
                 var _ = await client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
+                var msg = await client.readServerMSg(true);
+                cmdDIAG.Text = client.cmdbuffer;
             }
         }
         else
@@ -377,12 +379,12 @@ public partial class GenerateFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
-    private void dialogDialogUpdtated(bool updated)
+    private void cmdDataUpdated(bool updated)
     {
         if (updated && client != null)
         {
-            dialogDIAG.Text = client.dialogbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height ,true);
+            cmdDIAG.Text = client.cmdbuffer;
+            var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height ,true);
         }
     }
 

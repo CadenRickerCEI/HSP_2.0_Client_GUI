@@ -102,8 +102,9 @@
                 Grid.ColumnSpan="3"
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
-                Text="Dialog" />
-            <Frame Grid.Row="10" Grid.ColumnSpan="2" Margin="5">
+                Text="Dialog" 
+                IsVisible="False"/>
+            <Frame Grid.Row="10" Grid.ColumnSpan="2" Margin="5" IsVisible="False">
                 <ScrollView
                     x:Name="scrollDIAG"
                     MaximumHeightRequest="135"

@@ -29,6 +29,10 @@ public class HSPClient
     /// </summary>
     public event Action<bool>? connectionStatusChanged;
     /// <summary>
+    /// Notifiation for when the data buffer been updated
+    /// </summary>
+    public event Action<bool>? cmdUpdated;
+    /// <summary>
     /// Notification for when dialog buffer has been updated
     /// </summary>
     public event Action<bool>? dialogUpdated;
@@ -139,11 +143,8 @@ public class HSPClient
             _portDiag = PortDiag;
             _IpAddress = IPAddress;
             _clientCMD = new TelnetConnection(IPAddress, PortCMD);
-            if (!Preferences.Get(Constants.disableDiag, false))
-            {
-                _clientDIAG = new TelnetConnection(IPAddress, PortDiag);
-            }               
-            _clientDATA = new TelnetConnection(IPAddress, PortData);
+            _clientDIAG = new TelnetConnection(IPAddress, PortDiag);
+            _clientDATA = new TelnetConnection(IPAddress, PortData);        
             connectionStatusChanged?.Invoke(isConnected());
             busy = false;
             return await readServerMSg(true);
@@ -174,6 +175,9 @@ public class HSPClient
                     if (useQueue)
                     {
                         cmdbuffer = await parseMsg(msg, cmdQueue, 20, false);
+                        cmdUpdated?.Invoke(true);
+                        await Task.Delay(2);
+                        cmdUpdated?.Invoke(false);
                         return cmdbuffer;
                     }
                     else
@@ -248,7 +252,7 @@ public class HSPClient
                 }
 
                 string result = await readServerMSg(true);
-                await Task.Delay(2000);//Delay to give the HSP a chance to process the data. 
+                await Task.Delay(10);//Delay to give the HSP a chance to process the data. 
                 HSPResponse = await readServerMSg(true);                    
             }
         }
@@ -355,8 +359,9 @@ public class HSPClient
             }
 
             if (_clientCMD is not null && isConnected())
-            { 
-                string writtenMsg = await readServerMSg(true);             
+            {
+                await Task.Delay(250);
+                string writtenMsg = await readServerMSg(true);               
                 page.updatedialog(HSPInfo + writtenMsg);
             }
 
@@ -582,8 +587,9 @@ public class HSPClient
             var oldDialogBuffer = dialogbuffer;
 
             
-            if ( !Preferences.Get(Constants.disableDiag, false))
+            if ( !Preferences.Get(Constants.disableDiag, false) || true)
             {
+                
                 // Read data from the client and update the data buffer
                 var taskData = readClient(_clientDATA, data, 300, false);
 
@@ -610,12 +616,11 @@ public class HSPClient
                 // Invoke the dataUpdated event if the data buffer has changed
                 dataUpdated?.Invoke(dataBuffer != oldDataBuffer);
                 dialogUpdated?.Invoke(dialogbuffer != oldDialogBuffer);
-                await Task.Delay(10);
+                await Task.Delay(2);
                 // Invoke the update events with false to indicate completion
                 dialogUpdated?.Invoke(false);
                 dataUpdated?.Invoke(false);
-            }
-            
+            }        
 
 
         }
@@ -645,7 +650,8 @@ public class HSPClient
             if (msg != null)
             {
                 // If a message was successfully read, process it
-                return await parseMsg(msg, queue, quesize,addToLog);
+                var pMsg = await parseMsg(msg, queue, quesize,addToLog);
+                return pMsg;
             }
         }
         // Return an empty string if no message was read or the client is null
@@ -665,25 +671,37 @@ public class HSPClient
         var parsedMsg = "";
         await Task.Run(() =>
         {
+            
             var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
-            if( addToLog && false)
+            if( addToLog)
             {
-                Log.Logger.Information(string.Join("\n", newLines));
-            }            
-            foreach (var line in newLines.TakeLast(Math.Min(quesize,newLines.Length)))
-            {
-                var item = line.Trim();
-                if (item != "")
+                if(newLines.Length > 0)
                 {
-                    queue.Enqueue(item);
-                }
-                while (queue.Count > quesize)
-                {
-                    queue.Dequeue();
-                }
+                    Log.Logger.Information(string.Join("\r\n", newLines));
+                }                
             }
+            else
+            {
+
+                
+                foreach (var line in newLines.TakeLast(Math.Min(quesize, newLines.Length)))
+                {
+                    var item = line.Trim();
+                    if (item != "")
+                    {
+                        queue.Enqueue(item);
+                    }
+                    while (queue.Count > quesize)
+                    {
+                        queue.Dequeue();
+                    }
+                }
                 parsedMsg = string.Join("\n", queue);
+                
+            }
+            
         });
+        
         return parsedMsg;
     }    
 }
