@@ -82,7 +82,7 @@ public partial class StatusPage : ContentPage
             dialogData.Text = client.dataBuffer;
 
             // Scroll to the bottom of the data display
-            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, true);
+            scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
         }
     }
     /// <summary>

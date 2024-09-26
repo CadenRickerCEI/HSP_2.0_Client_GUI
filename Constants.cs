@@ -59,5 +59,6 @@ namespace HSPGUI
         public const double fontToWidthScale = 0.65;
         public const string demoMode = "demoMode";
         public const string disableDiag = "disDiag";
+        public const int tcpUpdateRate = 20;
     }
 }

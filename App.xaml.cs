@@ -110,7 +110,7 @@ public partial class App : Application
             }
 
             // Wait for 1 second before the next read operation
-            await Task.Delay(1000);
+            await Task.Delay(Constants.tcpUpdateRate);
         }
     }
 }
