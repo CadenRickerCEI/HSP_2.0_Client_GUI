@@ -19,7 +19,7 @@ namespace MinimalisticTelnet
     public class TelnetConnection : IDisposable
     {
         private TcpClient? tcpSocket;
-        private int TimeoutMs = 100;
+        private int TimeoutMs = 20;
 
         public bool IsConnected => tcpSocket is not null && tcpSocket.Connected;
 
@@ -118,7 +118,7 @@ namespace MinimalisticTelnet
         {
             while (tcpSocket is not null && tcpSocket.Available > 0)
             {
-                int input = tcpSocket.GetStream().ReadByte();
+               int input = tcpSocket.GetStream().ReadByte();
 
                 switch (input)
                 {

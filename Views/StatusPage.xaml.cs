@@ -76,7 +76,7 @@ public partial class StatusPage : ContentPage
     /// <param name="updated">Indicates whether the data has been updated.</param>
     private void dialogDataUpdtated(bool updated)
     {
-        if (updated && client != null)
+        if (updated && client != null && dialogData.Text != client.dataBuffer)
         {
             // Update the data display with the new data buffer
             dialogData.Text = client.dataBuffer;
