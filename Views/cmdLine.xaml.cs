@@ -97,7 +97,7 @@ public partial class cmdLine : ContentPage
             // Update the dialog with the user command and the response from the client
             dialog.Text = $"USER_>{cmdText}";
             dialog.Text = $"{await client.writeUsrCMD(cmdText)}";
-            await scrollCMD.ScrollToAsync(0, dialog.Height+scrollCMD.Height,true);
+            await scrollCMD.ScrollToAsync(0, dialog.Height+scrollCMD.Height,false);
         }
         else
         {

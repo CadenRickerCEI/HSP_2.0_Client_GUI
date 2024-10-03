@@ -83,6 +83,16 @@ public class HSPClient
     private string _IpAddress = "192.168.50.124";
     private int _updateTick;
     /// <summary>
+    /// array conating the list of all possible cmd for antena
+    /// 0 NB: baud rate for antena
+    /// 1 P"Tari""M Bit patern""LF Base Band Frequency"
+    /// 2 AA:async reciever Gain
+    /// 3 AG: reciever Gain
+    /// 4 RF: Frequency for the antana 902mHz to 928mHz
+    /// 5 RA: Power level for RF 8db to 19db
+    /// </summary>
+    private string[] antenaSettingCMDs = new string[] { "NB","P","AA","AG","RF","RA" };
+    /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
     private HSPClient()
@@ -384,10 +394,36 @@ public class HSPClient
     /// Reads the the curretent antena settings from the HSP and returns them as an arrray.
     /// </summary>
     /// <returns>An array of integers representing the antenna settings.</returns>
-    public Task<int[]> readAntenaSettings()
+    public async Task<int[]> readAntenaSettings()
     {
         var settings = new int[6];
-        return Task.FromResult(settings);
+        if (_clientCMD != null)
+        {
+            for (int i = 0; i < antenaSettingCMDs.Length; i++)
+            {
+                _clientCMD.WriteLine(antenaSettingCMDs[0]);
+                await Task.Delay(10);
+                string msg = await readServerMSg(false);
+                switch (i)
+                {
+                    case 0: //BaudRate
+                        break;
+                    case 1: //P interface commands
+                        break;
+                    case 2: //AA async reciever gain
+                        break;
+                    case 3: //AG reciever gain
+                        break;
+                    case 4: //RF
+                        break;
+                    case 5: //RA
+                        break;
+                    default:
+                        break;
+                }
+            } 
+        }
+        return settings ;
     }
 
     /// <summary>
