@@ -595,28 +595,32 @@ public class HSPClient
             else
             {
                 // Read data from the client and update the data buffer
-                newDataBuffer = await readClient(_clientDATA, data, 48, false, dataBuffer);
+                newDataBuffer = await readClient(_clientDATA, data, 96, false, dataBuffer);
+                dataBuffer = string.IsNullOrEmpty(newDataBuffer) ? dataBuffer : newDataBuffer;
+                
             }
 
 
             // Invoke the dialogUpdated event if the dialog buffer has changed
 
-            int updateLimitCounter = 500 / Constants.tcpUpdateRate;
+            int updateLimitCounter = 100 / Constants.tcpUpdateRate;
             // Introduce a short delay
-
+            busy = false;
             if (!busy && _updateTick == 0)
             {
                 // Invoke the dataUpdated event if the data buffer has changed
-                dataUpdated?.Invoke(dataBuffer != newDataBuffer);
-                dialogUpdated?.Invoke(dialogbuffer != newDialogBuffer);
+                dataUpdated?.Invoke(true);
+                //dialogUpdated?.Invoke(dialogbuffer != newDialogBuffer);
                 dataBuffer = newDataBuffer;
-                dialogbuffer = newDialogBuffer;                                                
+                dialogbuffer = newDialogBuffer;
+               
             }
             if (_updateTick == 1)
             {
                 dialogUpdated?.Invoke(false);
                 dataUpdated?.Invoke(false);
             }
+
             _updateTick = (_updateTick + 1) % updateLimitCounter;
         }
     }
@@ -647,8 +651,12 @@ public class HSPClient
             if (!string.IsNullOrEmpty(msg))
             {
                 // If a message was successfully read, process it
+                //System.Diagnostics.Debug.WriteLine(msg);
                 var pMsg = await parseMsg(msg, queue, quesize,addToLog);                
-                return pMsg;
+                if (pMsg.Length > 0)
+                {
+                    return pMsg ;
+                }                
             }
         }
         // Return an empty string if no message was read or the client is null
@@ -666,7 +674,7 @@ public class HSPClient
     /// <returns>the queue as joined as a string</returns>
     private async Task <string> parseMsg(string msg, Queue<string> queue, int quesize, bool addToLog)
     {
-        var parsedMsg = "";
+        var parsedMsg = "test";
         await Task.Run(() =>
         {          
             if( addToLog)
@@ -683,6 +691,10 @@ public class HSPClient
                 parsedMsg = "";
                 if (newLines.Length > 0)
                 {
+                    if (newLines.Length > quesize)
+                    {
+                        queue.Clear();
+                    }
                     foreach (var line in newLines.TakeLast(Math.Min(quesize, newLines.Length)))
                     {
                         var item = line.Trim();
@@ -694,13 +706,14 @@ public class HSPClient
                         {
                             queue.Dequeue();
                         }
-                    }
+                    }                   
                     parsedMsg = string.Join("\n", queue);
-                }
+
+                }  
             }
             
         });
-        
+        //System.Diagnostics.Debug.WriteLine(parsedMsg);
         return parsedMsg;
     }    
 }

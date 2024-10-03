@@ -76,10 +76,13 @@ public partial class StatusPage : ContentPage
     /// <param name="updated">Indicates whether the data has been updated.</param>
     private void dialogDataUpdtated(bool updated)
     {
-        if (updated && client != null && dialogData.Text != client.dataBuffer)
+        if (updated && client != null && (dialogData.Text != client.dataBuffer || true) )
         {
             // Update the data display with the new data buffer
             dialogData.Text = client.dataBuffer;
+
+
+
 
             // Scroll to the bottom of the data display
             scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
