@@ -394,29 +394,83 @@ public class HSPClient
     /// Reads the the curretent antena settings from the HSP and returns them as an arrray.
     /// </summary>
     /// <returns>An array of integers representing the antenna settings.</returns>
-    public async Task<int[]> readAntenaSettings()
+    public async Task<string[]> readAntenaSettings()
     {
-        var settings = new int[6];
+        var settings = new string[6];
         if (_clientCMD != null)
         {
             for (int i = 0; i < antenaSettingCMDs.Length; i++)
             {
+                if (i == 0 || i == 2)
+                    break;
                 _clientCMD.WriteLine(antenaSettingCMDs[0]);
                 await Task.Delay(10);
                 string msg = await readServerMSg(false);
+                string pattern = @"-?\d+(\.\d+)?";
+                MatchCollection matches;
+
+
                 switch (i)
                 {
                     case 0: //BaudRate
                         break;
                     case 1: //P interface commands
+                        matches = Regex.Matches(msg, pattern);
+                        string output = "";
+                        // Dictionaries to map match values to outputs
+                        var tariMap = new Dictionary<string, string>
+                        {
+                            { "6.25", "0" },{ "12.5", "1" },{ "default", "2" }
+                        };
+                        var bitPatternMap = new Dictionary<string, string>
+                        {
+                            { "0", "0" },{ "2", "1" },{ "4", "2" },{ "default", "3" }
+                        };
+                        var  baseBandMap = new Dictionary<string, string>
+                        {
+                            { "40", "0" },{ "160", "1" },{ "250", "2" },{ "320", "2" },{ "default", "3" }
+                        };
+                        // Process matches
+                        if (matches.Count > 0)
+                        {
+                            output = tariMap.ContainsKey(matches[0].Value) ? tariMap[matches[0].Value] : tariMap["default"];
+                        }
+                        if (matches.Count > 1)
+                        {
+                            output += bitPatternMap.ContainsKey(matches[1].Value) ? bitPatternMap[matches[1].Value] : bitPatternMap["default"];
+                        }
+                        if (matches.Count > 2)
+                        {
+                            output += baseBandMap.ContainsKey(matches[2].Value) ? baseBandMap[matches[2].Value] : baseBandMap["default"];
+                        }
+                        settings[1] = output;
                         break;
                     case 2: //AA async reciever gain
+                        //AA does not output anything when queried. It comes in with ag
                         break;
                     case 3: //AG reciever gain
+                        matches = Regex.Matches(msg, pattern);
+                        var gainMap = new Dictionary<string, string>
+                        {
+                            { "0","0" },{ "-9","1" },{ "-6","2" }, { "-3","3" },
+                            { "3","4" },{ "6","5" },{ "default","6" }
+                        };
+                        if (matches.Count > 0)
+                        {
+                            settings[3] = gainMap.ContainsKey(matches[0].Value)? gainMap[matches[0].Value] : gainMap["default"];
+                        }
+                        if (matches.Count > 1)
+                        {
+                            settings[2] = gainMap.ContainsKey(matches[1].Value) ? gainMap[matches[1].Value] : gainMap["default"];
+                        }                           
                         break;
                     case 4: //RF
+                        matches = Regex.Matches(msg, pattern);                        
+                        settings[4] = matches.Count > 0 ? matches[0].Value : "0";
                         break;
                     case 5: //RA
+                        matches = Regex.Matches(msg, pattern);
+                        settings[5] = matches.Count > 0 ? matches[0].Value : "0";
                         break;
                     default:
                         break;
@@ -430,11 +484,72 @@ public class HSPClient
     /// Writes antenna settings to the HSP.
     /// </summary>
     /// <param name="Settings">An array of integers representing the antenna settings.</param>
-    public void writeAntenaSettings(int[] Settings)
+    public async Task writeAntenaSettings(string[] Settings)
     {
         if (_clientCMD != null && isConnected())
         {
-            _clientCMD.WriteLine("NB");
+            for (int i = 0; i < antenaSettingCMDs.Length; i++)
+            {
+                if (i == 0 || i == 2)
+                    break;
+                string cmd = "";
+
+                /*
+                switch (i)
+                {
+                    case 0: //BaudRate
+                        break;
+                    case 1: //P interface commands
+                        var p settingSettings[i].Split('');
+                        // Dictionaries to map match values to outputs
+                        
+                        var tariMap = new Dictionary<string, string>
+                        {
+                            { "6.25", "0" },{ "12.5", "1" },{ "default", "2" }
+                        };
+                        var bitPatternMap = new Dictionary<string, string>
+                        {
+                            { "0", "0" },{ "2", "1" },{ "4", "2" },{ "default", "3" }
+                        };
+                        var baseBandMap = new Dictionary<string, string>
+                        {
+                            { "40", "0" },{ "160", "1" },{ "250", "2" },{ "320", "2" },{ "default", "3" }
+                        };
+                        // Process matches
+                        break;
+                    case 2: //AA async reciever gain
+                        //AA does not output anything when queried. It comes in with ag
+                        break;
+                    case 3: //AG reciever gain
+                        matches = Regex.Matches(msg, pattern);
+                        var gainMap = new Dictionary<string, string>
+                        {
+                            { "0","0" },{ "-9","1" },{ "-6","2" }, { "-3","3" },
+                            { "3","4" },{ "6","5" },{ "default","6" }
+                        };
+                        if (matches.Count > 0)
+                        {
+                            settings[3] = gainMap.ContainsKey(matches[0].Value) ? gainMap[matches[0].Value] : gainMap["default"];
+                        }
+                        if (matches.Count > 1)
+                        {
+                            settings[2] = gainMap.ContainsKey(matches[1].Value) ? gainMap[matches[1].Value] : gainMap["default"];
+                        }
+                        break;
+                    case 4: //RF
+                        matches = Regex.Matches(msg, pattern);
+                        settings[4] = matches.Count > 0 ? matches[0].Value : "0";
+                        break;
+                    case 5: //RA
+                        matches = Regex.Matches(msg, pattern);
+                        settings[5] = matches.Count > 0 ? matches[0].Value : "0";
+                        break;
+                    default:
+                        break;
+                }*/
+                _clientCMD.WriteLine(antenaSettingCMDs[0]);
+                await Task.Delay(10);
+            }
         }
     }
 
@@ -599,7 +714,6 @@ public class HSPClient
         {
             _clientDIAG.Dispose();
         }
-
     }
 
     /// <summary>
@@ -632,8 +746,7 @@ public class HSPClient
             {
                 // Read data from the client and update the data buffer
                 newDataBuffer = await readClient(_clientDATA, data, 96, false, dataBuffer);
-                dataBuffer = string.IsNullOrEmpty(newDataBuffer) ? dataBuffer : newDataBuffer;
-                
+                dataBuffer = string.IsNullOrEmpty(newDataBuffer) ? dataBuffer : newDataBuffer;                
             }
 
 

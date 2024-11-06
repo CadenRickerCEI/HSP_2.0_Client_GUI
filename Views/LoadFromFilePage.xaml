@@ -74,7 +74,7 @@
                 <Label x:Name="dialog" />
             </ScrollView>
         </Frame>
-            
+         <!--   
         <Label
             FontSize="Subtitle"
             HorizontalOptions="CenterAndExpand"
@@ -86,7 +86,7 @@
                 MinimumHeightRequest="75">
                 <Label x:Name="cmdDIAG" />
             </ScrollView>
-        </Frame>
+        </Frame>-->
 
     </StackLayout>
 

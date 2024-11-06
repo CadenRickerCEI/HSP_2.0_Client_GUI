@@ -24,12 +24,12 @@
         Icon="fileplus.png"
         Route="LoadFromFilePage"
         Shell.NavBarIsVisible="true" />
-    <!--<ShellContent
+    <ShellContent
         Title="Antena Setup"
         ContentTemplate="{DataTemplate views:AntenaSetUp}"
         Icon="antena.png"
         Route="AntenaSetUp"
-        Shell.NavBarIsVisible="true" />-->
+        Shell.NavBarIsVisible="true" />
     <ShellContent
         Title="Command Line"
         ContentTemplate="{DataTemplate views:cmdLine}"

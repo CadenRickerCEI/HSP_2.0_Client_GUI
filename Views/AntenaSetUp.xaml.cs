@@ -19,7 +19,7 @@ public partial class AntenaSetUp : ContentPage
         client = HSPClient.Instance;
 
         InitializeComponent();
-        baudRateSelector.SelectedIndex = Math.Max(baudRateSelector.SelectedIndex, 0);
+        //baudRateSelector.SelectedIndex = Math.Max(baudRateSelector.SelectedIndex, 0);
         tariSelector.SelectedIndex = Math.Max(tariSelector.SelectedIndex, 0);
         bitPatternSelector.SelectedIndex = Math.Max(bitPatternSelector.SelectedIndex, 0);
         LFSelector.SelectedIndex = Math.Max(LFSelector.SelectedIndex, 0);
@@ -40,12 +40,13 @@ public partial class AntenaSetUp : ContentPage
 
             if (settings != null && settings.Length > 5)
             {
-                baudRateSelector.SelectedIndex = settings[0];
-                tariSelector.SelectedIndex = settings[1];
-                bitPatternSelector.SelectedIndex = settings[2];
-                LFSelector.SelectedIndex = settings[3];
-                recieverGainSelector.SelectedIndex = settings[4];
-                asyncRecieverGain.SelectedIndex = settings[5];
+                //baudRateSelector.SelectedIndex = int.Parse(settings[0]);
+                tariSelector.SelectedIndex = int.Parse(settings[1]);
+                bitPatternSelector.SelectedIndex = int.Parse(settings[2]);
+                LFSelector.SelectedIndex = int.Parse(settings[3]);
+                recieverGainSelector.SelectedIndex = int.Parse(settings[4]);
+                asyncRecieverGain.SelectedIndex = int.Parse(settings[5]);
+                
             }
         }
     }
@@ -56,19 +57,19 @@ public partial class AntenaSetUp : ContentPage
     /// </summary>
     /// <param name="sender">The object that raised the event.</param>
     /// <param name="e">The event arguments.</param>
-    private void WriteSettings_Clicked(object sender, EventArgs e)
+    private async void WriteSettings_Clicked(object sender, EventArgs e)
     {
-        var settings = new int[6];
-        settings[0] = (int)baudRateSelector.SelectedIndex;
-        settings[1] = (int)tariSelector.SelectedIndex;
-        settings[2] = (int)bitPatternSelector.SelectedIndex;
-        settings[3] = (int)LFSelector.SelectedIndex;
-        settings[4] = (int)recieverGainSelector.SelectedIndex;
-        settings[5] = (int)asyncRecieverGain.SelectedIndex;
+        var settings = new string[6];
+        //settings[0] = (int)baudRateSelector.SelectedIndex;
+        settings[1] = tariSelector.SelectedIndex.ToString();
+        settings[2] = bitPatternSelector.SelectedIndex.ToString();
+        settings[3] = LFSelector.SelectedIndex.ToString();
+        settings[4] = recieverGainSelector.SelectedIndex.ToString();
+        settings[5] = asyncRecieverGain.SelectedIndex.ToString();
 
         if (client != null && client.isConnected())
         {
-            client.writeAntenaSettings(settings);
+           await client.writeAntenaSettings(settings);
         }
     }
 }

@@ -3,6 +3,7 @@
     x:Class="HSPGUI.Views.AntenaSetUp"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     >
 
     <StackLayout>
@@ -13,16 +14,16 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
 
                     </Grid.ColumnDefinitions>
-                    <Picker
+                    <!--<Picker
                         x:Name="baudRateSelector"
                         Title="Select Baud Rate"
                         Grid.Row="0" Grid.Column="0"
@@ -42,61 +43,59 @@
                             </x:Array>
 
                         </Picker.ItemsSource>
-                    </Picker>
+                    </Picker>-->
+                    <StackLayout Grid.Row="0" Grid.Column="0" Margin="5,0">
+                        <Label Text="Frequency" Margin="0,4"></Label>
+                        <Entry  >
+                            <!--<Entry.Behaviors>
+                                <toolkit:NumericValidationBehavior MinimumValue="902" MaximumValue="928" />
+                            </Entry.Behaviors>-->
+                        </Entry>
+                    </StackLayout>
+                    
                     <Picker
-                        x:Name="tariSelector"
-                        Title="Select Tari Length"
-                        Margin="10,0"
-                        Grid.Row="0" Grid.Column="1"
-                        HorizontalOptions="FillAndExpand"
-                        SelectedIndex="0"
-                        VerticalOptions="Start">
+                        x:Name="recieverAttenuation"
+                        Title="Attenuation"
+                        Grid.Row="0" Grid.Column="1">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
-                                <x:String>6.25 usec</x:String>
-                                <x:String>12.50 usec</x:String>
-                                <x:String>25.00 usec</x:String>
+                                <x:String>8</x:String>
+                                <x:String>9</x:String>
+                                <x:String>10</x:String>
+                                <x:String>11</x:String>
+                                <x:String>12</x:String>
+                                <x:String>13</x:String>
+                                <x:String>14</x:String>
+                                <x:String>15</x:String>
+                                <x:String>16</x:String>
+                                <x:String>17</x:String>
+                                <x:String>18</x:String>
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
                     <Picker
-                        x:Name="bitPatternSelector"
-                        Title="Select Bit Pattern"
-                        HorizontalOptions="FillAndExpand"
-                        SelectedIndex="0"
-                        Grid.Row="0" Grid.Column="2">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>FM0</x:String>
-                                <x:String>MILLER2</x:String>
-                                <x:String>MILLER4</x:String>
-                                <x:String>MILLER8</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
-                    <Picker
-                        x:Name="LFSelector"
-                        Title="Select Tag Base Band"
-                        
+                        x:Name="recieverGainSelector"
+                        Title="Reciever Gain"
+                        Margin="5,0"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
                         Grid.Row="1" Grid.Column="0"
                         VerticalOptions="Start">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
-                                <x:String>40 khz</x:String>
-                                <x:String>160 khz</x:String>
-                                <x:String>250 khz</x:String>
-                                <x:String>320 khz</x:String>
-                                <x:String>640 khz</x:String>
+                                <x:String> 0 db</x:String>
+                                <x:String>-9 db</x:String>
+                                <x:String>-6 db</x:String>
+                                <x:String>+3 db</x:String>
+                                <x:String>+6 db</x:String>
+                                <x:String>+9 db</x:String>
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
-
                     <Picker
-                        x:Name="recieverGainSelector"
-                        Title="Reciever Gain"
-                        Margin="10,0"
+                        x:Name="asyncRecieverGain"
+                        Title="Async Reciever Gain"
+                        Margin="5,0"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
                         Grid.Row="1" Grid.Column="1"
@@ -113,25 +112,56 @@
                         </Picker.ItemsSource>
                     </Picker>
                     <Picker
-                        x:Name="asyncRecieverGain"
-                        Title="Async Reciever Gain"
-                        
-                        HorizontalOptions="FillAndExpand"
-                        SelectedIndex="0"
-                        Grid.Row="1" Grid.Column="2"
-                        VerticalOptions="Start">
+                       x:Name="tariSelector"
+                       Title="Select Tari Length"
+                       Margin="5,0"
+                       Grid.Row="2" Grid.Column="0"
+                       HorizontalOptions="FillAndExpand"
+                       SelectedIndex="0"
+                       VerticalOptions="Start">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
-                                <x:String> 0 db</x:String>
-                                <x:String>-9 db</x:String>
-                                <x:String>-6 db</x:String>
-                                <x:String>+3 db</x:String>
-                                <x:String>+6 db</x:String>
-                                <x:String>+9 db</x:String>
+                                <x:String>6.25 usec</x:String>
+                                <x:String>12.50 usec</x:String>
+                                <x:String>25.00 usec</x:String>
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
-                    </Grid>
+                    <Picker
+                       x:Name="bitPatternSelector"
+                       Title="Select Bit Pattern"
+                       HorizontalOptions="FillAndExpand"
+                       Margin="5,0"
+                       SelectedIndex="0"
+                       Grid.Row="2" Grid.Column="1">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>FM0</x:String>
+                                <x:String>MILLER2</x:String>
+                                <x:String>MILLER4</x:String>
+                                <x:String>MILLER8</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Picker
+                       x:Name="LFSelector"
+                       Title="Select Tag Base Band"
+                       Margin="5,0"
+                       HorizontalOptions="FillAndExpand"
+                       SelectedIndex="0"
+                       Grid.Row="3" Grid.Column="0"
+                       VerticalOptions="Start">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>40 khz</x:String>
+                                <x:String>160 khz</x:String>
+                                <x:String>250 khz</x:String>
+                                <x:String>320 khz</x:String>
+                                <x:String>640 khz</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </Grid>
                 <StackLayout>
                     <Button
                         x:Name="ReadSettings"

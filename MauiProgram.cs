@@ -17,7 +17,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>().UseMauiCommunityToolkitCore();
 
-        builder.UseMauiApp<App>()
+        builder.UseMauiApp<App>().UseMauiCommunityToolkitCore()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -28,7 +28,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<StatusPage>();
         builder.Services.AddSingleton<GenerateFromFilePage>();
         builder.Services.AddSingleton<LoadFromFilePage>();
-        // builder.Services.AddSingleton<AntenaSetUp>();
+        builder.Services.AddSingleton<AntenaSetUp>();
         builder.Services.AddSingleton<cmdLine>();
         builder.Services.AddSingleton<NetworkConfig>();
         return builder.Build();
