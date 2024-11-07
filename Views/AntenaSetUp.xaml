@@ -46,10 +46,7 @@
                     </Picker>-->
                     <StackLayout Grid.Row="0" Grid.Column="0" Margin="5,0">
                         <Label Text="Frequency" Margin="0,4"></Label>
-                        <Entry  >
-                            <!--<Entry.Behaviors>
-                                <toolkit:NumericValidationBehavior MinimumValue="902" MaximumValue="928" />
-                            </Entry.Behaviors>-->
+                        <Entry x:Name="RadioFrequency">
                         </Entry>
                     </StackLayout>
                     
@@ -86,6 +83,7 @@
                                 <x:String> 0 db</x:String>
                                 <x:String>-9 db</x:String>
                                 <x:String>-6 db</x:String>
+                                <x:String>-3 db</x:String>
                                 <x:String>+3 db</x:String>
                                 <x:String>+6 db</x:String>
                                 <x:String>+9 db</x:String>
@@ -105,6 +103,7 @@
                                 <x:String> 0 db</x:String>
                                 <x:String>-9 db</x:String>
                                 <x:String>-6 db</x:String>
+                                <x:String>-3 db</x:String>
                                 <x:String>+3 db</x:String>
                                 <x:String>+6 db</x:String>
                                 <x:String>+9 db</x:String>

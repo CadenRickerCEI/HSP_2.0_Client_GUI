@@ -41,12 +41,14 @@ public partial class AntenaSetUp : ContentPage
             if (settings != null && settings.Length > 5)
             {
                 //baudRateSelector.SelectedIndex = int.Parse(settings[0]);
-                tariSelector.SelectedIndex = int.Parse(settings[1]);
-                bitPatternSelector.SelectedIndex = int.Parse(settings[2]);
-                LFSelector.SelectedIndex = int.Parse(settings[3]);
-                recieverGainSelector.SelectedIndex = int.Parse(settings[4]);
-                asyncRecieverGain.SelectedIndex = int.Parse(settings[5]);
-                
+                tariSelector.SelectedIndex = int.Parse(settings[1].Substring(0,1));
+                bitPatternSelector.SelectedIndex = int.Parse(settings[1].Substring(1,1));
+                LFSelector.SelectedIndex = int.Parse(settings[1].Substring(2, 1));
+                recieverGainSelector.SelectedIndex = int.Parse(settings[2]);
+                asyncRecieverGain.SelectedIndex = int.Parse(settings[3]);
+                RadioFrequency.Text = settings[4];
+                recieverAttenuation.SelectedIndex = int.Parse(settings[5]);              
+
             }
         }
     }

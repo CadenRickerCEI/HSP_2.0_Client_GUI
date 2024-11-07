@@ -91,7 +91,7 @@ public class HSPClient
     /// 4 RF: Frequency for the antana 902mHz to 928mHz
     /// 5 RA: Power level for RF 8db to 19db
     /// </summary>
-    private string[] antenaSettingCMDs = new string[] { "NB","P","AA","AG","RF","RA" };
+    private string[] antenaSettingCMDs = new string[] { "P","P","AA","AG","RF","RA" };
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
@@ -396,16 +396,19 @@ public class HSPClient
     /// <returns>An array of integers representing the antenna settings.</returns>
     public async Task<string[]> readAntenaSettings()
     {
-        var settings = new string[6];
+        var settings = new string[6] {"0", "0", "0", "0", "0", "0" };
         if (_clientCMD != null)
         {
-            for (int i = 0; i < antenaSettingCMDs.Length; i++)
+            for (int i = 1; i < antenaSettingCMDs.Length; i++)
             {
-                if (i == 0 || i == 2)
-                    break;
-                _clientCMD.WriteLine(antenaSettingCMDs[0]);
-                await Task.Delay(10);
-                string msg = await readServerMSg(false);
+                string msg = "";
+                if (i!=2){
+                    _clientCMD.WriteLine(antenaSettingCMDs[i]);
+                    await Task.Delay(10);
+                    msg = await readServerMSg(false);
+                    
+                }
+                System.Diagnostics.Debug.WriteLine(antenaSettingCMDs[i]);
                 string pattern = @"-?\d+(\.\d+)?";
                 MatchCollection matches;
 
@@ -426,24 +429,16 @@ public class HSPClient
                         {
                             { "0", "0" },{ "2", "1" },{ "4", "2" },{ "default", "3" }
                         };
-                        var  baseBandMap = new Dictionary<string, string>
+                        var baseBandMap = new Dictionary<string, string>
                         {
                             { "40", "0" },{ "160", "1" },{ "250", "2" },{ "320", "2" },{ "default", "3" }
                         };
                         // Process matches
-                        if (matches.Count > 0)
-                        {
-                            output = tariMap.ContainsKey(matches[0].Value) ? tariMap[matches[0].Value] : tariMap["default"];
-                        }
-                        if (matches.Count > 1)
-                        {
-                            output += bitPatternMap.ContainsKey(matches[1].Value) ? bitPatternMap[matches[1].Value] : bitPatternMap["default"];
-                        }
-                        if (matches.Count > 2)
-                        {
-                            output += baseBandMap.ContainsKey(matches[2].Value) ? baseBandMap[matches[2].Value] : baseBandMap["default"];
-                        }
+                        output = matches.Count > 0 && tariMap.ContainsKey(matches[0].Value) ? tariMap[matches[0].Value] : tariMap["default"];
+                        output += matches.Count > 1 && bitPatternMap.ContainsKey(matches[1].Value) ? bitPatternMap[matches[1].Value] : bitPatternMap["default"];
+                        output += matches.Count > 2 && baseBandMap.ContainsKey(matches[2].Value) ? baseBandMap[matches[2].Value] : baseBandMap["default"];
                         settings[1] = output;
+                        System.Diagnostics.Debug.WriteLine("P command setting is: " + output);
                         break;
                     case 2: //AA async reciever gain
                         //AA does not output anything when queried. It comes in with ag
@@ -455,6 +450,7 @@ public class HSPClient
                             { "0","0" },{ "-9","1" },{ "-6","2" }, { "-3","3" },
                             { "3","4" },{ "6","5" },{ "default","6" }
                         };
+                        System.Diagnostics.Debug.WriteLine($"{matches.Count} {matches[0].Value} {matches[1]}");
                         if (matches.Count > 0)
                         {
                             settings[3] = gainMap.ContainsKey(matches[0].Value)? gainMap[matches[0].Value] : gainMap["default"];
@@ -465,12 +461,16 @@ public class HSPClient
                         }                           
                         break;
                     case 4: //RF
-                        matches = Regex.Matches(msg, pattern);                        
-                        settings[4] = matches.Count > 0 ? matches[0].Value : "0";
+                        matches = Regex.Matches(msg, pattern);
+                        settings[4] = matches.Count > 0 ? (decimal.Parse(matches[0].Value)/1000).ToString("F2") : "0";
                         break;
                     case 5: //RA
-                        matches = Regex.Matches(msg, pattern);
-                        settings[5] = matches.Count > 0 ? matches[0].Value : "0";
+                        matches = Regex.Matches(msg, pattern);                        
+                        var RAMap = new Dictionary<string, string>
+                        {
+                            {"8","0"},{"9","1"},{"10","2"},{"11","3"},{"12","4"},{"13","5"},{"14","6"},{"15","7"},{"16","8"},{"17","9"},{"18","10"}
+                        };
+                        settings[5] = matches.Count > 2 && RAMap.ContainsKey(matches[1].Value)? RAMap[matches[1].Value] : "0";
                         break;
                     default:
                         break;
