@@ -50,9 +50,18 @@ public partial class StatusPage : ContentPage
     /// <param name="connectionStatus"></param>
     private void Client_connectionStatusChanged(bool connectionStatus)
     {
-        bool demoMode = Preferences.Get(Constants.demoMode, false);
-        connectionBtn.IsVisible = !connectionStatus && !demoMode;
-        statusGrid.IsVisible = connectionStatus  || demoMode ;
+        try
+        {
+            bool demoMode = Preferences.Get(Constants.demoMode, false);
+            connectionBtn.IsVisible = !connectionStatus && !demoMode;
+            statusGrid.IsVisible = connectionStatus || demoMode;
+        }
+        catch
+        {
+            connectionBtn.IsVisible = true;
+            statusGrid.IsVisible = false;
+        }
+        
     }
     /// <summary>
     /// Updates the dialog display if the dialog data has been updated.

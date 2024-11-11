@@ -266,9 +266,6 @@ public partial class GenerateFromFilePage : ContentPage
             var AccData = AccessPass_Entry.Text != null ? AccessPass_Entry.Text : "";
             var PCData = PC_Entry.Text != null ? PC_Entry.Text : "";
 
-            EPCData = (EPCData.Length >= 4) ? EPCData.Insert(EPCData.Length - 4, "!") : EPCData;
-            UserData = (UserData.Length >= 4) ? UserData.Insert(UserData.Length - 4, "!") : UserData;
-
             string[] bufferCmd = [EPCData, UserData, killData, AccData, PCData];
             var numofItems = GeneratorNum_Entry.Text != null ? int.Parse(GeneratorNum_Entry.Text) : -1;
 

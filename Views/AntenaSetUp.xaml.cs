@@ -1,4 +1,6 @@
-﻿namespace HSPGUI.Views;
+﻿using System.ComponentModel;
+
+namespace HSPGUI.Views;
 /// <summary>
 /// The AntenaSetUp class is a .net Maui ContentPage that provides a user interface
 /// for setting up an antenna. It includes methods for reading and writing antenna settings.
@@ -38,16 +40,15 @@ public partial class AntenaSetUp : ContentPage
         {
             var settings = await client.readAntenaSettings();
 
-            if (settings != null && settings.Length > 5)
-            {
-                //baudRateSelector.SelectedIndex = int.Parse(settings[0]);
-                tariSelector.SelectedIndex = int.Parse(settings[1].Substring(0,1));
-                bitPatternSelector.SelectedIndex = int.Parse(settings[1].Substring(1,1));
-                LFSelector.SelectedIndex = int.Parse(settings[1].Substring(2, 1));
-                recieverGainSelector.SelectedIndex = int.Parse(settings[2]);
-                asyncRecieverGain.SelectedIndex = int.Parse(settings[3]);
-                RadioFrequency.Text = settings[4];
-                recieverAttenuation.SelectedIndex = int.Parse(settings[5]);              
+            if (settings != null && settings.Length > 4)
+            {                
+                tariSelector.SelectedIndex = int.Parse(settings[0].Substring(0,1));
+                bitPatternSelector.SelectedIndex = int.Parse(settings[0].Substring(1,1));
+                LFSelector.SelectedIndex = int.Parse(settings[0].Substring(2, 1));
+                recieverGainSelector.SelectedIndex = int.Parse(settings[1]);
+                asyncRecieverGain.SelectedIndex = int.Parse(settings[2]);
+                RadioFrequency.Text = settings[3];
+                recieverAttenuation.SelectedIndex = int.Parse(settings[4]);              
 
             }
         }
@@ -61,17 +62,28 @@ public partial class AntenaSetUp : ContentPage
     /// <param name="e">The event arguments.</param>
     private async void WriteSettings_Clicked(object sender, EventArgs e)
     {
-        var settings = new string[6];
-        //settings[0] = (int)baudRateSelector.SelectedIndex;
-        settings[1] = tariSelector.SelectedIndex.ToString();
-        settings[2] = bitPatternSelector.SelectedIndex.ToString();
-        settings[3] = LFSelector.SelectedIndex.ToString();
-        settings[4] = recieverGainSelector.SelectedIndex.ToString();
-        settings[5] = asyncRecieverGain.SelectedIndex.ToString();
+        var settings = new string[5];
+        settings[0] = $"{tariSelector.SelectedIndex.ToString()},{bitPatternSelector.SelectedIndex.ToString()},{LFSelector.SelectedIndex.ToString()}";
+        settings[1] = recieverGainSelector.SelectedIndex.ToString();
+        settings[2] = asyncRecieverGain.SelectedIndex.ToString();
+        settings[3] = RadioFrequency.Text;
+        settings[4] = recieverAttenuation.SelectedIndex.ToString();
 
         if (client != null && client.isConnected())
         {
            await client.writeAntenaSettings(settings);
+        }
+    }
+
+
+    private void RadioFrequency_Completed(object sender, EventArgs e)
+    {
+        decimal number;
+        if (decimal.TryParse(RadioFrequency.Text, out number))
+        {
+            number = number < 902 ? 902 : number;
+            number = number > 928 ? 928 : number;
+            RadioFrequency.Text = (Math.Round(number * 20) / 20).ToString("F2");
         }
     }
 }

@@ -91,7 +91,7 @@ public class HSPClient
     /// 4 RF: Frequency for the antana 902mHz to 928mHz
     /// 5 RA: Power level for RF 8db to 19db
     /// </summary>
-    private string[] antenaSettingCMDs = new string[] { "P","P","AA","AG","RF","RA" };
+    private string[] antenaSettingCMDs = new string[] { "P","AA","AG","RF","RA" };
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
@@ -255,6 +255,7 @@ public class HSPClient
             {
                 try
                 {
+                    System.Diagnostics.Debug.WriteLine(command);
                     _clientCMD.WriteLine($"{command}");
                 }
                 catch
@@ -396,28 +397,25 @@ public class HSPClient
     /// <returns>An array of integers representing the antenna settings.</returns>
     public async Task<string[]> readAntenaSettings()
     {
-        var settings = new string[6] {"0", "0", "0", "0", "0", "0" };
+        var settings = new string[5] {"0", "0", "0", "0", "0"};
         if (_clientCMD != null)
         {
-            for (int i = 1; i < antenaSettingCMDs.Length; i++)
+            for (int i = 0; i < antenaSettingCMDs.Length; i++)
             {
                 string msg = "";
-                if (i!=2){
+                if (i!=1){
                     _clientCMD.WriteLine(antenaSettingCMDs[i]);
                     await Task.Delay(10);
                     msg = await readServerMSg(false);
                     
                 }
-                System.Diagnostics.Debug.WriteLine(antenaSettingCMDs[i]);
                 string pattern = @"-?\d+(\.\d+)?";
                 MatchCollection matches;
 
 
                 switch (i)
                 {
-                    case 0: //BaudRate
-                        break;
-                    case 1: //P interface commands
+                    case 0: //P interface commands
                         matches = Regex.Matches(msg, pattern);
                         string output = "";
                         // Dictionaries to map match values to outputs
@@ -437,40 +435,38 @@ public class HSPClient
                         output = matches.Count > 0 && tariMap.ContainsKey(matches[0].Value) ? tariMap[matches[0].Value] : tariMap["default"];
                         output += matches.Count > 1 && bitPatternMap.ContainsKey(matches[1].Value) ? bitPatternMap[matches[1].Value] : bitPatternMap["default"];
                         output += matches.Count > 2 && baseBandMap.ContainsKey(matches[2].Value) ? baseBandMap[matches[2].Value] : baseBandMap["default"];
-                        settings[1] = output;
-                        System.Diagnostics.Debug.WriteLine("P command setting is: " + output);
+                        settings[0] = output;
                         break;
-                    case 2: //AA async reciever gain
+                    case 1: //AA async reciever gain
                         //AA does not output anything when queried. It comes in with ag
                         break;
-                    case 3: //AG reciever gain
+                    case 2: //AG reciever gain
                         matches = Regex.Matches(msg, pattern);
                         var gainMap = new Dictionary<string, string>
                         {
                             { "0","0" },{ "-9","1" },{ "-6","2" }, { "-3","3" },
                             { "3","4" },{ "6","5" },{ "default","6" }
                         };
-                        System.Diagnostics.Debug.WriteLine($"{matches.Count} {matches[0].Value} {matches[1]}");
                         if (matches.Count > 0)
                         {
-                            settings[3] = gainMap.ContainsKey(matches[0].Value)? gainMap[matches[0].Value] : gainMap["default"];
+                            settings[2] = gainMap.ContainsKey(matches[0].Value)? gainMap[matches[0].Value] : gainMap["default"];
                         }
                         if (matches.Count > 1)
                         {
-                            settings[2] = gainMap.ContainsKey(matches[1].Value) ? gainMap[matches[1].Value] : gainMap["default"];
+                            settings[1] = gainMap.ContainsKey(matches[1].Value) ? gainMap[matches[1].Value] : gainMap["default"];
                         }                           
                         break;
-                    case 4: //RF
+                    case 3: //RF
                         matches = Regex.Matches(msg, pattern);
-                        settings[4] = matches.Count > 0 ? (decimal.Parse(matches[0].Value)/1000).ToString("F2") : "0";
+                        settings[3] = matches.Count > 0 ? (decimal.Parse(matches[0].Value)/1000).ToString("F2") : "0";
                         break;
-                    case 5: //RA
+                    case 4: //RA
                         matches = Regex.Matches(msg, pattern);                        
                         var RAMap = new Dictionary<string, string>
                         {
                             {"8","0"},{"9","1"},{"10","2"},{"11","3"},{"12","4"},{"13","5"},{"14","6"},{"15","7"},{"16","8"},{"17","9"},{"18","10"}
                         };
-                        settings[5] = matches.Count > 2 && RAMap.ContainsKey(matches[1].Value)? RAMap[matches[1].Value] : "0";
+                        settings[4] = matches.Count > 2 && RAMap.ContainsKey(matches[1].Value)? RAMap[matches[1].Value] : "0";
                         break;
                     default:
                         break;
@@ -483,71 +479,38 @@ public class HSPClient
     /// <summary>
     /// Writes antenna settings to the HSP.
     /// </summary>
-    /// <param name="Settings">An array of integers representing the antenna settings.</param>
-    public async Task writeAntenaSettings(string[] Settings)
+    /// <param name="settings">An array of integers representing the antenna settings.</param>
+    public async Task writeAntenaSettings(string[] settings)
     {
         if (_clientCMD != null && isConnected())
         {
             for (int i = 0; i < antenaSettingCMDs.Length; i++)
             {
-                if (i == 0 || i == 2)
-                    break;
-                string cmd = "";
-
-                /*
+                string cmd = $"{antenaSettingCMDs[i]}";                
                 switch (i)
                 {
-                    case 0: //BaudRate
+                    case 0: //P interface commands
+                        var splitString = settings[i] != null ? settings[i].Split(",") : new string[] { "0","0","0"};
+                        System.Diagnostics.Debug.WriteLine($"{splitString[0]} {splitString[1]} {splitString[2]}");
+                        cmd += $"{(splitString.Length > 0 && int.Parse(splitString[0])>= 0 && int.Parse(splitString[0]) < 3 ? splitString[0] : "0")}" +
+                               $"{(splitString.Length > 1 && int.Parse(splitString[1])>= 0 && int.Parse(splitString[1]) < 4 ? splitString[1] : "0")}" +
+                               $"{(splitString.Length > 2 && int.Parse(splitString[2])>= 0 && int.Parse(splitString[2]) < 4 ? splitString[2] : "0")}";
                         break;
-                    case 1: //P interface commands
-                        var p settingSettings[i].Split('');
-                        // Dictionaries to map match values to outputs
-                        
-                        var tariMap = new Dictionary<string, string>
-                        {
-                            { "6.25", "0" },{ "12.5", "1" },{ "default", "2" }
-                        };
-                        var bitPatternMap = new Dictionary<string, string>
-                        {
-                            { "0", "0" },{ "2", "1" },{ "4", "2" },{ "default", "3" }
-                        };
-                        var baseBandMap = new Dictionary<string, string>
-                        {
-                            { "40", "0" },{ "160", "1" },{ "250", "2" },{ "320", "2" },{ "default", "3" }
-                        };
-                        // Process matches
+                    case 1: //AA async reciever gain                       
+                        // same rules for AG
+                    case 2: //AG reciever gain
+                        cmd += $"{(settings[i] != null && int.Parse(settings[i]) >= 0 && int.Parse(settings[i]) <= 6 ? settings[i] : "0")}";                                               
                         break;
-                    case 2: //AA async reciever gain
-                        //AA does not output anything when queried. It comes in with ag
+                    case 3: //RF
+                        cmd += $"{(settings[i] != null && decimal.Parse(settings[i]) >= 902 && decimal.Parse(settings[i]) <= 928 ? (decimal.Parse(settings[i])*100).ToString("F0") : "91500")}";
                         break;
-                    case 3: //AG reciever gain
-                        matches = Regex.Matches(msg, pattern);
-                        var gainMap = new Dictionary<string, string>
-                        {
-                            { "0","0" },{ "-9","1" },{ "-6","2" }, { "-3","3" },
-                            { "3","4" },{ "6","5" },{ "default","6" }
-                        };
-                        if (matches.Count > 0)
-                        {
-                            settings[3] = gainMap.ContainsKey(matches[0].Value) ? gainMap[matches[0].Value] : gainMap["default"];
-                        }
-                        if (matches.Count > 1)
-                        {
-                            settings[2] = gainMap.ContainsKey(matches[1].Value) ? gainMap[matches[1].Value] : gainMap["default"];
-                        }
-                        break;
-                    case 4: //RF
-                        matches = Regex.Matches(msg, pattern);
-                        settings[4] = matches.Count > 0 ? matches[0].Value : "0";
-                        break;
-                    case 5: //RA
-                        matches = Regex.Matches(msg, pattern);
-                        settings[5] = matches.Count > 0 ? matches[0].Value : "0";
+                    case 4: //RA
+                        cmd += $"{(settings[i] != null && int.Parse(settings[i]) >= 0 && int.Parse(settings[i]) <= 10 ? (int.Parse(settings[i])+8).ToString() : "13")}";
                         break;
                     default:
                         break;
-                }*/
-                _clientCMD.WriteLine(antenaSettingCMDs[0]);
+                }
+                _clientCMD.WriteLine(cmd);
                 await Task.Delay(10);
             }
         }
