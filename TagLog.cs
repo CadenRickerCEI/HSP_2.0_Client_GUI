@@ -1,4 +1,6 @@
-﻿namespace HSPGUI.Resources
+﻿using System.Text;
+
+namespace HSPGUI.Resources
 {
     public struct TagData
     {
@@ -93,10 +95,37 @@
                                 nextTag.stats[keyPair[0]] = Convert.ToByte(keyPair[1],16);
                             }
                         }
+                        currentTag = nextTag;
                     }
                 }
             }
         }
+        public string getCurrentTag()
+        {
+            return formatTag(currentTag).ToString();
+        }
+        public async Task<String> getHistAsync()
+        {
+            return await Task.Run(() =>
+            {
+                var resultBuilder = new StringBuilder(); // Use StringBuilder for better performance
+                foreach (var tag in tagHist)
+                {
+                    resultBuilder.Append(formatTag(tag)); // Append formatted tag
+                }
+                return resultBuilder.ToString(); // Convert StringBuilder to string
+            });
+        }
+        private StringBuilder formatTag( TagData tag)
+        {
+            var statsFormatted = string.Join(", ", tag.stats.Select(kvp => $"{kvp.Key}:{kvp.Value:X2}"));
+            var sb = new StringBuilder();
+            sb.AppendLine($"{tag.TriggerTime:yyyy-MM-dd HH:mm:ss.fff}");
+            sb.AppendLine($"Entry = {tag.EntryEPC} --> Encode = {tag.EncodeData}");
+            sb.Append($"Stats: {statsFormatted}");
+            return sb;
+        }
+
     }
 
 }

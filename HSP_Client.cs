@@ -92,7 +92,7 @@ public class HSPClient
     /// 5 RA: Power level for RF 8db to 19db
     /// </summary>
     private string[] antenaSettingCMDs = new string[] { "P","AA","AG","RF","RA" };
-    //public TagLog tagLog {  get; private set; }
+    public TagLog tagLog {  get; private set; }
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
@@ -108,7 +108,7 @@ public class HSPClient
         {
             Directory.CreateDirectory(downloadsDirectory);
         }
-        //tagLog = new TagLog();
+        tagLog = new TagLog();
         var logFilePath = Path.Combine(downloadsDirectory, "app.log");
         Log.Logger = new LoggerConfiguration().WriteTo
             .File(logFilePath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7).CreateLogger(); 
@@ -714,7 +714,7 @@ public class HSPClient
             else
             {
                 // Read data from the client and update the data buffer
-                newDataBuffer = await readClient(_clientDATA, data, 96, false, dataBuffer);
+                newDataBuffer = await readClient(_clientDATA, data, 96, true, dataBuffer);
                 dataBuffer = string.IsNullOrEmpty(newDataBuffer) ? dataBuffer : newDataBuffer;                
             }
 
@@ -793,16 +793,14 @@ public class HSPClient
     private async Task <string> parseMsg(string msg, Queue<string> queue, int quesize, bool addToLog)
     {
         var parsedMsg = "test";
-        await Task.Run(() =>
-        {          
-            if( addToLog)
-            {
-                if (string.IsNullOrEmpty(msg))
-                {
-                    Log.Logger.Information( msg);
-                }              
-            }
-            else
+        if (addToLog)
+        {
+            await tagLog.addData(msg);
+            parsedMsg = await tagLog.getHistAsync();
+        }
+        else
+        {
+            await Task.Run(() =>
             {
                 var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
                 parsedMsg = "";
@@ -815,7 +813,7 @@ public class HSPClient
                     foreach (var line in newLines.TakeLast(Math.Min(quesize, newLines.Length)))
                     {
                         var item = line.Trim();
-                        if (item != "" && ! item.Contains("PIPUMP") )
+                        if (item != "" && !item.Contains("PIPUMP"))
                         {
                             queue.Enqueue(item);
                         }
@@ -823,11 +821,12 @@ public class HSPClient
                         {
                             queue.Dequeue();
                         }
-                    }                   
+                    }
                     parsedMsg = string.Join("\n", queue);
-                }  
-            }            
-        });
+                }
+            });
+        }
+        
         return parsedMsg;
     }    
 }
