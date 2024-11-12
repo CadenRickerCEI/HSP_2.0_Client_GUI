@@ -92,6 +92,7 @@ public class HSPClient
     /// 5 RA: Power level for RF 8db to 19db
     /// </summary>
     private string[] antenaSettingCMDs = new string[] { "P","AA","AG","RF","RA" };
+    //public TagLog tagLog {  get; private set; }
     /// <summary>
     /// Initializes a new instance of the HSPClient class.
     /// </summary>
@@ -107,7 +108,7 @@ public class HSPClient
         {
             Directory.CreateDirectory(downloadsDirectory);
         }
-
+        //tagLog = new TagLog();
         var logFilePath = Path.Combine(downloadsDirectory, "app.log");
         Log.Logger = new LoggerConfiguration().WriteTo
             .File(logFilePath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7).CreateLogger(); 
@@ -224,7 +225,6 @@ public class HSPClient
             HSPResponse = "";
             var command = "GENERATE=";
             var i = 0;
-
             foreach (var data in bufferCmdData)
             {
                 if (data != "") command += dataTypes[i] + data + ",";
@@ -572,15 +572,22 @@ public class HSPClient
             _clientCMD.WriteLine("GETBUFFERCOUNT\n");
             string? result = await readServerMSg(false);            
             result = result is not null ? result : "";
+            
             int count = -1;
             if (result != "")
             {
-                MatchCollection matches = Regex.Matches(result, @"\d+");
-                int sum = 0;
-
-                foreach (Match match in matches)
-                    sum += int.Parse(match.Value);
-                count = sum;
+                var newLines = result.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
+                foreach (var line in newLines)
+                {
+                    if (line.Contains("PIPUMP"))
+                    {
+                        MatchCollection matches = Regex.Matches(line, @"\d+");
+                        int sum = 0;
+                        foreach (Match match in matches)
+                            sum += int.Parse(match.Value);
+                        count = sum;
+                    }                    
+                }                
             }
             else
             {
@@ -696,8 +703,7 @@ public class HSPClient
             {
                 
                 // Read data from the client and update the data buffer
-                var taskData = readClient(_clientDATA, data, 300, false, dataBuffer);
-                
+                var taskData = readClient(_clientDATA, data, 300, false, dataBuffer);                
                 // Read data from the dialog client and update the dialog buffer
                 var taskDialog = readClient(_clientDIAG, dialog, 300, true,dialogbuffer);
 
@@ -798,7 +804,6 @@ public class HSPClient
             }
             else
             {
-
                 var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
                 parsedMsg = "";
                 if (newLines.Length > 0)
@@ -810,7 +815,7 @@ public class HSPClient
                     foreach (var line in newLines.TakeLast(Math.Min(quesize, newLines.Length)))
                     {
                         var item = line.Trim();
-                        if (item != "")
+                        if (item != "" && ! item.Contains("PIPUMP") )
                         {
                             queue.Enqueue(item);
                         }
@@ -820,12 +825,9 @@ public class HSPClient
                         }
                     }                   
                     parsedMsg = string.Join("\n", queue);
-
                 }  
-            }
-            
+            }            
         });
-        //System.Diagnostics.Debug.WriteLine(parsedMsg);
         return parsedMsg;
     }    
 }
