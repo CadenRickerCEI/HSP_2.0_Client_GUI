@@ -703,7 +703,7 @@ public class HSPClient
             {
                 
                 // Read data from the client and update the data buffer
-                var taskData = readClient(_clientDATA, data, 300, false, dataBuffer);                
+                var taskData = readClient(_clientDATA, data, 300, true, dataBuffer);                
                 // Read data from the dialog client and update the dialog buffer
                 var taskDialog = readClient(_clientDIAG, dialog, 300, true,dialogbuffer);
 
@@ -718,7 +718,7 @@ public class HSPClient
                 dataBuffer = string.IsNullOrEmpty(newDataBuffer) ? dataBuffer : newDataBuffer;                
             }
 
-
+            dataUpdated?.Invoke(true);
             // Invoke the dialogUpdated event if the dialog buffer has changed
 
             int updateLimitCounter = 100 / Constants.tcpUpdateRate;
@@ -796,7 +796,7 @@ public class HSPClient
         if (addToLog)
         {
             await tagLog.addData(msg);
-            parsedMsg = await tagLog.getHistAsync();
+            parsedMsg = "added to log";//await tagLog.getHistAsync();
         }
         else
         {

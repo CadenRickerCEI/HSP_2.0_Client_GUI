@@ -31,16 +31,12 @@ public partial class StatusPage : ContentPage
     public StatusPage()
     {
         client = HSPClient.Instance;
-        client.connectionStatusChanged += Client_connectionStatusChanged;
-        client.dataUpdated += dialogDataUpdtated;
-        client.dialogUpdated += dialogDialogUpdtated;
+        client.connectionStatusChanged += Client_connectionStatusChanged;        
+        client.dataUpdated += dialogDataUpdated;
         InitializeComponent();
         if (client != null)
         {            
-            dialogData.Text = client.dataBuffer;            
-            dialogDIAG.Text = client.dialogbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height, true);
-            var i = scrollDATA.ScrollToAsync(0, dialogData.Height, true);
+            
             var j = scrollCMD.ScrollToAsync(0, dialog.Height, true);
         }
     }
@@ -67,37 +63,24 @@ public partial class StatusPage : ContentPage
     /// Updates the dialog display if the dialog data has been updated.
     /// </summary>
     /// <param name="updated">Indicates whether the dialog data has been updated.</param>
-    private void dialogDialogUpdtated(bool updated)
+    private void dialogDataUpdated(bool updated)
     {
-        if (updated && client != null)
+        if (client != null)
         {
-            // Update the dialog display with the new dialog buffer
-            dialogDIAG.Text = client.dialogbuffer;
-
-            // Scroll to the bottom of the dialog display
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height + scrollDIAG.Height, true);
-        }
-    }
-
-    /// <summary>
-    /// Updates the data display if the data has been updated.
-    /// </summary>
-    /// <param name="updated">Indicates whether the data has been updated.</param>
-    private void dialogDataUpdtated(bool updated)
-    {
-        if (updated && client != null )
-        {
-            // Update the data display with the new data buffer
-            bool newText = dialogData.Text != client.dataBuffer;
-            dialogData.Text = client.dataBuffer;
-            if (newText)
-            {
-                // Scroll to the bottom of the data display
-                scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
-            }
+            var tagString = client.tagLog.getCurrentTag();
             
+            if (lastTag.Text != null || tagString != lastTag.Text)
+            {
+                lastTag.Text = tagString;
+            }            
+            if (tagErrLabel.Text == "" || tagErrLabel.Text == null)
+            {
+                tagErrLabel.Text = client.tagLog.dequeErrHist();
+            }
         }
     }
+
+
     /// <summary>
     /// Event handler for the button click event. Initiates the connection to the HSP server.
     /// </summary>
@@ -289,5 +272,20 @@ public partial class StatusPage : ContentPage
             }
             return false; // Stop repeating
         });
+    }
+
+    private void removeErr_clicked(object sender, EventArgs e)
+    {
+       if (client != null)
+       {
+            tagErrLabel.Text = client.tagLog.dequeErrHist();
+            return;              
+       }
+       tagErrLabel.Text = "";
+    }
+
+    private void btnCLearPressed(object sender, EventArgs e)
+    {
+        scannerInput.Text = "";
     }
 }
