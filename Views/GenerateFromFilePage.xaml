@@ -8,10 +8,13 @@
         <Frame Margin="5" Padding="10">
             <StackLayout Margin="2">
                 <StackLayout Orientation="Horizontal">
-                    <Label FontSize="Subtitle" Text="Select File Here" VerticalOptions="Center" />
-                    <ImageButton Source="helpcirc.png" Clicked="fileSelectHelp_Clicked"></ImageButton>
+                    <Label
+                        FontSize="Subtitle"
+                        Text="Select File Here"
+                        VerticalOptions="Center" />
+                    <ImageButton Clicked="fileSelectHelp_Clicked" Source="helpcirc.png" />
                 </StackLayout>
-                
+
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -27,18 +30,21 @@
                         x:Name="fileLocationEntry"
                         Grid.Row="0"
                         Grid.Column="0"
-                        IsReadOnly="True" />
+                        IsReadOnly="True" 
+                        FontSize="Small"/>
                     <Button
                         Grid.Row="0"
                         Grid.Column="1"
                         Margin="10,0,0,0"
                         Clicked="OnOpenFileClicked"
+                        FontSize="Small"
                         Text="Select File" />
                 </Grid>
                 <Button
                     x:Name="updateFromFileBtn"
                     Margin="0,20,0,0"
                     Clicked="updateFromFileBtn_Clicked"
+                    FontSize="Small"
                     Text="Read File" />
             </StackLayout>
         </Frame>
@@ -48,11 +54,9 @@
                     <Label
                         Margin="2,0,0,0"
                         FontSize="Subtitle"
-                        VerticalTextAlignment="Center"
-                        Text="Edit Tag Data Here" />
-                    <ImageButton Source="helpcirc.png" Clicked="tagDataHelp_Clicked">
-
-                    </ImageButton>
+                        Text="Edit Tag Data Here"
+                        VerticalTextAlignment="Center" />
+                    <ImageButton Clicked="tagDataHelp_Clicked" Source="helpcirc.png" />
                 </StackLayout>
 
                 <!--  Label and entry for 32 hex digits  -->
@@ -73,7 +77,8 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Text="EPC Data: "
-                        VerticalOptions="CenterAndExpand" />
+                        VerticalOptions="CenterAndExpand"
+                        FontSize="Small"/>
 
                     <Entry
                         x:Name="EPC_Entry"
@@ -84,14 +89,15 @@
                         Keyboard="Numeric"
                         MaxLength="32"
                         Placeholder="Epc Data"
-                        TextChanged="OnEPC_EntryTextChanged" />
+                        TextChanged="OnEPC_EntryTextChanged"
+                        FontSize="Small"/>
 
                     <Label
                         Grid.Row="0"
                         Grid.Column="1"
                         Margin="5,0,0,0"
                         Text="User Data:"
-                        VerticalOptions="CenterAndExpand" />
+                        VerticalOptions="CenterAndExpand" FontSize="Small"/>
 
                     <Entry
                         x:Name="UserData_Entry"
@@ -102,7 +108,7 @@
                         Keyboard="Numeric"
                         MaxLength="32"
                         Placeholder="User Data"
-                        TextChanged="OnUSR_EntryTextChanged" />
+                        TextChanged="OnUSR_EntryTextChanged" FontSize="Small" />
                 </Grid>
 
                 <Grid Margin="2">
@@ -129,7 +135,7 @@
                         <Label
                             Margin="0,0,5,0"
                             Text="Kill Password: "
-                            VerticalOptions="Center" />
+                            VerticalOptions="Center" FontSize="Small"/>
                         <CheckBox x:Name="killPassCheckBox" CheckedChanged="OnCheckedChanged" />
                     </StackLayout>
                     <Entry
@@ -141,13 +147,13 @@
                         IsVisible="False"
                         MaxLength="8"
                         Placeholder="Enter value"
-                        TextChanged="OnKIL_EntryTextChanged" />
+                        TextChanged="OnKIL_EntryTextChanged" FontSize="Small"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="1"
                         Margin="5,0,5,0"
                         Text="Access Password:"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small"/>
                     <Entry
                         x:Name="AccessPass_Entry"
                         Grid.Row="1"
@@ -157,13 +163,13 @@
                         Keyboard="Numeric"
                         MaxLength="8"
                         Placeholder="Enter 8 hex digits"
-                        TextChanged="OnACC_EntryTextChanged" />
+                        TextChanged="OnACC_EntryTextChanged" FontSize="Small"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="2"
                         Margin="5,0,5,0"
                         Text="PC Word:"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small"/>
                     <Entry
                         x:Name="PC_Entry"
                         Grid.Row="1"
@@ -173,13 +179,13 @@
                         Keyboard="Numeric"
                         MaxLength="4"
                         Placeholder="Enter 4 hex digits"
-                        TextChanged="OnPCW_EntryTextChanged" />
+                        TextChanged="OnPCW_EntryTextChanged" FontSize="Small"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="3"
                         Margin="5,0,0,0"
                         Text="Number of Tags to Generate:"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small"/>
                     <Entry
                         x:Name="GeneratorNum_Entry"
                         Grid.Row="1"
@@ -187,24 +193,28 @@
                         Margin="5,0,0,0"
                         Keyboard="Numeric"
                         MaxLength="5"
-                        Placeholder="Number Of Tags to load into the buffer" />
+                        Placeholder="Number Of Tags to load into the buffer" FontSize="Small"/>
                 </Grid>
             </StackLayout>
         </Frame>
 
+        <StackLayout Orientation="Horizontal">
+            <Button
+                x:Name="genBufferBtn"
+                Margin="5"
+                Clicked="loadBuffer_Clicked"
+                FontSize="Small"
+                HorizontalOptions="FillAndExpand"
+                Text="Load HSP Buffer" />
+            <Button
+                Margin="5"
+                BackgroundColor="{StaticResource Secondary}"
+                Clicked="GenerateFileClicked"
+                FontSize="Small"
+                HorizontalOptions="FillAndExpand"
+                Text="Save Tag Data to File" />
+        </StackLayout>
 
-        <Button
-            x:Name="genBufferBtn"
-            Margin="5"
-            Clicked="loadBuffer_Clicked"
-            HorizontalOptions="FillAndExpand"
-            Text="Load HSP Buffer" />
-        <Button
-            Margin="5"
-            BackgroundColor="{StaticResource Secondary}"
-            Clicked="GenerateFileClicked"
-            HorizontalOptions="FillAndExpand"
-            Text="Save Tag Data to File" />
 
         <Label
             FontSize="Subtitle"
@@ -219,6 +229,6 @@
             </ScrollView>
         </Frame>
 
-        
+
     </StackLayout>
 </ContentPage>

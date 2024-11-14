@@ -3,8 +3,7 @@
     x:Class="HSPGUI.Views.AntenaSetUp"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    >
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
 
     <StackLayout>
 
@@ -16,6 +15,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
@@ -23,17 +23,25 @@
                         <ColumnDefinition Width="*" />
 
                     </Grid.ColumnDefinitions>
-                    
-                    <StackLayout Grid.Row="0" Grid.Column="0" Margin="5,0">
-                        <Label Text="Frequency" Margin="0,4"></Label>
-                        <Entry x:Name="RadioFrequency" Completed="RadioFrequency_Completed"  Keyboard="Numeric">
-                        </Entry>
+
+                    <StackLayout
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="5,0">
+                        <Label Margin="0,4" Text="Frequency" FontSize="Small"/>
+                        <Entry
+                            x:Name="RadioFrequency"
+                            Completed="RadioFrequency_Completed"
+                            Keyboard="Numeric" 
+                            FontSize="Small"/>
                     </StackLayout>
-                    
+
                     <Picker
                         x:Name="recieverAttenuation"
                         Title="Attenuation"
-                        Grid.Row="0" Grid.Column="1">
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        FontSize="Small">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
                                 <x:String>8</x:String>
@@ -53,14 +61,16 @@
                     <Picker
                         x:Name="recieverGainSelector"
                         Title="Reciever Gain"
+                        Grid.Row="1"
+                        Grid.Column="0"
                         Margin="5,0"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
-                        Grid.Row="1" Grid.Column="0"
-                        VerticalOptions="Start">
+                        VerticalOptions="Start"
+                        FontSize="Small">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
-                                <x:String> 0 db</x:String>
+                                <x:String>0 db</x:String>
                                 <x:String>-9 db</x:String>
                                 <x:String>-6 db</x:String>
                                 <x:String>-3 db</x:String>
@@ -73,14 +83,16 @@
                     <Picker
                         x:Name="asyncRecieverGain"
                         Title="Async Reciever Gain"
+                        Grid.Row="1"
+                        Grid.Column="1"
                         Margin="5,0"
                         HorizontalOptions="FillAndExpand"
                         SelectedIndex="0"
-                        Grid.Row="1" Grid.Column="1"
-                        VerticalOptions="Start">
+                        VerticalOptions="Start"
+                        FontSize="Small">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
-                                <x:String> 0 db</x:String>
+                                <x:String>0 db</x:String>
                                 <x:String>-9 db</x:String>
                                 <x:String>-6 db</x:String>
                                 <x:String>-3 db</x:String>
@@ -91,13 +103,15 @@
                         </Picker.ItemsSource>
                     </Picker>
                     <Picker
-                       x:Name="tariSelector"
-                       Title="Select Tari Length"
-                       Margin="5,0"
-                       Grid.Row="2" Grid.Column="0"
-                       HorizontalOptions="FillAndExpand"
-                       SelectedIndex="0"
-                       VerticalOptions="Start">
+                        x:Name="tariSelector"
+                        Title="Select Tari Length"
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start"
+                        FontSize="Small">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
                                 <x:String>6.25 usec</x:String>
@@ -107,12 +121,14 @@
                         </Picker.ItemsSource>
                     </Picker>
                     <Picker
-                       x:Name="bitPatternSelector"
-                       Title="Select Bit Pattern"
-                       HorizontalOptions="FillAndExpand"
-                       Margin="5,0"
-                       SelectedIndex="0"
-                       Grid.Row="2" Grid.Column="1">
+                        x:Name="bitPatternSelector"
+                        Title="Select Bit Pattern"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        FontSize="Small">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
                                 <x:String>FM0</x:String>
@@ -123,13 +139,15 @@
                         </Picker.ItemsSource>
                     </Picker>
                     <Picker
-                       x:Name="LFSelector"
-                       Title="Select Tag Base Band"
-                       Margin="5,0"
-                       HorizontalOptions="FillAndExpand"
-                       SelectedIndex="0"
-                       Grid.Row="3" Grid.Column="0"
-                       VerticalOptions="Start">
+                        x:Name="LFSelector"
+                        Title="Select Tag Base Band"
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="5,0"
+                        HorizontalOptions="FillAndExpand"
+                        SelectedIndex="0"
+                        VerticalOptions="Start"
+                        FontSize="Small">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
                                 <x:String>40 khz</x:String>
@@ -140,22 +158,31 @@
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
-                </Grid>
-                <StackLayout>
                     <Button
                         x:Name="ReadSettings"
-                        Margin="0,20,0,0"
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Margin="5,10,5,0"
                         Clicked="ReadSettings_Clicked"
                         HorizontalOptions="FillAndExpand"
-                        Text="Read Current Settings" />
-
+                        Text="Read Current Settings" 
+                        FontSize="Subtitle"/>
                     <Button
                         x:Name="WriteSettings"
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Margin="5,10,5,0"
+                        FontSize="Subtitle"
                         BackgroundColor="{StaticResource Secondary}"
-                        Margin="0,20,0,0"
                         Clicked="WriteSettings_Clicked"
                         HorizontalOptions="FillAndExpand"
                         Text="Write Settings" />
+                    
+                </Grid>
+                <StackLayout Orientation="Horizontal">
+
+
+                    
                 </StackLayout>
             </StackLayout>
         </Frame>

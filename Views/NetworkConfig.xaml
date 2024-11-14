@@ -41,7 +41,7 @@
                         Focused="focused"
                         Keyboard="Numeric"
                         MaxLength="3"
-                        Placeholder="0">
+                        Placeholder="0" FontSize="Small">
                         <Entry.Behaviors>
                             <local:OctetValidationBehavior />
                         </Entry.Behaviors>
@@ -51,7 +51,7 @@
                         Grid.Column="1"
                         Margin="10"
                         Text="."
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small" />
                     <Entry
                         x:Name="octet2"
                         Grid.Row="0"
@@ -60,7 +60,7 @@
                         Focused="focused"
                         Keyboard="Numeric"
                         MaxLength="3"
-                        Placeholder="0">
+                        Placeholder="0" FontSize="Small">
                         <Entry.Behaviors>
                             <local:OctetValidationBehavior />
                         </Entry.Behaviors>
@@ -70,7 +70,7 @@
                         Grid.Column="3"
                         Margin="10"
                         Text="."
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small" />
                     <Entry
                         x:Name="octet3"
                         Grid.Row="0"
@@ -79,7 +79,7 @@
                         Focused="focused"
                         Keyboard="Numeric"
                         MaxLength="3"
-                        Placeholder="0">
+                        Placeholder="0" FontSize="Small" >
                         <Entry.Behaviors>
                             <local:OctetValidationBehavior />
                         </Entry.Behaviors>
@@ -89,7 +89,7 @@
                         Grid.Column="5"
                         Margin="10"
                         Text="."
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small" />
                     <Entry
                         x:Name="octet4"
                         Grid.Row="0"
@@ -97,7 +97,7 @@
                         Completed="octet4_Completed"
                         Focused="focused"
                         Keyboard="Numeric"
-                        MaxLength="3">
+                        MaxLength="3" FontSize="Small">
                         <Entry.Behaviors>
                             <local:OctetValidationBehavior />
                         </Entry.Behaviors>
@@ -121,7 +121,7 @@
                         Margin="10"
                         HorizontalOptions="End"
                         Text="Command Port"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small"/>
                     <Entry
                         x:Name="portCMD"
                         Grid.Row="0"
@@ -129,14 +129,14 @@
                         Completed="portCMD_Completed"
                         Focused="focused"
                         Keyboard="Numeric"
-                        MaxLength="4" />
+                        MaxLength="4" FontSize="Small"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="2"
                         Margin="10"
                         HorizontalOptions="End"
                         Text="Data Port"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small"/>
                     <Entry
                         x:Name="portDATA"
                         Grid.Row="0"
@@ -144,26 +144,26 @@
                         Completed="portDATA_Completed"
                         Focused="focused"
                         Keyboard="Numeric"
-                        MaxLength="4" />
+                        MaxLength="4" FontSize="Small"/>
                     <Label
                         Grid.Row="0"
                         Grid.Column="4"
                         Margin="10"
                         HorizontalOptions="End"
                         Text="Dialog Port"
-                        VerticalOptions="Center" />
+                        VerticalOptions="Center" FontSize="Small"/>
                     <Entry
                         x:Name="portDIAG"
                         Grid.Row="0"
                         Grid.Column="5"
                         Focused="focused"
                         Keyboard="Numeric"
-                        MaxLength="4" />
+                        MaxLength="4" FontSize="Small"/>
                 </Grid>
                 <Button
                     Margin="0,10,0,0"
                     Clicked="Button_Clicked"
-                    Text="Update IP Address" />
+                    Text="Update IP Address" FontSize="Small"/>
             </StackLayout>
         </Frame>
         
@@ -172,6 +172,6 @@
             Margin="5,200"
             Clicked="demoMode_Clicked"
             HorizontalOptions="Start"
-            VerticalOptions="End" />
+            VerticalOptions="End" FontSize="Small"/>
     </StackLayout>
 </ContentPage>

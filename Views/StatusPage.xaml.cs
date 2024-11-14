@@ -77,6 +77,15 @@ public partial class StatusPage : ContentPage
             {
                 tagErrLabel.Text = client.tagLog.dequeErrHist();
             }
+            try
+            {
+                ErrorCount.Text = $"{client.tagLog.badTags.Count().ToString(),10}";
+            }
+            catch
+            {
+                ErrorCount.Text = "Failed to get count";
+            }
+            clearErrBtn.IsVisible = tagErrLabel.Text != "";
         }
     }
 
@@ -279,6 +288,7 @@ public partial class StatusPage : ContentPage
        if (client != null)
        {
             tagErrLabel.Text = client.tagLog.dequeErrHist();
+            clearErrBtn.IsVisible = tagErrLabel.Text != "";
             return;              
        }
        tagErrLabel.Text = "";

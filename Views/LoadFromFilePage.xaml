@@ -26,13 +26,13 @@
                         Grid.Column="0"
                         Margin="0,0,5,0"
                         Placeholder="File to load here"
-                        TextChanged="fileLocationEntry_TextChanged" />
+                        TextChanged="fileLocationEntry_TextChanged" FontSize="Small" />
                     <Button
                         Grid.Row="0"
                         Grid.Column="1"
                         Margin="5,0,0,0"
                         Clicked="OnOpenFileClicked"
-                        Text="Select File" />
+                        Text="Select File" FontSize="Small"/>
                 </Grid>
                 <Button
                     x:Name="loadFileBtn"
@@ -40,7 +40,7 @@
                     Clicked="loadFileBtn_Clicked"
                     HorizontalOptions="FillAndExpand"
                     IsVisible="False"
-                    Text="Load File" />
+                    Text="Load File" FontSize="Small"/>
                 <Frame
                     x:Name="progressFrame"
                     Margin="0,20,0,0"
@@ -59,11 +59,11 @@
 
         </Frame>
         <Button
-            Margin="10"
+            Margin="5,10"
             BackgroundColor="{StaticResource Secondary}"
             Clicked="createSample"
             HorizontalOptions="FillAndExpand"
-            Text="Create Sample File" />
+            Text="Create Sample File" FontSize="Small"/>
         <Label
             FontSize="Subtitle"
             HorizontalOptions="CenterAndExpand"

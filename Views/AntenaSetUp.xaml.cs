@@ -62,17 +62,21 @@ public partial class AntenaSetUp : ContentPage
     /// <param name="e">The event arguments.</param>
     private async void WriteSettings_Clicked(object sender, EventArgs e)
     {
-        var settings = new string[5];
-        settings[0] = $"{tariSelector.SelectedIndex.ToString()},{bitPatternSelector.SelectedIndex.ToString()},{LFSelector.SelectedIndex.ToString()}";
-        settings[1] = recieverGainSelector.SelectedIndex.ToString();
-        settings[2] = asyncRecieverGain.SelectedIndex.ToString();
-        settings[3] = RadioFrequency.Text;
-        settings[4] = recieverAttenuation.SelectedIndex.ToString();
-
-        if (client != null && client.isConnected())
+        bool confrim = await DisplayAlert("Write Settings", "Warning Changing Settings Is Non Reversible","Confirm", "Cancel");
+        if (confrim)
         {
-           await client.writeAntenaSettings(settings);
-        }
+            var settings = new string[5];
+            settings[0] = $"{tariSelector.SelectedIndex.ToString()},{bitPatternSelector.SelectedIndex.ToString()},{LFSelector.SelectedIndex.ToString()}";
+            settings[1] = recieverGainSelector.SelectedIndex.ToString();
+            settings[2] = asyncRecieverGain.SelectedIndex.ToString();
+            settings[3] = RadioFrequency.Text;
+            settings[4] = recieverAttenuation.SelectedIndex.ToString();
+
+            if (client != null && client.isConnected())
+            {
+                await client.writeAntenaSettings(settings);
+            }
+        }        
     }
 
 

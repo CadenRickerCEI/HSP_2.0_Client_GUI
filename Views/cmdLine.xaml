@@ -67,7 +67,7 @@
             Text="Commands" />
         <ScrollView
             HorizontalOptions="FillAndExpand"
-            MaximumHeightRequest="110"
+            MaximumHeightRequest="300"
             VerticalScrollBarVisibility="Always">
             <Grid Margin="5" HorizontalOptions="FillAndExpand">
                 <Grid.RowDefinitions>

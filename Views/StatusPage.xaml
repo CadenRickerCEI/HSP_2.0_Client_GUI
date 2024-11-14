@@ -24,20 +24,20 @@
             Margin="10"
             IsVisible="False">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -48,6 +48,7 @@
                 Grid.Column="0"
                 Margin="5"
                 Clicked="EnagedHSP"
+                FontSize="Small"
                 Text="Engage HSP" />
             <Button
                 Grid.Row="1"
@@ -55,68 +56,131 @@
                 Margin="5"
                 BackgroundColor="{StaticResource Secondary}"
                 Clicked="DisengageHSP"
+                FontSize="Small"
                 Text="Disengage HSP" />
-            <Label
+            <Frame
                 Grid.Row="3"
-                Grid.ColumnSpan="3"
-                FontSize="Subtitle"
-                HorizontalOptions="CenterAndExpand"
-                Text="Buffer Count" />
-            <Button
-                Grid.Row="4"
                 Grid.Column="0"
                 Margin="5"
-                Clicked="GetBufferCount"
-                Text="Get Current Buffer Count" />
-            <Entry
-                x:Name="bufferCount"
-                Grid.Row="4"
+                Padding="5,0">
+                <StackLayout Orientation="Horizontal">
+                    <Label
+                        Grid.Row="3"
+                        Margin="0,0,20,0"
+                        FontSize="Small"
+                        Text="Buffer Count:"
+                        VerticalOptions="Center" />
+                    <Label
+                        x:Name="bufferCount"
+                        FontSize="Small"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center" />
+                </StackLayout>
+
+            </Frame>
+            <Frame
+                Grid.Row="3"
                 Grid.Column="1"
-                Margin="5" />
+                Margin="5"
+                Padding="5,0">
+                <StackLayout Orientation="Horizontal">
+                    <Label
+                        Grid.Row="3"
+                        Margin="0,0,20,0"
+                        FontSize="Small"
+                        Text="Error Buffer Count:"
+                        VerticalOptions="Center" />
+                    <Label
+                        x:Name="ErrorCount"
+                        FontSize="Small"
+                        HorizontalOptions="End"
+                        Text="0"
+                        VerticalOptions="Center" />
+                </StackLayout>
+
+            </Frame>
+
             <Label
                 Grid.Row="5"
                 Grid.ColumnSpan="3"
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
-                Text="HSP Command Dialog" />
-            <Frame Grid.Row="6" Grid.ColumnSpan="2" Margin="5" MinimumHeightRequest="50">
-                <ScrollView x:Name="scrollCMD" MinimumHeightRequest="100" MaximumHeightRequest="100">
-                    <Label Text="dialog" x:Name="dialog"/>
-                </ScrollView>                
+                Text="Last Tag" />
+            <Frame
+                Grid.Row="6"
+                Grid.ColumnSpan="2"
+                Margin="5">
+                <StackLayout>
+                    <Label x:Name="lastTag" FontSize="Small" />
+                </StackLayout>
             </Frame>
             <Label
                 Grid.Row="7"
                 Grid.ColumnSpan="3"
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
-                Text="Last Tag" />
-            <Frame Grid.Row="8" Grid.ColumnSpan="2" Margin="5">
+                Text="Tag Errors" />
+            <Frame
+                Grid.Row="8"
+                Grid.ColumnSpan="2"
+                Margin="5">
                 <StackLayout>
-                    <Label x:Name="lastTag" />
-                </StackLayout> 
+                    <Label x:Name="tagErrLabel" FontSize="Small" />
+                    <Button
+                        x:Name="clearErrBtn"
+                        Margin="0,10,0,0"
+                        BackgroundColor="{StaticResource Secondary}"
+                        Clicked="removeErr_clicked"
+                        FontSize="Small"
+                        IsVisible="False"
+                        Text="Clear Error" />
+                </StackLayout>
             </Frame>
-             
             <Label
                 Grid.Row="9"
+                Grid.ColumnSpan="2"
+                FontSize="Subtitle"
+                HorizontalOptions="CenterAndExpand"
+                Text="Scanner Input" />
+            <Frame
+                Grid.Row="10"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                Padding="5">
+
+                <StackLayout>
+                    <Editor
+                        x:Name="scannerInput"
+                        Margin="5"
+                        FontSize="Small"
+                        MaximumHeightRequest="110"
+                        MinimumHeightRequest="110" />
+                    <Button
+                        Margin="5,10"
+                        Clicked="btnCLearPressed"
+                        FontSize="Small"
+                        Text="Clear Input" />
+                </StackLayout>
+            </Frame>
+            <Label
+                Grid.Row="12"
                 Grid.ColumnSpan="3"
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
-                Text="Tag Errors" />
-            <Frame Grid.Row="10" Grid.ColumnSpan="2" Margin="5">
-                <StackLayout>                   
-                    <Label x:Name="tagErrLabel" />
-                    <Button Text="Clear Error" Clicked="removeErr_clicked" Margin="0,10,0,0"></Button>
-                </StackLayout>
+                Text="HSP Command Dialog" />
+            <Frame
+                Grid.Row="13"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                MinimumHeightRequest="50">
+                <ScrollView
+                    x:Name="scrollCMD"
+                    MaximumHeightRequest="100"
+                    MinimumHeightRequest="100">
+                    <Label x:Name="dialog" Text="dialog" />
+                </ScrollView>
             </Frame>
-            <Label Text="Scanner Input" FontSize="Subtitle" HorizontalOptions="CenterAndExpand" Grid.Row="11" Grid.ColumnSpan="2"></Label>
-            <ScrollView Margin="0,10"  MinimumHeightRequest="100" MaximumHeightRequest="200" Grid.Row="12" Grid.ColumnSpan="2">
-                <Editor x:Name="scannerInput" MinimumHeightRequest="100" ></Editor>
-            </ScrollView>
-            <Button Text="Clear Input" Clicked="btnCLearPressed" Grid.Row="13" Grid.ColumnSpan="2"></Button>
+
         </Grid>
-        
-        
     </StackLayout>
-
-
 </ContentPage>
