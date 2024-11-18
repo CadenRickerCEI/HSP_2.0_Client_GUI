@@ -37,7 +37,7 @@ public partial class StatusPage : ContentPage
         if (client != null)
         {            
             
-            var j = scrollCMD.ScrollToAsync(0, dialog.Height, true);
+            //var j = scrollCMD.ScrollToAsync(0, dialog.Height, true);
         }
     }
     /// <summary>
@@ -153,7 +153,7 @@ public partial class StatusPage : ContentPage
 
             dialog.Text = message;
         }
-        var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
+        //var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
         loadingIndicator.IsRunning = false;
         loadingIndicator.IsVisible = false;        
     }
@@ -181,14 +181,14 @@ public partial class StatusPage : ContentPage
         {
             var result = await client.getBufferCount();
             bufferCount.Text = result[0];
-            dialog.Text = result[1];
+            //dialog.Text = result[1];
         }
         else
         {
             bufferCount.Text = "-1";
             dialog.Text = "Count invalid not connected";
         }
-        var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);        
+        //var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);        
     }
 
     /// <summary>
@@ -205,7 +205,7 @@ public partial class StatusPage : ContentPage
         if (client != null && client.isConnected())
         {
             dialog.Text = await client.EngageHSP();
-            var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
+            //var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
         }
     }
 
@@ -223,7 +223,7 @@ public partial class StatusPage : ContentPage
         if (client != null && client.isConnected())
         {
             dialog.Text = await client.disengageHSP();
-            var _ = scrollCMD.ScrollToAsync(0, dialog.Height , true);
+            //var _ = scrollCMD.ScrollToAsync(0, dialog.Height , true);
         }
     }
 
@@ -275,7 +275,7 @@ public partial class StatusPage : ContentPage
                         bufferCount.Text = "0";
                         dialog.Text = "Count invalid not connected";
                     }
-                    var _ = scrollCMD.ScrollToAsync(0,dialog.Height,true);
+                    //var _ = scrollCMD.ScrollToAsync(0,dialog.Height,true);
                 });
                 return true; // Repeat again
             }

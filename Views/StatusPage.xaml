@@ -167,18 +167,23 @@
                 Grid.ColumnSpan="3"
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
-                Text="HSP Command Dialog" />
+                Text="HSP Command Dialog" 
+                IsVisible="False" />
             <Frame
                 Grid.Row="13"
                 Grid.ColumnSpan="2"
                 Margin="5"
-                MinimumHeightRequest="50">
-                <ScrollView
+                MinimumHeightRequest="50"
+                IsVisible="False">
+                <Label x:Name="dialog" Text="dialog" 
+       IsVisible="False"/>
+                <!--<ScrollView
                     x:Name="scrollCMD"
                     MaximumHeightRequest="100"
                     MinimumHeightRequest="100">
-                    <Label x:Name="dialog" Text="dialog" />
-                </ScrollView>
+                    <Label x:Name="dialog" Text="dialog" 
+                           IsVisible="False"/>
+                </ScrollView>-->
             </Frame>
 
         </Grid>
