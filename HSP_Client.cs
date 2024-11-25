@@ -417,6 +417,7 @@ public class HSPClient
                 {
                     case 0: //P interface commands
                         matches = Regex.Matches(msg, pattern);
+                        System.Diagnostics.Debug.WriteLine("read messaage"+msg);
                         string output = "";
                         // Dictionaries to map match values to outputs
                         var tariMap = new Dictionary<string, string>
@@ -429,7 +430,7 @@ public class HSPClient
                         };
                         var baseBandMap = new Dictionary<string, string>
                         {
-                            { "40", "0" },{ "160", "1" },{ "250", "2" },{ "320", "2" },{ "default", "3" }
+                            { "40", "0" },{ "160", "1" },{ "250", "2" },{ "320", "3" },{ "default", "4" }
                         };
                         // Process matches
                         output = matches.Count > 0 && tariMap.ContainsKey(matches[0].Value) ? tariMap[matches[0].Value] : tariMap["default"];
@@ -510,6 +511,7 @@ public class HSPClient
                     default:
                         break;
                 }
+                System.Diagnostics.Debug.WriteLine("writecmd" + cmd);
                 _clientCMD.WriteLine(cmd);
                 await Task.Delay(10);
             }
