@@ -111,7 +111,7 @@
                 Grid.ColumnSpan="2"
                 Margin="5">
                 <StackLayout>
-                    <Label x:Name="lastTag" FontSize="Small" />
+                    <Label x:Name="lastTag" FontSize="Small" FontFamily="monospace"/>
                 </StackLayout>
             </Frame>
             <Label
@@ -125,7 +125,7 @@
                 Grid.ColumnSpan="2"
                 Margin="5">
                 <StackLayout>
-                    <Label x:Name="tagErrLabel" FontSize="Small" />
+                    <Label x:Name="tagErrLabel" FontSize="Small"  FontFamily="monospace"/>
                     <Button
                         x:Name="clearErrBtn"
                         Margin="0,10,0,0"
@@ -154,7 +154,8 @@
                         Margin="5"
                         FontSize="Small"
                         MaximumHeightRequest="110"
-                        MinimumHeightRequest="110" />
+                        MinimumHeightRequest="110" 
+                        FontFamily="monospace"/>
                     <Button
                         Margin="5,10"
                         Clicked="btnCLearPressed"

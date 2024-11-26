@@ -10,7 +10,6 @@ using System.Net;
 using System.IO.Pipes;
 using HSPGUI;
 
-
 /// <summary>
 /// The HSPClient class is used for managing the connection and communication with a Telnet server.
 /// It also validates the data going into the HSP Buffer.
@@ -830,5 +829,32 @@ public class HSPClient
         }
         
         return parsedMsg;
-    }    
+    }   
+    public async Task<string> getSystemType()
+    {
+        if (_clientCMD != null && _clientCMD.IsConnected)
+        {
+            await readServerMSg(true);
+            _clientCMD.WriteLine("SYSTEMTYPE");
+            string line = await readServerMSg(false);
+            int index = line.IndexOf("=");
+            if (index != -1 && index < line.Length )
+            {
+                var data = line.Substring(line.IndexOf("=") + 1);
+                return data;
+            }
+        }
+        return "";
+    }
+    public async Task setSystemType(string systemType)
+    {
+        var systemTypes = new string[] { "VER","STA", "ENC", "STA", "TRE" };
+        if (systemTypes.Contains(systemType) && _clientCMD != null && _clientCMD.IsConnected )
+        {
+            await readServerMSg(true);
+            _clientCMD.WriteLine("SYSTEMTYPE="+systemType);
+            await readServerMSg(true);
+        }
+        return;
+    }
 }
