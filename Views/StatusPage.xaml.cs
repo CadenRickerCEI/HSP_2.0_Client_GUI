@@ -292,10 +292,33 @@ public partial class StatusPage : ContentPage
             return;              
        }
        tagErrLabel.Text = "";
+       scannerInput.Focus();
     }
 
     private void btnCLearPressed(object sender, EventArgs e)
     {
         scannerInput.Text = "";
+    }
+
+    private async void getSystemMode_Clicked(object sender, EventArgs e)
+    {
+        var systemTypes = new string[] { "STA", "VER",  "ENC", "TRE" };
+        if (client!= null)
+        {
+            await client.readSystemMode();
+            if (systemTypes.Contains(client.systemMode))
+            {
+                SysteModeSelction.SelectedIndex = Array.IndexOf(systemTypes, client.systemMode);
+            }
+        }        
+    }
+
+    private async void SysteModeSelction_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        var systemTypes = new string[] { "STA", "VER", "ENC", "TRE" };
+        if (client!= null && SysteModeSelction.SelectedIndex > -1)
+        {
+            await client.writeSystemMode(systemTypes[SysteModeSelction.SelectedIndex]);
+        }
     }
 }

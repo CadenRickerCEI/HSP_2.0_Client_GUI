@@ -81,6 +81,7 @@ public class HSPClient
     private int _portDiag = 5003;
     private string _IpAddress = "192.168.50.124";
     private int _updateTick;
+    public string systemMode;
     /// <summary>
     /// array conating the list of all possible cmd for antena
     /// 0 NB: baud rate for antena
@@ -107,6 +108,7 @@ public class HSPClient
         {
             Directory.CreateDirectory(downloadsDirectory);
         }
+        systemMode = "STA";
         tagLog = new TagLog();
         var logFilePath = Path.Combine(downloadsDirectory, "app.log");
         Log.Logger = new LoggerConfiguration().WriteTo
@@ -157,7 +159,10 @@ public class HSPClient
             _clientDATA = new TelnetConnection(IPAddress, PortData);        
             connectionStatusChanged?.Invoke(isConnected());
             busy = false;
-            return await readServerMSg(true);
+            string msg = await readServerMSg(true);
+            await Task.Delay(10);
+            await readSystemMode();
+            return msg;
         }
         catch
         {
@@ -830,7 +835,7 @@ public class HSPClient
         
         return parsedMsg;
     }   
-    public async Task<string> getSystemType()
+    public async Task readSystemMode()
     {
         if (_clientCMD != null && _clientCMD.IsConnected)
         {
@@ -841,17 +846,19 @@ public class HSPClient
             if (index != -1 && index < line.Length )
             {
                 var data = line.Substring(line.IndexOf("=") + 1);
-                return data;
+                systemMode = data;
+                return;
             }
         }
-        return "";
+        return ;
     }
-    public async Task setSystemType(string systemType)
+    public async Task writeSystemMode(string systemType)
     {
-        var systemTypes = new string[] { "VER","STA", "ENC", "STA", "TRE" };
+        var systemTypes = new string[] { "VER","STA", "ENC", "TRE" };
         if (systemTypes.Contains(systemType) && _clientCMD != null && _clientCMD.IsConnected )
         {
             await readServerMSg(true);
+            systemMode = systemType;
             _clientCMD.WriteLine("SYSTEMTYPE="+systemType);
             await readServerMSg(true);
         }

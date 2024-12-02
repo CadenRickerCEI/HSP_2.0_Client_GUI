@@ -38,6 +38,8 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -111,7 +113,10 @@
                 Grid.ColumnSpan="2"
                 Margin="5">
                 <StackLayout>
-                    <Label x:Name="lastTag" FontSize="Small" FontFamily="monospace"/>
+                    <Label
+                        x:Name="lastTag"
+                        FontFamily="monospace"
+                        FontSize="Small" />
                 </StackLayout>
             </Frame>
             <Label
@@ -125,7 +130,10 @@
                 Grid.ColumnSpan="2"
                 Margin="5">
                 <StackLayout>
-                    <Label x:Name="tagErrLabel" FontSize="Small"  FontFamily="monospace"/>
+                    <Label
+                        x:Name="tagErrLabel"
+                        FontFamily="monospace"
+                        FontSize="Small" />
                     <Button
                         x:Name="clearErrBtn"
                         Margin="0,10,0,0"
@@ -152,10 +160,10 @@
                     <Editor
                         x:Name="scannerInput"
                         Margin="5"
+                        FontFamily="monospace"
                         FontSize="Small"
                         MaximumHeightRequest="110"
-                        MinimumHeightRequest="110" 
-                        FontFamily="monospace"/>
+                        MinimumHeightRequest="110" />
                     <Button
                         Margin="5,10"
                         Clicked="btnCLearPressed"
@@ -168,24 +176,51 @@
                 Grid.ColumnSpan="3"
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
-                Text="HSP Command Dialog" 
-                IsVisible="False" />
+                IsVisible="False"
+                Text="HSP Command Dialog" />
             <Frame
                 Grid.Row="13"
                 Grid.ColumnSpan="2"
                 Margin="5"
-                MinimumHeightRequest="50"
-                IsVisible="False">
-                <Label x:Name="dialog" Text="dialog" 
-       IsVisible="False"/>
+                IsVisible="False"
+                MinimumHeightRequest="50">
+                <Label
+                    x:Name="dialog"
+                    IsVisible="False"
+                    Text="dialog" />
                 <!--<ScrollView
                     x:Name="scrollCMD"
                     MaximumHeightRequest="100"
                     MinimumHeightRequest="100">
-                    <Label x:Name="dialog" Text="dialog" 
+                    <Label x:Name="dialog" Text="dialog"
                            IsVisible="False"/>
                 </ScrollView>-->
             </Frame>
+            <Label
+                Grid.Row="14"
+                Grid.ColumnSpan="2"
+                FontSize="Subtitle"
+                HorizontalOptions="CenterAndExpand"
+                Text="System Mode" />
+
+            <Button Grid.Row="15" Grid.Column="0" Text="Get System Mode" Clicked="getSystemMode_Clicked"/>
+            <Picker
+                x:Name="SysteModeSelction"
+                Grid.Row="15"
+                Grid.Column="1"
+                FontSize="Small"
+                SelectedIndex="0"
+                VerticalOptions="Start"
+                SelectedIndexChanged="SysteModeSelction_SelectedIndexChanged">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Read Encode Verify (STA)</x:String>
+                        <x:String>Verify (Ver)</x:String>
+                        <x:String>Encode (ENC)</x:String>
+                        <x:String>Three Frequency Test (TRE)</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
 
         </Grid>
     </StackLayout>
