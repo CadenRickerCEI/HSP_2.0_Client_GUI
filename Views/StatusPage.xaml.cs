@@ -84,13 +84,20 @@ public partial class StatusPage : ContentPage
             {
                 lastTag.Text = tagString;
             }            
-            if (tagErrLabel.Text == "" || tagErrLabel.Text == null)
-            {
-                tagErrLabel.Text = client.tagLog.dequeErrHist();
-            }
+            
             try
             {
-                ErrorCount.Text = $"{client.tagLog.badTags.Count().ToString(),10}";
+                var errorCount = client.tagLog.badTags.Count();
+                if (tagErrLabel.Text == "" || tagErrLabel.Text == null) 
+                {
+                    tagErrLabel.Text = client.tagLog.dequeErrHist();
+                }
+                else
+                {
+                    errorCount++;
+                }
+                
+                ErrorCount.Text = $"{errorCount.ToString(),5}";
             }
             catch
             {
