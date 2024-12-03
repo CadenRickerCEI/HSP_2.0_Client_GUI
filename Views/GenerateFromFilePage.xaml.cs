@@ -50,10 +50,7 @@ public partial class GenerateFromFilePage : ContentPage
     /// </value>
     public GenerateFromFilePage()
     {
-        client = HSPClient.Instance;
-
         cancellationTokenSource = new CancellationTokenSource();
-        client.cmdUpdated += cmdDataUpdated;
         InitializeComponent();
         EPC_Valid = true;
         USR_Valid = true;
@@ -68,21 +65,27 @@ public partial class GenerateFromFilePage : ContentPage
         updateFromFileBtn.IsVisible = false;
         EPC_Entry.MinimumWidthRequest = EPC_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenEPC_hex;
         UserData_Entry.MinimumWidthRequest = UserData_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenUSR_Hex;
-        
+    }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        client = HSPClient.Instance;
+        client.cmdUpdated += cmdDataUpdated;
         if (client != null)
         {
             cmdDIAG.Text = client.cmdbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
         }
-    }
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
         visable = true;
     }
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+        if (client != null)
+        {
+            client.cmdUpdated -= cmdDataUpdated;
+        }
+        client = null;
         visable = false;
     }
     /// <summary>
@@ -389,7 +392,7 @@ public partial class GenerateFromFilePage : ContentPage
     }
     private void cmdDataUpdated(bool updated)
     {
-        if (updated && client != null)
+        if (updated && client != null && visable)
         {
             cmdDIAG.Text = client.cmdbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height ,true);

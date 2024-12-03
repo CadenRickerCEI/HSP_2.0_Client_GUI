@@ -4,7 +4,8 @@
     x:Class="HSPGUI.Views.NetworkConfig"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:HSPGUI.Resources">
+    xmlns:local="clr-namespace:HSPGUI.Resources"
+    Title="Network Config">
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:OctetValidationBehavior x:Key="octetValidation" />

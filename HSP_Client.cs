@@ -31,10 +31,10 @@ public class HSPClient
     /// Notifiation for when the data buffer been updated
     /// </summary>
     public event Action<bool>? cmdUpdated;
-    /// <summary>
+    /*/// <summary>
     /// Notification for when dialog buffer has been updated
     /// </summary>
-    public event Action<bool>? dialogUpdated;
+    public event Action<bool>? dialogUpdated;*/
     /// <summary>
     /// Notifiation for when the data buffer been updated
     /// </summary>

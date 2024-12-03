@@ -55,6 +55,7 @@ public partial class cmdLine : ContentPage
             client.connectionStatusChanged += Client_connectionStatusChanged;
             client.dataUpdated -= dialogDataUpdated;
         }
+        client = null;
         visable = false;
     }
     /// <summary>

@@ -5,7 +5,7 @@
             x:Class="HSPGUI.MainPage"
             >
     <TabbedPage.Children>
-        <NavigationPage Title="RFID Status" IconImageSource="rfid.png" >
+        <NavigationPage Title="HSP Status" IconImageSource="rfid.png" >
             <x:Arguments>
                 <views:StatusPage />
             </x:Arguments>

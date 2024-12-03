@@ -46,7 +46,7 @@ public partial class LoadFromFilePage : ContentPage
             //scrollDIAG.ScrollToAsync(0,cmdDIAG.Height ,true);
             scrollCMD.ScrollToAsync(0,dialog.Height,true);
         }
-    }
+    }    
     /// <summary>
     /// Event handler for the Open File button click event. It allows the user to select a CSV file
     /// and displays the file location in the Entry control.

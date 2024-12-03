@@ -29,16 +29,27 @@ public partial class StatusPage : ContentPage
     /// Sets up the client field and initializes the UI components.
     /// </summary>
     public StatusPage()
+    {        
+        InitializeComponent();       
+    }
+    protected override void OnAppearing()
     {
+        base.OnAppearing();
         client = HSPClient.Instance;
-        client.connectionStatusChanged += Client_connectionStatusChanged;        
+        client.connectionStatusChanged += Client_connectionStatusChanged;
         client.dataUpdated += dialogDataUpdated;
-        InitializeComponent();
+        StartPeriodicTask();
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _isRunning = false;
         if (client != null)
-        {            
-            
-            //var j = scrollCMD.ScrollToAsync(0, dialog.Height, true);
+        {
+            client.connectionStatusChanged -= Client_connectionStatusChanged;
+            client.dataUpdated -= dialogDataUpdated;
         }
+        client = null;
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -225,26 +236,7 @@ public partial class StatusPage : ContentPage
             dialog.Text = await client.disengageHSP();
             //var _ = scrollCMD.ScrollToAsync(0, dialog.Height , true);
         }
-    }
-
-    /// <summary>
-    /// when the page opens start checking the buffer count.
-    /// </summary>
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        StartPeriodicTask();
-    }
-
-    /// <summary>
-    /// When the page is changd from this one stop checking buffer count.
-    /// </summary>
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-        _isRunning = false;
-    }
-
+    } 
     /// <summary>
     /// Periodically check the buffer count and writes it to the count display.
     /// </summary>
