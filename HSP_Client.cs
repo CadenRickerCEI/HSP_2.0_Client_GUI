@@ -741,7 +741,7 @@ public class HSPClient
             }
             if (_updateTick == 1)
             {
-                dialogUpdated?.Invoke(false);
+                //dialogUpdated?.Invoke(false);
                 dataUpdated?.Invoke(false);
             }
 

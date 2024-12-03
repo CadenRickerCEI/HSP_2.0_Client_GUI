@@ -1,0 +1,39 @@
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:local="clr-namespace:HSPGUI"
+            xmlns:views="clr-namespace:HSPGUI.Views"
+            x:Class="HSPGUI.MainPage"
+            >
+    <TabbedPage.Children>
+        <NavigationPage Title="RFID Status" IconImageSource="rfid.png" >
+            <x:Arguments>
+                <views:StatusPage />
+            </x:Arguments>
+        </NavigationPage>
+        <NavigationPage Title="Generate From File" IconImageSource="iconblank.png">
+            <x:Arguments>
+                <views:GenerateFromFilePage />
+            </x:Arguments>
+        </NavigationPage>
+        <NavigationPage Title="Load From File" IconImageSource="fileplus.png">
+            <x:Arguments>
+                <views:LoadFromFilePage />
+            </x:Arguments>
+        </NavigationPage>
+        <NavigationPage Title="Antena Setup" IconImageSource="antena.png">
+            <x:Arguments>
+                <views:AntenaSetUp />
+            </x:Arguments>
+        </NavigationPage>
+        <NavigationPage Title="Command Line" IconImageSource="cmd.png">
+            <x:Arguments>
+                <views:cmdLine />
+            </x:Arguments>
+        </NavigationPage>
+        <NavigationPage Title="Network Config" IconImageSource="etherneticon.png">
+            <x:Arguments>
+                <views:NetworkConfig />
+            </x:Arguments>
+        </NavigationPage>
+    </TabbedPage.Children>
+</TabbedPage>

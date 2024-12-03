@@ -321,4 +321,31 @@ public partial class StatusPage : ContentPage
             await client.writeSystemMode(systemTypes[SysteModeSelction.SelectedIndex]);
         }
     }
+
+    private async void bufferInfo_Clicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Buffer Help", "Buffer count is the number of tags left in the HSP system.\nError Count is the number of errors in the queue for the system.", "Done");
+    }
+
+    private async void SystemModeHelp_Clicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("System Mode Help", "System mode controls the the mode the system runs in. Press Read System type to get the current setting.\n" +" Change system type by slecting a new type in the drop down.", "Done");
+    }
+
+    private async void lastTagHelp_Clicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Last Tag Help", "System mode controls the the mode the system runs in.", "Done");
+    }
+
+    private async void TagErrHelp_Clicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Tag Error Help", "The tag error displays the oldest tag in the error queque.\nThe codes meanings:\n"+
+            "C<X> Error from tag <X> denotes the error num\n"+
+            "Press \"Clear Error\" to remove the error from the queue.", "Done");
+    }
+
+    private async void scannerInputHelp_Clicked(object sender, EventArgs e)
+    {
+        await DisplayAlert("Scanner Input Help", "This box is here for input from the scanner. Press \"Clear Input\" to clear the box of text.", "Done");
+    }
 }

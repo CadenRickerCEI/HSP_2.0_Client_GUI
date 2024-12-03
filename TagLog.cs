@@ -39,12 +39,17 @@ namespace HSPGUI.Resources
             
             var sb = new StringBuilder();
             sb.Append($"{this.TriggerTime:HH:mm:ss.fff} Entry = {this.EntryEPC,32} --> Encode = {this.EncodeData,32} --> Exit EPC = {this.ExitEPC,32}");
-            sb.Append($" Stats: ");
+            sb.Append($"\nStats: ");
             foreach (var statType in statTypes)
             {
                 if (this.stats.ContainsKey(statType) && this.stats[statType] != 0x9F && this.stats[statType] != 0x9E)
                 {
-                    sb.Append($"{statType}:{this.stats[statType].ToString("X2")} ");
+                    var statCode = this.stats[statType].ToString("X2");
+                    if (statCode == "00") statCode = "Pass";
+                    else if (statCode == "90") statCode = "Fail";
+                    else if (statCode == "69") statCode = "Buffer Empty or Trigger Timing to close";
+                    else statCode = statCode.PadLeft(4);
+                    sb.Append($"{statType}:{statCode} ");
                 }
             }
             return sb.ToString().Trim();            

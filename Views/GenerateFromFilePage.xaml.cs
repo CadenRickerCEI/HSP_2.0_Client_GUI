@@ -43,6 +43,7 @@ public partial class GenerateFromFilePage : ContentPage
     private bool PCW_Valid;
     private string PCW_invalidReason;
     private CancellationTokenSource cancellationTokenSource;
+    private bool visable = false;
     /// <value>
     /// The constructor for the GenerateFromFilePage class. It connects the HSP client variable to the one in the main app,
     /// sets the initial validity of input fields, and configures the UI elements.
@@ -73,6 +74,16 @@ public partial class GenerateFromFilePage : ContentPage
             cmdDIAG.Text = client.cmdbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
         }
+    }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        visable = true;
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        visable = false;
     }
     /// <summary>
     /// Event handler for the Open File button click event. It allows the user to select a CSV file

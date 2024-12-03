@@ -60,14 +60,66 @@
                 Clicked="DisengageHSP"
                 FontSize="Small"
                 Text="Disengage HSP" />
-            <Frame
+            <StackLayout
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                HorizontalOptions="CenterAndExpand"
+                Orientation="Horizontal">
+                <Label
+                    FontSize="Subtitle"
+                    Text="System Mode"
+                    VerticalOptions="Center" />
+                <ImageButton Clicked="SystemModeHelp_Clicked" Source="helpcirc.png" />
+            </StackLayout>
+            <Label
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                FontSize="Subtitle"
+                HorizontalOptions="CenterAndExpand" />
+            <Button
                 Grid.Row="3"
                 Grid.Column="0"
                 Margin="5"
-                Padding="5,0">
-                <StackLayout Orientation="Horizontal">
+                Clicked="getSystemMode_Clicked"
+                FontSize="Small"
+                Text="Read System Mode" />
+            <Picker
+                x:Name="SysteModeSelction"
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="5"
+                FontSize="Small"
+                SelectedIndex="0"
+                SelectedIndexChanged="SysteModeSelction_SelectedIndexChanged"
+                VerticalOptions="Start">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Read Encode Verify (STA)</x:String>
+                        <x:String>Verify (Ver)</x:String>
+                        <x:String>Encode (ENC)</x:String>
+                        <x:String>Three Frequency Test (TRE)</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+            <StackLayout
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
+                HorizontalOptions="CenterAndExpand"
+                Orientation="Horizontal">
+                <Label
+                    FontSize="Subtitle"
+                    Text="Buffer Information"
+                    VerticalOptions="Center" />
+                <ImageButton Clicked="bufferInfo_Clicked" Source="helpcirc.png" />
+            </StackLayout>
+
+            <Frame
+                Grid.Row="5"
+                Grid.Column="0"
+                Margin="5"
+                Padding="10,10">
+                <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                     <Label
-                        Grid.Row="3"
                         Margin="0,0,20,0"
                         FontSize="Small"
                         Text="Buffer Count:"
@@ -81,13 +133,12 @@
 
             </Frame>
             <Frame
-                Grid.Row="3"
+                Grid.Row="5"
                 Grid.Column="1"
                 Margin="5"
-                Padding="5,0">
+                Padding="10,10">
                 <StackLayout Orientation="Horizontal">
                     <Label
-                        Grid.Row="3"
                         Margin="0,0,20,0"
                         FontSize="Small"
                         Text="Error Buffer Count:"
@@ -99,41 +150,49 @@
                         Text="0"
                         VerticalOptions="Center" />
                 </StackLayout>
-
             </Frame>
-
-            <Label
-                Grid.Row="5"
-                Grid.ColumnSpan="3"
-                FontSize="Subtitle"
-                HorizontalOptions="CenterAndExpand"
-                Text="Last Tag" />
-            <Frame
+            <StackLayout
                 Grid.Row="6"
                 Grid.ColumnSpan="2"
-                Margin="5">
+                HorizontalOptions="CenterAndExpand"
+                Orientation="Horizontal">
+                <Label
+                    FontSize="Subtitle"
+                    Text="Last Tag"
+                    VerticalOptions="Center" />
+                <ImageButton Clicked="lastTagHelp_Clicked" Source="helpcirc.png" />
+            </StackLayout>
+            <Frame
+                Grid.Row="7"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                MinimumHeightRequest="50">
                 <StackLayout>
-                    <Label
-                        x:Name="lastTag"
-                        FontFamily="monospace"
-                        FontSize="Small" />
+                    <Label x:Name="lastTag" FontSize="Small" />
                 </StackLayout>
             </Frame>
-            <Label
-                Grid.Row="7"
-                Grid.ColumnSpan="3"
-                FontSize="Subtitle"
-                HorizontalOptions="CenterAndExpand"
-                Text="Tag Errors" />
-            <Frame
+            <StackLayout
                 Grid.Row="8"
                 Grid.ColumnSpan="2"
-                Margin="5">
+                HorizontalOptions="CenterAndExpand"
+                Orientation="Horizontal">
+                <Label
+                    FontSize="Subtitle"
+                    HorizontalOptions="CenterAndExpand"
+                    Text="Tag Errors"
+                    VerticalOptions="Center" />
+                <ImageButton Clicked="TagErrHelp_Clicked" Source="helpcirc.png" />
+            </StackLayout>
+            <Frame
+                Grid.Row="9"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                MinimumHeightRequest="150">
                 <StackLayout>
                     <Label
                         x:Name="tagErrLabel"
-                        FontFamily="monospace"
-                        FontSize="Small" />
+                        FontSize="Small"
+                        MinimumHeightRequest="50" />
                     <Button
                         x:Name="clearErrBtn"
                         Margin="0,10,0,0"
@@ -144,14 +203,21 @@
                         Text="Clear Error" />
                 </StackLayout>
             </Frame>
-            <Label
-                Grid.Row="9"
-                Grid.ColumnSpan="2"
-                FontSize="Subtitle"
-                HorizontalOptions="CenterAndExpand"
-                Text="Scanner Input" />
-            <Frame
+            <StackLayout
                 Grid.Row="10"
+                Grid.ColumnSpan="2"
+                HorizontalOptions="CenterAndExpand"
+                Orientation="Horizontal">
+                <Label
+                    FontSize="Subtitle"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Text="Scanner Input" />
+                <ImageButton  Clicked="scannerInputHelp_Clicked" Source="helpcirc.png" />
+            </StackLayout>
+
+            <Frame
+                Grid.Row="11"
                 Grid.ColumnSpan="2"
                 Margin="5"
                 Padding="5">
@@ -196,31 +262,6 @@
                            IsVisible="False"/>
                 </ScrollView>-->
             </Frame>
-            <Label
-                Grid.Row="14"
-                Grid.ColumnSpan="2"
-                FontSize="Subtitle"
-                HorizontalOptions="CenterAndExpand"
-                Text="System Mode" />
-
-            <Button Grid.Row="15" Grid.Column="0" Text="Get System Mode" Clicked="getSystemMode_Clicked"/>
-            <Picker
-                x:Name="SysteModeSelction"
-                Grid.Row="15"
-                Grid.Column="1"
-                FontSize="Small"
-                SelectedIndex="0"
-                VerticalOptions="Start"
-                SelectedIndexChanged="SysteModeSelction_SelectedIndexChanged">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Read Encode Verify (STA)</x:String>
-                        <x:String>Verify (Ver)</x:String>
-                        <x:String>Encode (ENC)</x:String>
-                        <x:String>Three Frequency Test (TRE)</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
 
         </Grid>
     </StackLayout>

@@ -9,34 +9,53 @@ public partial class cmdLine : ContentPage
     /// </summary>
     private HSPClient? client;
 
+    private bool visable = false;
     /// <summary>
     /// Initializes a new instance of the cmdLine class.
     /// </summary>
     public cmdLine()
-    {
+    {        
+        // Initialize the component
+        InitializeComponent();        
+    }
+    protected override void OnAppearing()
+    {        
+        base.OnAppearing();
         // Retrieve the client instance from the application
         client = HSPClient.Instance;
-        // Subscribe to the connection status changed event
-        client.connectionStatusChanged += Client_connectionStatusChanged;
-        // Initialize the component
-        InitializeComponent();
 
         // Set the visibility of the connection button based on the client's connection status
         connectionBtn.IsVisible = client == null || !client.isConnected();
-        
-        // Set the visibility of the stack layout based on the connection button's visibility
-        StackLayout.IsVisible = !connectionBtn.IsVisible;
+
+
         if (client != null)
         {
+            // Set the visibility of the stack layout based on the connection button's visibility
+            StackLayout.IsVisible = !client.isConnected();
+            // Set the visibility of the connection button based on the client's connection status
+            connectionBtn.IsVisible = false;
+            // Subscribe to the connection status changed event
+            client.connectionStatusChanged += Client_connectionStatusChanged;
             dialogData.Text = client.dataBuffer;
             dialogDIAG.Text = client.dialogbuffer;
-            client.dataUpdated += dialogDataUpdtated;
-            client.dialogUpdated += dialogDialogUpdtated;
+            client.dataUpdated += dialogDataUpdated;
+            //client.cmdUpdated += dialogCmdUpdated;
             dialog.Text = client.cmdbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height+scrollDIAG.Height, false);
-            var i = scrollDATA.ScrollToAsync(0, dialogData.Height+ scrollDATA.Height, false);
-            var j = scrollCMD.ScrollToAsync(0, dialog.Height+scrollCMD.Height, false);
+            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height + scrollDIAG.Height, false);
+            var i = scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
+            var j = scrollCMD.ScrollToAsync(0, dialog.Height + scrollCMD.Height, false);
+        }        
+        visable = true;
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (client != null)
+        {
+            client.connectionStatusChanged += Client_connectionStatusChanged;
+            client.dataUpdated -= dialogDataUpdated;
         }
+        visable = false;
     }
     /// <summary>
     ///  listener for when the connection status changes on the HSP
@@ -111,7 +130,7 @@ public partial class cmdLine : ContentPage
     /// <param name="updated">Indicates whether the dialog data has been updated.</param>
     private void dialogDialogUpdtated(bool updated)
     {
-        if (updated && client != null)
+        if (updated && client != null && visable)
         {
             // Update the dialog display with the new dialog buffer
             dialogDIAG.Text = client.dialogbuffer;
@@ -125,9 +144,9 @@ public partial class cmdLine : ContentPage
     /// Updates the data display if the data has been updated.
     /// </summary>
     /// <param name="updated">Indicates whether the data has been updated.</param>
-    private void dialogDataUpdtated(bool updated)
+    private void dialogDataUpdated(bool updated)
     {
-        if (updated && client != null)
+        if (updated && client != null && visable)
         {
             // Update the data display with the new data buffer
             dialogData.Text = client.dataBuffer;
