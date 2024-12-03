@@ -45,11 +45,16 @@ namespace HSPGUI.Resources
                 if (this.stats.ContainsKey(statType) && this.stats[statType] != 0x9F && this.stats[statType] != 0x9E)
                 {
                     var statCode = this.stats[statType].ToString("X2");
-                    if (statCode == "00") statCode = "Pass";
+                    if (statCode == "00" && !(statType == "RSSI_I" || statType == "RSSI_Q")) statCode = "Pass";
                     else if (statCode == "90") statCode = "Fail";
                     else if (statCode == "69") statCode = "Buffer Empty or Trigger Timing to close";
                     else statCode = statCode.PadLeft(4);
                     sb.Append($"{statType}:{statCode} ");
+                }
+                else
+                {
+                    string tmp = "";
+                    sb.Append(tmp.PadLeft(9));
                 }
             }
             return sb.ToString().Trim();            
