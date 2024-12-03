@@ -614,6 +614,7 @@ public class HSPClient
     {
         if (_clientCMD != null && isConnected())
         {
+           await readServerMSg(true);
             _clientCMD.WriteLine("ENGAGE");
             return await readServerMSg(true);
         }
@@ -841,12 +842,18 @@ public class HSPClient
         {
             await readServerMSg(true);
             _clientCMD.WriteLine("SYSTEMTYPE");
-            string line = await readServerMSg(false);
+            string line = await readServerMSg(true);
             int index = line.IndexOf("=");
             if (index != -1 && index < line.Length )
             {
-                var data = line.Substring(line.IndexOf("=") + 1);
-                systemMode = data;
+                var systemTypes = new string[] { "VER", "STA", "ENC", "TRE" };
+                foreach ( string  systemType in systemTypes)
+                {
+                    if (line.Contains(systemType))
+                    {
+                        systemMode = systemType;
+                    }
+                }
                 return;
             }
         }
@@ -857,9 +864,11 @@ public class HSPClient
         var systemTypes = new string[] { "VER","STA", "ENC", "TRE" };
         if (systemTypes.Contains(systemType) && _clientCMD != null && _clientCMD.IsConnected )
         {
+            _clientCMD.WriteLine("DISENGAGE");
             await readServerMSg(true);
             systemMode = systemType;
             _clientCMD.WriteLine("SYSTEMTYPE="+systemType);
+            _clientCMD.WriteLine("ENGAGE");
             await readServerMSg(true);
         }
         return;

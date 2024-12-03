@@ -36,13 +36,13 @@ public partial class cmdLine : ContentPage
             connectionBtn.IsVisible = false;
             // Subscribe to the connection status changed event
             client.connectionStatusChanged += Client_connectionStatusChanged;
-            dialogData.Text = client.dataBuffer;
-            dialogDIAG.Text = client.dialogbuffer;
-            client.dataUpdated += dialogDataUpdated;
+            //dialogData.Text = client.dataBuffer;
+            //dialogDIAG.Text = client.dialogbuffer;
+            //client.dataUpdated += dialogDataUpdated;
             //client.cmdUpdated += dialogCmdUpdated;
             dialog.Text = client.cmdbuffer;
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height + scrollDIAG.Height, false);
-            var i = scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
+            //var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height + scrollDIAG.Height, false);
+            //var i = scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
             var j = scrollCMD.ScrollToAsync(0, dialog.Height + scrollCMD.Height, false);
         }        
         visable = true;
@@ -53,7 +53,7 @@ public partial class cmdLine : ContentPage
         if (client != null)
         {
             client.connectionStatusChanged -= Client_connectionStatusChanged;
-            client.dataUpdated -= dialogDataUpdated;
+            //client.dataUpdated -= dialogDataUpdated;
         }
         client = null;
         visable = false;
@@ -125,35 +125,35 @@ public partial class cmdLine : ContentPage
             dialog.Text = "Not connected";
         }
     }
-    /// <summary>
-    /// Updates the dialog display if the dialog data has been updated.
-    /// </summary>
-    /// <param name="updated">Indicates whether the dialog data has been updated.</param>
-    private void dialogDialogUpdtated(bool updated)
-    {
-        if (updated && client != null && visable)
-        {
-            // Update the dialog display with the new dialog buffer
-            dialogDIAG.Text = client.dialogbuffer;
+    ///// <summary>
+    ///// Updates the dialog display if the dialog data has been updated.
+    ///// </summary>
+    ///// <param name="updated">Indicates whether the dialog data has been updated.</param>
+    //private void dialogDialogUpdtated(bool updated)
+    //{
+    //    if (updated && client != null && visable)
+    //    {
+    //        // Update the dialog display with the new dialog buffer
+    //        dialogDIAG.Text = client.dialogbuffer;
 
-            // Scroll to the bottom of the dialog display
-            var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height+ scrollDIAG.Height, false);
-        }
-    }
+    //        // Scroll to the bottom of the dialog display
+    //        var _ = scrollDIAG.ScrollToAsync(0, dialogDIAG.Height+ scrollDIAG.Height, false);
+    //    }
+    //}
 
-    /// <summary>
-    /// Updates the data display if the data has been updated.
-    /// </summary>
-    /// <param name="updated">Indicates whether the data has been updated.</param>
-    private void dialogDataUpdated(bool updated)
-    {
-        if (updated && client != null && visable)
-        {
-            // Update the data display with the new data buffer
-            dialogData.Text = client.dataBuffer;
+    ///// <summary>
+    ///// Updates the data display if the data has been updated.
+    ///// </summary>
+    ///// <param name="updated">Indicates whether the data has been updated.</param>
+    //private void dialogDataUpdated(bool updated)
+    //{
+    //    if (updated && client != null && visable)
+    //    {
+    //        // Update the data display with the new data buffer
+    //        dialogData.Text = client.dataBuffer;
 
-            // Scroll to the bottom of the data display
-            var _ = scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
-        }
-    }
+    //        // Scroll to the bottom of the data display
+    //        var _ = scrollDATA.ScrollToAsync(0, dialogData.Height + scrollDATA.Height, false);
+    //    }
+    //}
 }

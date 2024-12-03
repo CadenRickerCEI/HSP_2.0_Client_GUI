@@ -34,7 +34,7 @@
                     <Label x:Name="dialog" />
                 </ScrollView>
             </Frame>
-            <Label
+            <!--<Label
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
                 Text="Data Dialog" />
@@ -45,8 +45,8 @@
                     MinimumHeightRequest="75">
                     <Label x:Name="dialogData" />
                 </ScrollView>
-            </Frame>
-            <Label
+            </Frame>-->
+            <!--<Label
                 FontSize="Subtitle"
                 HorizontalOptions="CenterAndExpand"
                 Text="Dialog" IsVisible="False"/>
@@ -58,7 +58,7 @@
                     <Label x:Name="dialogDIAG"
                            />
                 </ScrollView>
-            </Frame>
+            </Frame>-->
         </StackLayout>
         <Label
             Margin="5"

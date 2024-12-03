@@ -34,7 +34,7 @@ public partial class LoadFromFilePage : ContentPage
         cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
         loadFileBtn.IsVisible = false;
-        //client.cmdUpdated += cmdDialogUpdated;
+        client.cmdUpdated += cmdDialogUpdated;
         _progress.ProgressChanged += (s, e) =>
         {
             progressBar.Progress = e;
@@ -42,9 +42,9 @@ public partial class LoadFromFilePage : ContentPage
         if (client != null)
         {
             //cmdDIAG.Text = client.dialogbuffer;
-            dialog.Text = client.cmdbuffer;
+            cmdDIAG.Text = client.cmdbuffer;
             //scrollDIAG.ScrollToAsync(0,cmdDIAG.Height ,true);
-            scrollCMD.ScrollToAsync(0,dialog.Height,true);
+            scrollDIAG.ScrollToAsync(0,cmdDIAG.Height,true);
         }
     }    
     /// <summary>
@@ -120,7 +120,7 @@ public partial class LoadFromFilePage : ContentPage
         progressBar.IsVisible = false;
         progressFrame.IsVisible = false;
         loadFileBtn.IsEnabled = true;
-        await scrollCMD.ScrollToAsync(0,dialog.Height+scrollCMD.Height,false);
+        await scrollDIAG.ScrollToAsync(0,cmdDIAG.Height+scrollDIAG.Height,false);
     }
 
     /// <summary>
@@ -192,11 +192,11 @@ public partial class LoadFromFilePage : ContentPage
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            dialog.Text = input;
-            scrollCMD.ScrollToAsync(0, dialog.Height , true);
+           cmdDIAG.Text = input;
+            scrollDIAG.ScrollToAsync(0, cmdDIAG.Height , true);
         });
     }
-    /*
+    
     private void cmdDialogUpdated(bool updated)
     {
         if (updated && client != null)
@@ -204,5 +204,5 @@ public partial class LoadFromFilePage : ContentPage
             cmdDIAG.Text = client.cmdbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height + scrollDIAG.Height, true);
         }
-    }*/
+    }
 }

@@ -223,6 +223,13 @@ public partial class StatusPage : ContentPage
         if (client != null && client.isConnected())
         {
             dialog.Text = await client.EngageHSP();
+            if (dialog.Text.Contains("ENGAGED")){
+                await DisplayAlert("System Engaged", "HSP system is engaged", "Ok");
+            }
+            else
+            {
+                await DisplayAlert("System Engaged", dialog.Text, "Ok");
+            }
             //var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
         }
     }
