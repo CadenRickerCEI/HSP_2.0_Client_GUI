@@ -52,7 +52,7 @@ public partial class cmdLine : ContentPage
         base.OnDisappearing();
         if (client != null)
         {
-            client.connectionStatusChanged += Client_connectionStatusChanged;
+            client.connectionStatusChanged -= Client_connectionStatusChanged;
             client.dataUpdated -= dialogDataUpdated;
         }
         client = null;
