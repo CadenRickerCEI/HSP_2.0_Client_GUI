@@ -224,7 +224,7 @@ public class HSPClient
                 }
             }
         }
-        //_busy = true;
+        _busy = true;
         try
         {
             var csvReader = new CSVReader(file);
@@ -266,7 +266,7 @@ public class HSPClient
                         try
                         {  
                             _clientCMD.WriteLine($"{command}");
-                            if (i % 100 == 0)
+                            if (i % 25 == 0)
                             {
                                 await Task.Delay(5);
                             }
@@ -285,7 +285,7 @@ public class HSPClient
                     return $"Line {i} is Empty or invalid";
                 }
 
-                if (i % (data.Count / Math.Min(400, data.Count)) == 0)
+                if (i % (data.Count / Math.Min(1000, data.Count)) == 0)
                 {
                     var progressVal = (double)i / (double)(data.Count - 1);
                     progress.Report(progressVal);

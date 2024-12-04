@@ -46,17 +46,16 @@ public partial class LoadFromFilePage : ContentPage
         base.OnAppearing();
         if (client != null)
         {
-            //cmdDIAG.Text = client.dialogbuffer;
-            cmdDIAG.Text = client._cmdbuffer;
-            client._cmdUpdated += cmdDialogUpdated;
-            scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
+            //client._cmdUpdated += cmdDialogUpdated;
+            //cmdDIAG.Text = client._cmdbuffer;
+            //scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
         }
     }
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        if (client != null )
-        client._cmdUpdated -= cmdDialogUpdated;
+        //if (client != null )
+        //client._cmdUpdated -= cmdDialogUpdated;
     }
     /// <summary>
     /// Event handler for the Open File button click event. It allows the user to select a CSV file
@@ -131,7 +130,7 @@ public partial class LoadFromFilePage : ContentPage
         progressBar.IsVisible = false;
         progressFrame.IsVisible = false;
         loadFileBtn.IsEnabled = true;
-        await scrollDIAG.ScrollToAsync(0,cmdDIAG.Height+scrollDIAG.Height,false);
+        //await scrollDIAG.ScrollToAsync(0,cmdDIAG.Height+scrollDIAG.Height,false);
     }
 
     /// <summary>
@@ -196,13 +195,13 @@ public partial class LoadFromFilePage : ContentPage
     }
 
     
-    private async void cmdDialogUpdated(bool updated)
-    {
-        if (updated && client != null)
-        {
-            cmdDIAG.Text = client._cmdbuffer;
-            await Task.Delay(10);
-            var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height + scrollDIAG.Height, true);
-        }
-    }
+    //private async void cmdDialogUpdated(bool updated)
+    //{
+    //    if (updated && client != null)
+    //    {
+    //        cmdDIAG.Text = client._cmdbuffer;
+    //        await Task.Delay(10);
+    //        var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height + scrollDIAG.Height, true);
+    //    }
+    //}
 }

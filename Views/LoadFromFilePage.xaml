@@ -67,7 +67,7 @@
             HorizontalOptions="FillAndExpand"
             Text="Create Sample File" FontSize="Small"/>        
            
-        <Label
+        <!--<Label
             FontSize="Subtitle"
             HorizontalOptions="CenterAndExpand"
             Text="Command Dialog" />
@@ -78,7 +78,7 @@
                 MinimumHeightRequest="75">
                 <Label x:Name="cmdDIAG" />
             </ScrollView>
-        </Frame>
+        </Frame>-->
 
     </StackLayout>
 
