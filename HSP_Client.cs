@@ -21,52 +21,40 @@ public class HSPClient
     /// </summary>
     private TelnetConnection? _clientCMD;
     private TelnetConnection? _clientDATA; //5001
-    private TelnetConnection? _clientDIAG; //5003
-    public bool busy;
+    private bool _busy;
+    public int _bufferCount =0; 
     /// <summary>
     /// Occurs when the connection status changes.
     /// </summary>
-    public event Action<bool>? connectionStatusChanged;
+    public event Action<bool>? _connectionStatusChanged;
     /// <summary>
     /// Notifiation for when the data buffer been updated
     /// </summary>
-    public event Action<bool>? cmdUpdated;
-    /*/// <summary>
-    /// Notification for when dialog buffer has been updated
-    /// </summary>
-    public event Action<bool>? dialogUpdated;*/
+    public event Action<bool>? _cmdUpdated;   
     /// <summary>
     /// Notifiation for when the data buffer been updated
     /// </summary>
-    public event Action<bool>? dataUpdated;
+    public event Action<bool>? _dataUpdated;
     /// <summary>
     /// Array of data types used in buffer commands.
     /// </summary>
-    private string[] dataTypes = new string[] { "EPC", "USR", "KIL", "ACC", "PCW" };
+    private string[] _dataTypes = new string[] { "EPC", "USR", "KIL", "ACC", "PCW" };
     /// <summary>
     /// Queue for storing the dialog strings to be space effiecent.
     /// </summary>
-    private Queue<string> cmdQueue = new Queue<string>();
+    private Queue<string> _cmdQueue = new Queue<string>();
     /// <summary>
     /// last 100 lines of cmd and respones from the HSP.
     /// </summary>
-    public string cmdbuffer = "";
-    /// <summary>
-    /// Queue for storing the dialog strings to be space effiecent.
-    /// </summary>
-    private Queue<string> dialog = new Queue<string>();
-    /// <summary>
-    /// last 100 lines of dialog from the HSP.
-    /// </summary>
-    public string dialogbuffer = "";
+    public string _cmdbuffer = "";  
     /// <summary>
     /// Queue for storing lines of data from the data port
     /// </summary>
-    private Queue<string> data = new Queue<string>();
+    private Queue<string> _data = new Queue<string>();
     /// <summary>
     /// last 100 lines of Data from the HSP.
     /// </summary>
-    public string dataBuffer = "";
+    public string _dataBuffer = "";
     /// <summary>
     /// The single instance of the HSPClient class.
     /// </summary>
@@ -75,12 +63,10 @@ public class HSPClient
     /// Lock object for thread safety.
     /// </summary>
     private static readonly object _lock = new object();
-    
+    public bool _engaged { get; private set; }
     private int _portData = 5001;
     
-    private int _portDiag = 5003;
     private string _IpAddress = "192.168.50.124";
-    private int _updateTick;
     public string systemMode;
     /// <summary>
     /// array conating the list of all possible cmd for antena
@@ -100,8 +86,7 @@ public class HSPClient
     {
         _clientCMD = null;
         _clientDATA = null;
-        _clientDIAG = null;
-        busy = false;
+        _busy = false;
         var downloadsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "YourAppLogs");
 
         if (!Directory.Exists(downloadsDirectory))
@@ -143,87 +128,36 @@ public class HSPClient
     /// </summary>
     /// <param name="IPAddress"></param>
     /// <param name="PortCMD"></param>
-    /// <param name="PortDiag"></param>
     /// <param name="PortData"></param>
     /// <returns>String containg message from the HSP or Failed to conect</returns>
-    public async Task<string> connectToHSP(string IPAddress, int PortCMD,
-                                int PortDiag, int PortData)
+    public void connectToHSP(string IPAddress, int PortCMD, int PortData)
     {
         try
         {
             _portData = PortData;
-            _portDiag = PortDiag;
             _IpAddress = IPAddress;
             _clientCMD = new TelnetConnection(IPAddress, PortCMD);
-            _clientDIAG = null;//new TelnetConnection(IPAddress, PortDiag);
             _clientDATA = new TelnetConnection(IPAddress, PortData);        
-            connectionStatusChanged?.Invoke(isConnected());
-            busy = false;
-            string msg = await readServerMSg(true);
-            await Task.Delay(10);
-            await readSystemMode();
-            return msg;
+            _connectionStatusChanged?.Invoke(isConnected());
+            _busy = false;
+            readSystemMode();
+            return;
         }
         catch
         {
-            return "HSP conncetion failed. Check that HSP is powered on.";
+            return ;
         }
     }
-
-    /// <summary>
-    ///  reads server message and formats the message
-    /// </summary>
-    /// <returns>Formated message from the server.</returns>
-    public async Task<string> readServerMSg(bool useQueue)
-    {
-        try
-        {
-            string? result = _clientCMD?.Read();
-
-            if (result != null)
-            {
-                result = result.Trim();
-                string pattern = @"\s*HSPSA>$";
-                if (result.Length > 0)
-                {
-                    var msg = "HSPSA>" + Regex.Replace(result, pattern, "");
-                    if (useQueue)
-                    { 
-                        var pMsg = await parseMsg(msg, cmdQueue, 20, false);
-                        cmdbuffer = pMsg == "" ? cmdbuffer : pMsg;
-                        if (pMsg != "")
-                        {
-                            cmdUpdated?.Invoke(true);
-                        }                        
-                        return cmdbuffer;
-                    }
-                    else
-                    {
-                        return msg;
-                    }
-                    
-                }
-            }
-            return cmdbuffer;
-        }
-        catch
-        {
-            cmdbuffer = connectionLost;
-            return cmdbuffer;
-        }
-    }
-
     /// <summary>
     /// Generates a buffer command data string.
     /// </summary>
     /// <param name="bufferCmdData">Array of command data strings.</param>
     /// <param name="numberOfTags">The number of tags to be added to the buffer.</param>
     /// <param name="resetBuffer">Indicates whether to reset the buffer.</param>
-    public async Task<string> GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
+    public string GenerateBuffer(string?[] bufferCmdData, int numberOfTags, bool resetBuffer)
     {
-        busy = false;
         string HSPResponse = "Generate File Failed";
-
+        _busy = false;
         if (_clientCMD != null && _clientCMD.IsConnected)
         {
             HSPResponse = "";
@@ -231,7 +165,7 @@ public class HSPClient
             var i = 0;
             foreach (var data in bufferCmdData)
             {
-                if (data != "") command += dataTypes[i] + data + ",";
+                if (data != "") command += _dataTypes[i] + data + ",";
                 i++;
             }
 
@@ -239,14 +173,11 @@ public class HSPClient
 
             if (resetBuffer)
             {
-                System.Diagnostics.Debug.WriteLine("RESETBUFFER");
-
                 if (_clientCMD is not null && isConnected())
                 {
                     try
                     {
                         _clientCMD.WriteLine("RESETBUFFER");
-                        HSPResponse += readServerMSg(true) + "\n";
                     }
                     catch
                     {
@@ -258,22 +189,15 @@ public class HSPClient
             if (_clientCMD is not null && isConnected())
             {
                 try
-                {
-                    System.Diagnostics.Debug.WriteLine(command);
+                { 
                     _clientCMD.WriteLine($"{command}");
                 }
                 catch
                 {
-                    busy = false;
                     return "Connection Lost";
-                }
-
-                string result = await readServerMSg(true);
-                await Task.Delay(200);//Delay to give the HSP a chance to process the data. 
-                HSPResponse = await readServerMSg(true);                    
+                }                  
             }
         }
-        busy = false;
         return HSPResponse;
     }
 
@@ -286,8 +210,6 @@ public class HSPClient
     /// <returns>An integer indicating the result of the operation.</returns>
     public async Task<string> LoadFromFile(string file, IProgress<double> progress, bool resetBuffer, LoadFromFilePage page)
     {
-        string HSPInfo = "";
-        busy = true;
         if (resetBuffer)
         {
             if (_clientCMD is not null && isConnected())
@@ -298,14 +220,11 @@ public class HSPClient
                 }
                 catch
                 {
-                    busy = false;
                     return connectionLost;
                 }
-                HSPInfo = await readServerMSg(false);
-                page.updatedialog(HSPInfo +"\n");
             }
         }
-
+        //_busy = true;
         try
         {
             var csvReader = new CSVReader(file);
@@ -326,12 +245,11 @@ public class HSPClient
                         string errMessage = validateInput(data[i][j], length, false);
 
                         if (errMessage != "")
-                        {                            
-                            busy = false;
-                            return $"File loading halted.\nError on Line {i}\n {dataTypes[j]} {errMessage}\n";
+                        {
+                            return $"File loading halted.\nError on Line {i}\n {_dataTypes[j]} {errMessage}\n";
                         }
                     }
-                    command += data[i][j].Length > 0 ? dataTypes[j] + data[i][j] + "," : "";
+                    command += data[i][j].Length > 0 ? _dataTypes[j] + data[i][j] + "," : "";
                 }
 
                 if (command != "WriteItem=")
@@ -348,49 +266,40 @@ public class HSPClient
                         try
                         {  
                             _clientCMD.WriteLine($"{command}");
-                            if (i % 432 == 0)
+                            if (i % 100 == 0)
                             {
-                                await readDialogPorts();
+                                await Task.Delay(5);
                             }
                         }
                         catch(Exception ex)
                         {
                             System.Diagnostics.Debug.WriteLine(ex);
-                            busy = false;
+                            _busy = false;
                             return connectionLost;
                         }
                     }
                 }
                 else
                 {
-                    busy = false;
+                    _busy = false;
                     return $"Line {i} is Empty or invalid";
                 }
 
-                if (i % (data.Count / Math.Min(200, data.Count)) == 0)
+                if (i % (data.Count / Math.Min(400, data.Count)) == 0)
                 {
                     var progressVal = (double)i / (double)(data.Count - 1);
                     progress.Report(progressVal);
                     if (!isConnected()) await Task.Delay(20);
                 }
             }
-
-            if (_clientCMD is not null && isConnected())
-            {
-                await Task.Delay(250);
-                string writtenMsg = await readServerMSg(true);               
-                page.updatedialog(HSPInfo + writtenMsg);
-            }
-
             progress.Report(1.0);
-            System.Diagnostics.Debug.WriteLine("completed loading");
-            busy = false;
+            _busy = false;
             return "";
         }
         catch (Exception e)
         {
             System.Diagnostics.Debug.WriteLine(e.ToString());
-            busy = false;
+            _busy = false;
             return "File is missing, open in another program, or empty.";
         }
     }
@@ -401,27 +310,26 @@ public class HSPClient
     /// <returns>An array of integers representing the antenna settings.</returns>
     public async Task<string[]> readAntenaSettings()
     {
+        _busy = true;
         var settings = new string[5] {"0", "0", "0", "0", "0"};
         if (_clientCMD != null)
         {
             for (int i = 0; i < antenaSettingCMDs.Length; i++)
             {
-                string msg = "";
+                string? msg = "";
                 if (i!=1){
                     _clientCMD.WriteLine(antenaSettingCMDs[i]);
                     await Task.Delay(10);
-                    msg = await readServerMSg(false);
+                    msg  = _clientCMD.Read();
+                    msg = msg == null ? "" : msg;
                     
                 }
                 string pattern = @"-?\d+(\.\d+)?";
                 MatchCollection matches;
-
-
                 switch (i)
                 {
                     case 0: //P interface commands
                         matches = Regex.Matches(msg, pattern);
-                        System.Diagnostics.Debug.WriteLine("read messaage"+msg);
                         string output = "";
                         // Dictionaries to map match values to outputs
                         var tariMap = new Dictionary<string, string>
@@ -478,6 +386,7 @@ public class HSPClient
                 }
             } 
         }
+        _busy = false;
         return settings ;
     }
 
@@ -496,7 +405,6 @@ public class HSPClient
                 {
                     case 0: //P interface commands
                         var splitString = settings[i] != null ? settings[i].Split(",") : new string[] { "0","0","0"};
-                        System.Diagnostics.Debug.WriteLine($"{splitString[0]} {splitString[1]} {splitString[2]}");
                         cmd += $"{(splitString.Length > 0 && int.Parse(splitString[0])>= 0 && int.Parse(splitString[0]) < 3 ? splitString[0] : "0")}" +
                                $"{(splitString.Length > 1 && int.Parse(splitString[1])>= 0 && int.Parse(splitString[1]) < 4 ? splitString[1] : "0")}" +
                                $"{(splitString.Length > 2 && int.Parse(splitString[2])>= 0 && int.Parse(splitString[2]) < 4 ? splitString[2] : "0")}";
@@ -515,7 +423,6 @@ public class HSPClient
                     default:
                         break;
                 }
-                System.Diagnostics.Debug.WriteLine("writecmd" + cmd);
                 _clientCMD.WriteLine(cmd);
                 await Task.Delay(10);
             }
@@ -561,47 +468,17 @@ public class HSPClient
     public bool isConnected()
     {
         var connected = _clientCMD != null && _clientCMD.IsConnected;
-        connectionStatusChanged?.Invoke(connected);
+        _connectionStatusChanged?.Invoke(connected);
         return connected;
     }
 
     /// <summary>
-    /// reads any lingering messages then 
     /// gets the current buffer count in HSP.
     /// </summary>
-    /// <returns> string array containing the count followed by the messages reviced.</returns>
-    public async Task<string[]> getBufferCount()
+    public void getBufferCount()
     {
         if (_clientCMD != null && isConnected())
-        {
-            cmdbuffer = await readServerMSg(true);
             _clientCMD.WriteLine("GETBUFFERCOUNT\n");
-            string? result = await readServerMSg(false);            
-            result = result is not null ? result : "";
-            
-            int count = -1;
-            if (result != "")
-            {
-                var newLines = result.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
-                foreach (var line in newLines)
-                {
-                    if (line.Contains("PIPUMP"))
-                    {
-                        MatchCollection matches = Regex.Matches(line, @"\d+");
-                        int sum = 0;
-                        foreach (Match match in matches)
-                            sum += int.Parse(match.Value);
-                        count = sum;
-                    }                    
-                }                
-            }
-            else
-            {
-                count = 0;
-            }
-            return [count.ToString(), $"{cmdbuffer}\n{result}"];
-        }
-        return ["0", "Buffer invalid"];
     }
 
     /// <summary>
@@ -610,15 +487,11 @@ public class HSPClient
     /// the edge control currently set(rising edge or falling edge).
     /// </summary>
     /// <returns>Server response</returns>
-    public async Task<string> EngageHSP()
+    public void EngageHSP()
     {
         if (_clientCMD != null && isConnected())
-        {
-           await readServerMSg(true);
             _clientCMD.WriteLine("ENGAGE");
-            return await readServerMSg(true);
-        }
-        return "Engage Failed Not Connected";
+            
     }
 
     /// <summary>
@@ -629,14 +502,12 @@ public class HSPClient
     /// system to idle state.
     /// </summary>
     /// <returns>Server response</returns>
-    public async Task<string> disengageHSP()
+    public void disengageHSP()
     {
         if (_clientCMD != null && isConnected())
         {
             _clientCMD.WriteLine("DISENGAGE");
-            return await readServerMSg(true);
         }
-        return "Disengage Failed Not Connected";
     }
 
     /// <summary>
@@ -644,14 +515,12 @@ public class HSPClient
     /// will be set to zero.
     /// </summary>
     /// <returns>Server Message</returns>
-    public async Task<string> resetbuffer()
+    public void resetbuffer()
     {
         if (_clientCMD != null && isConnected())
         {
             _clientCMD.WriteLine("RESETBUFFER");
-            return await readServerMSg(true);
         }
-        return "Reset Buffer Failed Not Connected";
     }
 
     /// <summary>
@@ -659,16 +528,13 @@ public class HSPClient
     /// </summary>
     /// <param name="cmd">command</param>
     /// <returns>User command followed</returns>
-    public async Task<string> writeUsrCMD(string cmd)
+    public void writeUsrCMD(string cmd)
     {
         if (_clientCMD != null && isConnected())
         {
+            _cmdQueue.Enqueue($"USER_>{cmd}");
             _clientCMD.WriteLine($"{cmd}");
-            cmdQueue.Enqueue($"USER_>{cmd}");
-            await Task.Delay(100);
-            return await readServerMSg(true);
         }
-        return "Not connected to HSP";
     }
     /// <summary>
     /// Disconnects and disposes of all client connections.
@@ -683,14 +549,6 @@ public class HSPClient
         {
             _clientDATA.Dispose();
         }
-        if (_clientDATA is not null)
-        {
-            _clientDATA.Dispose();
-        }
-        if (_clientDIAG is not null)
-        {
-            _clientDIAG.Dispose();
-        }
     }
 
     /// <summary>
@@ -700,149 +558,107 @@ public class HSPClient
     public async Task readDialogPorts()
     {
         
-        if (true)
-        {
-            var newDataBuffer = "";            
-            var newDialogBuffer ="";
-
-            
-            if ( !Preferences.Get(Constants.disableDiag, false) && _clientDIAG != null )
+        if (_clientDATA != null)
+        { 
+            // Read data from the client and update the data buffer
+            var dataMSG = _clientDATA.Read() ;
+            if (dataMSG != null)
             {
+                bool newTag = await tagLog.addData(dataMSG);
+                _dataUpdated?.Invoke(newTag);
+            }            
+        }
+        await parseCMDMsg();
                 
-                // Read data from the client and update the data buffer
-                var taskData = readClient(_clientDATA, data, 300, true, dataBuffer);                
-                // Read data from the dialog client and update the dialog buffer
-                var taskDialog = readClient(_clientDIAG, dialog, 300, true,dialogbuffer);
-
-                await Task.WhenAll(taskData, taskDialog);
-                newDataBuffer = await taskData;
-                newDialogBuffer = await taskDialog;
-            }
-            else
-            {
-                // Read data from the client and update the data buffer
-                newDataBuffer = await readClient(_clientDATA, data, 96, true, dataBuffer);
-                dataBuffer = string.IsNullOrEmpty(newDataBuffer) ? dataBuffer : newDataBuffer;                
-            }
-
-            dataUpdated?.Invoke(true);
-            // Invoke the dialogUpdated event if the dialog buffer has changed
-
-            int updateLimitCounter = 100 / Constants.tcpUpdateRate;
-            // Introduce a short delay
-            busy = false;
-            if (!busy && _updateTick == 0)
-            {
-                // Invoke the dataUpdated event if the data buffer has changed
-                dataUpdated?.Invoke(true);
-                //dialogUpdated?.Invoke(dialogbuffer != newDialogBuffer);
-                dataBuffer = newDataBuffer;
-                dialogbuffer = newDialogBuffer;
-               
-            }
-            if (_updateTick == 1)
-            {
-                //dialogUpdated?.Invoke(false);
-                dataUpdated?.Invoke(false);
-            }
-
-            _updateTick = (_updateTick + 1) % updateLimitCounter;
-        }
-    }
-    /// <summary>
-    /// Reads a message from the Telnet client and processes it.
-    /// </summary>
-    /// <param name="client">The Telnet client connection.</param>
-    /// <param name="queue">The queue to store parsed messages.</param>
-    /// <param name="quesize">The maximum size of the queue.</param>
-    /// <param name="addToLog">adds result to a log file instead of adding to the buffer</param>
-    /// <param name="buffer">stiring containg old buffer to return in the case of an empty message</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the processed message.</returns>
-    private async Task<string> readClient(TelnetConnection? client, Queue<string> queue,
-                                            int quesize, bool addToLog, string buffer)
-    {
-        if (client is not null)
-        {
-            string? msg = null;
-            try
-            {
-                // Attempt to read a message from the client
-                msg = client.Read();
-            }
-            catch
-            {
-                // Handle any exceptions that occur during the read operation
-            }
-            if (!string.IsNullOrEmpty(msg))
-            {
-                // If a message was successfully read, process it
-                //System.Diagnostics.Debug.WriteLine(msg);
-                var pMsg = await parseMsg(msg, queue, quesize,addToLog);                
-                if (pMsg.Length > 0)
-                {
-                    return pMsg ;
-                }                
-            }
-        }
-        // Return an empty string if no message was read or the client is null
-        return buffer;
     }
     /// <summary>
     /// parse message takes in a string splits by new lines then adds them to a queue.
     /// the oldest items are removed from the queue when queue is larger than size.
     /// it then returns the message containg the newest lines up to the quesize.
     /// </summary>
-    /// <param name="msg">new data to be added to the queue</param>
-    /// <param name="queue">queue</param>
-    /// <param name="quesize">maximum number of elements in the queue</param>
     /// <parm> if add to log is true add the output to a log and doesnt add to the queue</parm>
     /// <returns>the queue as joined as a string</returns>
-    private async Task <string> parseMsg(string msg, Queue<string> queue, int quesize, bool addToLog)
+    private async Task parseCMDMsg()
     {
-        var parsedMsg = "test";
-        if (addToLog)
+        if (_clientCMD is not null && ! _busy)
         {
-            await tagLog.addData(msg);
-            parsedMsg = "added to log";//await tagLog.getHistAsync();
-        }
-        else
-        {
-            await Task.Run(() =>
+            int lastCount = _bufferCount;
+            string? msg = null;
+            var quesize = 15;
+            try
             {
-                var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
-                parsedMsg = "";
-                if (newLines.Length > 0)
+                // Attempt to read a message from the client
+                msg = "HSPSA>"+ _clientCMD.Read();
+            }
+            catch
+            {
+                // Handle any exceptions that occur during the read operation
+            }
+
+            if (!string.IsNullOrEmpty(msg))
+            {
+                var parsedMsg = "";
+
+                await Task.Run(() =>
                 {
-                    if (newLines.Length > quesize)
+                    var newLines = msg.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
+                    parsedMsg = "";
+                    if (newLines.Length > 0)
                     {
-                        queue.Clear();
-                    }
-                    foreach (var line in newLines.TakeLast(Math.Min(quesize, newLines.Length)))
-                    {
-                        var item = line.Trim();
-                        if (item != "" && !item.Contains("PIPUMP"))
+                        if (newLines.Length > quesize)
                         {
-                            queue.Enqueue(item);
+                            _cmdQueue.Clear();
                         }
-                        while (queue.Count > quesize)
+                        foreach (var line in newLines.TakeLast(Math.Min(quesize, newLines.Length)))
                         {
-                            queue.Dequeue();
+                            var item = line.Trim();
+                            if (item != "" && !item.Contains("PIPUMP") && !( item.Length -1 > -1 && item[item.Length-1] == '>'))
+                            {
+                                _cmdQueue.Enqueue(item);
+                                if (item.Contains("ENGAGED"))
+                                {
+                                    _engaged = true;
+                                }else if (item.Contains("DISENGAGED"))
+                                {
+                                    _engaged = false;
+                                }
+                            }
+                            else if (item.Contains("PIPUMP"))
+                            {
+                                MatchCollection matches = Regex.Matches(line, @"\d+");
+                                int sum = 0;
+                                foreach (Match match in matches)
+                                    sum += int.Parse(match.Value);
+                                _bufferCount = sum;
+                            }
+                            while (_cmdQueue.Count > quesize)
+                            {
+                                _cmdQueue.Dequeue();
+                            }
                         }
+                        parsedMsg = string.Join("\n", _cmdQueue);
                     }
-                    parsedMsg = string.Join("\n", queue);
+                });
+                if ((parsedMsg != "" && parsedMsg != _cmdbuffer)|| _bufferCount != lastCount)
+                {
+                    _cmdbuffer = parsedMsg;
+                    _cmdUpdated?.Invoke(true);
                 }
-            });
+                else
+                {
+                    _cmdUpdated?.Invoke(false);
+                }
+            }
         }
-        
-        return parsedMsg;
-    }   
-    public async Task readSystemMode()
+    }
+    public void readSystemMode()
     {
+        _busy = true;
         if (_clientCMD != null && _clientCMD.IsConnected)
         {
-            await readServerMSg(true);
             _clientCMD.WriteLine("SYSTEMTYPE");
-            string line = await readServerMSg(true);
+            string? line = _clientCMD.Read();
+            line = line == null ? "" : line;
             int index = line.IndexOf("=");
             if (index != -1 && index < line.Length )
             {
@@ -854,9 +670,9 @@ public class HSPClient
                         systemMode = systemType;
                     }
                 }
-                return;
             }
         }
+        _busy = false;
         return ;
     }
     public async Task writeSystemMode(string systemType)
@@ -865,11 +681,11 @@ public class HSPClient
         if (systemTypes.Contains(systemType) && _clientCMD != null && _clientCMD.IsConnected )
         {
             _clientCMD.WriteLine("DISENGAGE");
-            await readServerMSg(true);
+            await Task.Delay(10);
             systemMode = systemType;
             _clientCMD.WriteLine("SYSTEMTYPE="+systemType);
+            await Task.Delay(10);
             _clientCMD.WriteLine("ENGAGE");
-            await readServerMSg(true);
         }
         return;
     }

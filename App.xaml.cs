@@ -103,7 +103,7 @@ public partial class App : Application
         // Continuously read data from the ports
         while (true)
         {
-            if (_client != null && _client.isConnected() && !_client.busy)
+            if (_client != null && _client.isConnected() )
             {
                 // Read data from the dialog ports
                 await _client.readDialogPorts();

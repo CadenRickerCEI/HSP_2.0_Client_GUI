@@ -36,8 +36,10 @@ public partial class StatusPage : ContentPage
     {
         base.OnAppearing();
         client = HSPClient.Instance;
-        client.connectionStatusChanged += Client_connectionStatusChanged;
-        client.dataUpdated += dialogDataUpdated;
+        client._connectionStatusChanged += Client_connectionStatusChanged;
+        client._cmdUpdated += dialogCmdUpdated;
+        client._dataUpdated += dialogDataUpdated;
+        client.readSystemMode();
         StartPeriodicTask();
     }
     protected override void OnDisappearing()
@@ -46,8 +48,8 @@ public partial class StatusPage : ContentPage
         _isRunning = false;
         if (client != null)
         {
-            client.connectionStatusChanged -= Client_connectionStatusChanged;
-            client.dataUpdated -= dialogDataUpdated;
+            client._connectionStatusChanged -= Client_connectionStatusChanged;
+            client._dataUpdated -= dialogDataUpdated;
         }
         client = null;
     }
@@ -83,8 +85,7 @@ public partial class StatusPage : ContentPage
             if (lastTag.Text != null || tagString != lastTag.Text)
             {
                 lastTag.Text = tagString;
-            }            
-            
+            }
             try
             {
                 var errorCount = client.tagLog.badTags.Count();
@@ -96,7 +97,6 @@ public partial class StatusPage : ContentPage
                 {
                     errorCount++;
                 }
-                
                 ErrorCount.Text = $"{errorCount.ToString(),5}";
             }
             catch
@@ -106,7 +106,15 @@ public partial class StatusPage : ContentPage
             clearErrBtn.IsVisible = tagErrLabel.Text != "";
         }
     }
-
+    /// <summary>
+    /// Updates the buffer count on the screen.
+    /// </summary>
+    /// <param name="updated"></param>
+    private void dialogCmdUpdated( bool updated)
+    {
+        if (updated && client !=  null)
+            bufferCount.Text = client._bufferCount.ToString();
+    }    
 
     /// <summary>
     /// Event handler for the button click event. Initiates the connection to the HSP server.
@@ -137,7 +145,6 @@ public partial class StatusPage : ContentPage
                 return;
             }
         }
-
         connectionBtn.IsVisible = false;
         statusGrid.IsVisible = true;        
     }
@@ -149,8 +156,6 @@ public partial class StatusPage : ContentPage
     public async Task connectToServer()
     {        
         loadingIndicator.IsVisible = true;
-        System.Diagnostics.Debug.WriteLine("Attempting to connect to Server");
-
         if (client != null)
         {
             //dialog.Text = client.connectToHSP(Preferences.Get(Constants.KeyIpAddress, Constants.IpAddress), Preferences.Get(Constants.KeyPort, Constants.Port));
@@ -158,20 +163,16 @@ public partial class StatusPage : ContentPage
             int port = Preferences.Get(Constants.KeyPort, Constants.Port);
             int portDIAG = Preferences.Get(Constants.KeyPortDIAG, Constants.PortDIAG);
             int portData = Preferences.Get(Constants.KeyPortDATA, Constants.PortDATA);
-            var message = "";
             await Task.Delay(10);
             try
             {
-                message = await client.connectToHSP(IPAdrress, port, portDIAG, portData );
+                client.connectToHSP(IPAdrress, port, portData );
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
             }
-
-            dialog.Text = message;
         }
-        //var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
         loadingIndicator.IsRunning = false;
         loadingIndicator.IsVisible = false;        
     }
@@ -193,13 +194,12 @@ public partial class StatusPage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private async void GetBufferCount(object sender, EventArgs e)
+    private void GetBufferCount(object sender, EventArgs e)
     {
-                if (client != null && client.isConnected())
+        if (client != null && client.isConnected())
         {
-            var result = await client.getBufferCount();
-            bufferCount.Text = result[0];
-            //dialog.Text = result[1];
+            client.getBufferCount();
+            
         }
         else
         {
@@ -218,19 +218,11 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private async void EnagedHSP(object sender, EventArgs e)
+    private void EnagedHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            dialog.Text = await client.EngageHSP();
-            if (dialog.Text.Contains("ENGAGED")){
-                await DisplayAlert("System Engaged", "HSP system is engaged", "Ok");
-            }
-            else
-            {
-                await DisplayAlert("System Engaged", dialog.Text, "Ok");
-            }
-            //var _ = scrollCMD.ScrollToAsync(0, dialog.Height + 5, true);
+            client.EngageHSP();            
         }
     }
 
@@ -243,12 +235,11 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private async void DisengageHSP(object sender, EventArgs e)
+    private void DisengageHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            dialog.Text = await client.disengageHSP();
-            //var _ = scrollCMD.ScrollToAsync(0, dialog.Height , true);
+            client.disengageHSP();
         }
     } 
     /// <summary>
@@ -263,13 +254,11 @@ public partial class StatusPage : ContentPage
             if (_isRunning)
             {
                 // Your periodic function logic here
-                Dispatcher.Dispatch(async () =>
+                Dispatcher.Dispatch( () =>
                 {
                     if (client != null && client.isConnected())
                     {
-                        var result = await client.getBufferCount();
-                        bufferCount.Text = result[0];
-                        dialog.Text = result[1];
+                        client.getBufferCount();                        
                         connectionBtn.IsVisible = false;
                         statusGrid.IsVisible = true;
                     }
@@ -279,9 +268,7 @@ public partial class StatusPage : ContentPage
                         connectionBtn.IsVisible = !demoMode;
                         statusGrid.IsVisible = demoMode ;
                         bufferCount.Text = "0";
-                        dialog.Text = "Count invalid not connected";
                     }
-                    //var _ = scrollCMD.ScrollToAsync(0,dialog.Height,true);
                 });
                 return true; // Repeat again
             }
@@ -306,12 +293,12 @@ public partial class StatusPage : ContentPage
         scannerInput.Text = "";
     }
 
-    private async void getSystemMode_Clicked(object sender, EventArgs e)
+    private void getSystemMode_Clicked(object sender, EventArgs e)
     {
         var systemTypes = new string[] { "STA", "VER",  "ENC", "TRE" };
         if (client!= null)
         {
-            await client.readSystemMode();
+            client.readSystemMode();
             if (systemTypes.Contains(client.systemMode))
             {
                 SysteModeSelction.SelectedIndex = Array.IndexOf(systemTypes, client.systemMode);

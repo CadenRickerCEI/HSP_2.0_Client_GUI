@@ -34,19 +34,30 @@ public partial class LoadFromFilePage : ContentPage
         cancellationTokenSource = new CancellationTokenSource();
         InitializeComponent();
         loadFileBtn.IsVisible = false;
-        client.cmdUpdated += cmdDialogUpdated;
+        
         _progress.ProgressChanged += (s, e) =>
         {
             progressBar.Progress = e;
         };
+        
+    }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
         if (client != null)
         {
             //cmdDIAG.Text = client.dialogbuffer;
-            cmdDIAG.Text = client.cmdbuffer;
-            //scrollDIAG.ScrollToAsync(0,cmdDIAG.Height ,true);
-            scrollDIAG.ScrollToAsync(0,cmdDIAG.Height,true);
+            cmdDIAG.Text = client._cmdbuffer;
+            client._cmdUpdated += cmdDialogUpdated;
+            scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
         }
-    }    
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (client != null )
+        client._cmdUpdated -= cmdDialogUpdated;
+    }
     /// <summary>
     /// Event handler for the Open File button click event. It allows the user to select a CSV file
     /// and displays the file location in the Entry control.
@@ -184,24 +195,13 @@ public partial class LoadFromFilePage : ContentPage
         }
     }
 
-    /// <summary>
-    /// Updates dialog box with the input
-    /// </summary>
-    /// <param name="input"> string to update dialog box</param>
-    public void updatedialog(string input)
-    {
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-           cmdDIAG.Text = input;
-            scrollDIAG.ScrollToAsync(0, cmdDIAG.Height , true);
-        });
-    }
     
-    private void cmdDialogUpdated(bool updated)
+    private async void cmdDialogUpdated(bool updated)
     {
         if (updated && client != null)
         {
-            cmdDIAG.Text = client.cmdbuffer;
+            cmdDIAG.Text = client._cmdbuffer;
+            await Task.Delay(10);
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height + scrollDIAG.Height, true);
         }
     }

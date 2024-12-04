@@ -27,12 +27,12 @@
                 HorizontalOptions="Center"
                 Text="HSP Dialog" />
             <Frame Margin="5">
-                <ScrollView
+                <!--<ScrollView
                     x:Name="scrollCMD"
                     MaximumHeightRequest="100"
-                    MinimumHeightRequest="100">
-                    <Label x:Name="dialog" />
-                </ScrollView>
+                    MinimumHeightRequest="100">-->
+                    <Label x:Name="dialog" MinimumHeightRequest="200" />
+                <!--</ScrollView>-->
             </Frame>
             <!--<Label
                 FontSize="Subtitle"

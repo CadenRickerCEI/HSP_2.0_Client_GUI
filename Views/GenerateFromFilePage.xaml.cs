@@ -70,10 +70,10 @@ public partial class GenerateFromFilePage : ContentPage
     {
         base.OnAppearing();
         client = HSPClient.Instance;
-        client.cmdUpdated += cmdDataUpdated;
+        client._cmdUpdated += cmdDataUpdated;
         if (client != null)
         {
-            cmdDIAG.Text = client.cmdbuffer;
+            cmdDIAG.Text = client._cmdbuffer;
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
         }
         visable = true;
@@ -83,7 +83,7 @@ public partial class GenerateFromFilePage : ContentPage
         base.OnDisappearing();
         if (client != null)
         {
-            client.cmdUpdated -= cmdDataUpdated;
+            client._cmdUpdated -= cmdDataUpdated;
         }
         client = null;
         visable = false;
@@ -285,9 +285,7 @@ public partial class GenerateFromFilePage : ContentPage
 
             if (client != null)
             {
-                var _ = await client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);
-                var msg = await client.readServerMSg(true);
-                cmdDIAG.Text = client.cmdbuffer;
+                client.GenerateBuffer(bufferCmd, numofItems, resetBuffer);                
             }
         }
         else
@@ -390,11 +388,12 @@ public partial class GenerateFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
-    private void cmdDataUpdated(bool updated)
+    private async void cmdDataUpdated(bool updated)
     {
         if (updated && client != null && visable)
         {
-            cmdDIAG.Text = client.cmdbuffer;
+            cmdDIAG.Text = client._cmdbuffer;
+            await Task.Delay(3);
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height ,true);
         }
     }

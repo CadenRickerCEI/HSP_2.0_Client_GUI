@@ -10,6 +10,7 @@ namespace HSPGUI.Resources
         public string TID { get; set; }
         public string ExitEPC { get; set; }
         public Dictionary<string, byte> stats { get; set; }
+        
         private string[] statTypes = new String[] { "ALL", "OPN", "EPC","TID", "KIL","ACC", "USR", "PCW","LCK","RSSI_I","RSSI_Q" };
         
         public TagData()
@@ -67,32 +68,34 @@ namespace HSPGUI.Resources
         public Queue<TagData> tagHist { get; private set; }
         public Queue<TagData> badTags { get; private set; }
         private TagData? nextTag;
-        private bool newTag;
+        private bool _newTag;
         private string curTagString;
         public TagLog() {
             currentTag = new TagData();
             nextTag = null;
             tagHist = new Queue<TagData>();
             badTags = new Queue<TagData>();
-            newTag = false;
+            _newTag = false;
             curTagString = "";
         }
         
-        public async Task addData(string data)
+        public async Task<bool> addData(string data)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
-                parseData(data);
+                return parseData(data);
             });
         }
-        private void parseData(string data){
+        private bool parseData(string data){
+            bool newTag = false;
             var newLines = data.Split(new string[] { "\r\n", "\r\n\r\n" }, StringSplitOptions.None);
-            //System.Diagnostics.Debug.WriteLine(data);
             foreach (var line in newLines)
             {
                 
                 if (line.Contains("TRIGGER"))
                 {
+                    _newTag = true;
+                    newTag = true;
                     if (nextTag != null)
                     {
                         tagHist.Enqueue(nextTag);
@@ -102,7 +105,6 @@ namespace HSPGUI.Resources
                     nextTag = new TagData();
                     nextTag.TriggerTime = DateTime.TryParse(line.Substring(0, line.IndexOf("TRIGGER") - 1), out DateTime triggerTime)?
                         triggerTime : default(DateTime);
-                    //nextTag.TriggerTime = DateTime.Parse(line.Substring(0,line.IndexOf("TRIGGER")-1));
                     while (tagHist.Count > 30)
                     {
                         tagHist.Dequeue();
@@ -159,6 +161,7 @@ namespace HSPGUI.Resources
                         }
                         currentTag = nextTag;
                         newTag = true;
+                        _newTag = true;
                         if (badTag)
                         {
                             //System.Diagnostics.Debug.WriteLine("badTag");
@@ -171,13 +174,14 @@ namespace HSPGUI.Resources
                     }
                 }
             }
+            return newTag;
         }
         public string getCurrentTag()
         {
-            if (currentTag != null && newTag)
+            if (currentTag != null && _newTag)
             {
                 //System.Diagnostics.Debug.WriteLine(currentTag.ToString());
-                newTag = false;
+                _newTag = false;
                 curTagString = currentTag.ToString();
             }
             return curTagString;
