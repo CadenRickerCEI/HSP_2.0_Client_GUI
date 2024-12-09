@@ -119,13 +119,15 @@ public partial class cmdLine : ContentPage
             // Update the dialog to indicate that the client is not connected
             dialog.Text = "Not connected";
         }
-    }
-    private async void cmdDialogUpdated(bool updated)
+    }/// <summary>
+    /// /
+    /// </summary>
+    private void cmdDialogUpdated()
     {
-        if (updated && client != null && visable)
+        if (client != null && visable)
         {
             dialog.Text = client._cmdbuffer;
-            await Task.Delay(10);
+            //await Task.Delay(10);
             //var _ = scrollCMD.ScrollToAsync(0, dialog.Height + scrollCMD.Height, true);
         }
     }

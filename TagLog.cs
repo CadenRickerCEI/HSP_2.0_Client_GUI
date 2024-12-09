@@ -2,6 +2,9 @@
 
 namespace HSPGUI.Resources
 {
+    /// <summary> 
+    /// 
+    /// </summary>
     public class TagData
     {
         public DateTime TriggerTime { get; set; }
@@ -64,19 +67,20 @@ namespace HSPGUI.Resources
     }
     public class TagLog
     {
-        private TagData? currentTag { get; set; }
-        public Queue<TagData> tagHist { get; private set; }
-        public Queue<TagData> badTags { get; private set; }
+        private TagData? _currentTag { get; set; }
+        public Queue<TagData> _tagHist { get; private set; }
+        public Queue<TagData> _badTags { get; private set; }
         private TagData? nextTag;
         private bool _newTag;
-        private string curTagString;
+        private string _curTagString;
+        private const int _tagHistSize =5;
         public TagLog() {
-            currentTag = new TagData();
+            _currentTag = new TagData();
             nextTag = null;
-            tagHist = new Queue<TagData>();
-            badTags = new Queue<TagData>();
+            _tagHist = new Queue<TagData>();
+            _badTags = new Queue<TagData>();
             _newTag = false;
-            curTagString = "";
+            _curTagString = "";
         }
         
         public async Task<bool> addData(string data)
@@ -98,16 +102,16 @@ namespace HSPGUI.Resources
                     newTag = true;
                     if (nextTag != null)
                     {
-                        tagHist.Enqueue(nextTag);
-                        currentTag = nextTag;
+                        _tagHist.Enqueue(nextTag);
+                        _currentTag = nextTag;
                     }
                     newTag = true;
                     nextTag = new TagData();
                     nextTag.TriggerTime = DateTime.TryParse(line.Substring(0, line.IndexOf("TRIGGER") - 1), out DateTime triggerTime)?
                         triggerTime : default(DateTime);
-                    while (tagHist.Count > 30)
+                    while (_tagHist.Count > _tagHistSize)
                     {
-                        tagHist.Dequeue();
+                        _tagHist.Dequeue();
                     }
                 }
                 int index = line.IndexOf("=");
@@ -132,7 +136,6 @@ namespace HSPGUI.Resources
                     }
                     else if (line.Contains("ALL"))
                     {
-                        //System.Diagnostics.Debug.WriteLine("stat read"+line);
                         // Split the string into parts
                         var searchString = "RSSI=";
                         var RSSIindex = line.IndexOf(searchString)+searchString.Length;                        
@@ -159,16 +162,16 @@ namespace HSPGUI.Resources
                                 }
                             }
                         }
-                        currentTag = nextTag;
+                        _currentTag = nextTag;
                         newTag = true;
                         _newTag = true;
                         if (badTag)
                         {
                             //System.Diagnostics.Debug.WriteLine("badTag");
-                            badTags.Enqueue(nextTag);
-                            while (badTags.Count > 400)
+                            _badTags.Enqueue(nextTag);
+                            while (_badTags.Count > 400)
                             {
-                                badTags.Dequeue();
+                                _badTags.Dequeue();
                             }
                         }
                     }
@@ -178,20 +181,20 @@ namespace HSPGUI.Resources
         }
         public string getCurrentTag()
         {
-            if (currentTag != null && _newTag)
+            if (_currentTag != null && _newTag)
             {
                 //System.Diagnostics.Debug.WriteLine(currentTag.ToString());
                 _newTag = false;
-                curTagString = currentTag.ToString();
+                _curTagString = _currentTag.ToString();
             }
-            return curTagString;
+            return _curTagString;
         }
         public async Task<String> getHistAsync()
         {
             return await Task.Run(() =>
             {
                 var resultBuilder = new StringBuilder(); // Use StringBuilder for better performance
-                foreach (var tag in tagHist)
+                foreach (var tag in _tagHist)
                 {
                     resultBuilder.AppendLine(tag.ToString()); // Append formatted tag
                 }
@@ -200,9 +203,8 @@ namespace HSPGUI.Resources
         }
         public string dequeErrHist()
         {
-            //System.Diagnostics.Debug.WriteLine("dequeue tag");
             var tag = new TagData();
-            bool result = badTags.TryDequeue(out tag);
+            bool result = _badTags.TryDequeue(out tag);
             return result && tag != null ? tag.ToString():"";
         }
         

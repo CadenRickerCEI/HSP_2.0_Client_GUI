@@ -388,9 +388,9 @@ public partial class GenerateFromFilePage : ContentPage
                                                             stream, cancellationTokenSource.Token);
         }
     }
-    private async void cmdDataUpdated(bool updated)
+    private async void cmdDataUpdated()
     {
-        if (updated && client != null && visable)
+        if ( client != null && visable)
         {
             cmdDIAG.Text = client._cmdbuffer;
             await Task.Delay(3);

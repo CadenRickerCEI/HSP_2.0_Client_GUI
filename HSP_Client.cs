@@ -20,6 +20,9 @@ public class HSPClient
     /// The TelnetClient object used for the connection.
     /// </summary>
     private TelnetConnection? _clientCMD;
+    /// <summary>
+    /// 
+    /// </summary>
     private TelnetConnection? _clientDATA; //5001
     private bool _busy;
     public int _bufferCount =0; 
@@ -30,11 +33,11 @@ public class HSPClient
     /// <summary>
     /// Notifiation for when the data buffer been updated
     /// </summary>
-    public event Action<bool>? _cmdUpdated;   
+    public event Action? _cmdUpdated;   
     /// <summary>
     /// Notifiation for when the data buffer been updated
     /// </summary>
-    public event Action<bool>? _dataUpdated;
+    public event Action? _dataUpdated;
     /// <summary>
     /// Array of data types used in buffer commands.
     /// </summary>
@@ -63,10 +66,21 @@ public class HSPClient
     /// Lock object for thread safety.
     /// </summary>
     private static readonly object _lock = new object();
+    /// <summary>
+    /// Engaged Status for the HSP. Note this only based on  responses to the HSP and may not be accurate.
+    /// </summary>
     public bool _engaged { get; private set; }
+    /// <summary>
+    /// Data prot for the HSP.
+    /// </summary>
     private int _portData = 5001;
-    
+    /// <summary>
+    /// IP address for the hsP
+    /// </summary>
     private string _IpAddress = "192.168.50.124";
+    /// <summary>
+    /// 
+    /// </summary>
     public string systemMode;
     /// <summary>
     /// array conating the list of all possible cmd for antena
@@ -95,9 +109,6 @@ public class HSPClient
         }
         systemMode = "STA";
         tagLog = new TagLog();
-        var logFilePath = Path.Combine(downloadsDirectory, "app.log");
-        Log.Logger = new LoggerConfiguration().WriteTo
-            .File(logFilePath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7).CreateLogger(); 
     }
     /// <summary>
     /// Gets the single instance of the HSPClient class.
@@ -489,6 +500,7 @@ public class HSPClient
     /// <returns>Server response</returns>
     public void EngageHSP()
     {
+        _engaged = false;
         if (_clientCMD != null && isConnected())
             _clientCMD.WriteLine("ENGAGE");
             
@@ -557,19 +569,16 @@ public class HSPClient
     /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task readDialogPorts()
     {
-        
         if (_clientDATA != null)
         { 
             // Read data from the client and update the data buffer
             var dataMSG = _clientDATA.Read() ;
-            if (dataMSG != null)
+            if (dataMSG != null && await tagLog.addData(dataMSG))
             {
-                bool newTag = await tagLog.addData(dataMSG);
-                _dataUpdated?.Invoke(newTag);
+                _dataUpdated?.Invoke();
             }            
         }
         await parseCMDMsg();
-                
     }
     /// <summary>
     /// parse message takes in a string splits by new lines then adds them to a queue.
@@ -642,15 +651,14 @@ public class HSPClient
                 if ((parsedMsg != "" && parsedMsg != _cmdbuffer)|| _bufferCount != lastCount)
                 {
                     _cmdbuffer = parsedMsg;
-                    _cmdUpdated?.Invoke(true);
-                }
-                else
-                {
-                    _cmdUpdated?.Invoke(false);
+                    _cmdUpdated?.Invoke();
                 }
             }
         }
     }
+    /// <summary>
+    /// Sends command to get system type
+    /// </summary>
     public void readSystemMode()
     {
         _busy = true;
@@ -675,6 +683,11 @@ public class HSPClient
         _busy = false;
         return ;
     }
+    /// <summary>
+    /// Writes the sytem mode to the HSP.
+    /// </summary>
+    /// <param name="systemType"></param>
+    /// <returns></returns>
     public async Task writeSystemMode(string systemType)
     {
         var systemTypes = new string[] { "VER","STA", "ENC", "TRE" };

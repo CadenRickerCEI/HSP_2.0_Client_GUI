@@ -73,10 +73,9 @@ public partial class StatusPage : ContentPage
         
     }
     /// <summary>
-    /// Updates the dialog display if the dialog data has been updated.
+    /// Updates the dialog display if the dialog data has been updated. This is bound to an an action and get triggered when new text is available.
     /// </summary>
-    /// <param name="updated">Indicates whether the dialog data has been updated.</param>
-    private void dialogDataUpdated(bool updated)
+    private void dialogDataUpdated()
     {
         if (client != null)
         {
@@ -88,7 +87,7 @@ public partial class StatusPage : ContentPage
             }
             try
             {
-                var errorCount = client.tagLog.badTags.Count();
+                var errorCount = client.tagLog._badTags.Count();
                 if (tagErrLabel.Text == "" || tagErrLabel.Text == null) 
                 {
                     tagErrLabel.Text = client.tagLog.dequeErrHist();
@@ -109,10 +108,9 @@ public partial class StatusPage : ContentPage
     /// <summary>
     /// Updates the buffer count on the screen.
     /// </summary>
-    /// <param name="updated"></param>
-    private void dialogCmdUpdated( bool updated)
+    private void dialogCmdUpdated()
     {
-        if (updated && client !=  null)
+        if (client !=  null)
             bufferCount.Text = client._bufferCount.ToString();
     }    
 
@@ -218,11 +216,15 @@ public partial class StatusPage : ContentPage
     /// <param name="sender"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    private void EnagedHSP(object sender, EventArgs e)
+    private async void EnagedHSP(object sender, EventArgs e)
     {
         if (client != null && client.isConnected())
         {
-            client.EngageHSP();            
+            client.EngageHSP();
+            
+            await Task.Delay(20);
+            if (client._engaged)
+            await DisplayAlert("Engaged", "", "OK");
         }
     }
 
