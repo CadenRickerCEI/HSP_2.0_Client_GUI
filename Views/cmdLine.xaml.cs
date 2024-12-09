@@ -8,8 +8,9 @@ public partial class cmdLine : ContentPage
     /// A nullable HSPClient used to interact with the HSP object.
     /// </summary>
     private HSPClient? client;
-
-
+    /// <summary>
+    /// screen visabliyt to user
+    /// </summary>
     private bool visable = false;
     /// <summary>
     /// Initializes a new instance of the cmdLine class.
@@ -19,16 +20,16 @@ public partial class cmdLine : ContentPage
         // Initialize the component
         InitializeComponent();        
     }
+    /// <summary>
+    /// subscribes to actions, connects clinet, and sets visablity.
+    /// </summary>
     protected override void OnAppearing()
     {        
         base.OnAppearing();
         // Retrieve the client instance from the application
         client = HSPClient.Instance;
-
         // Set the visibility of the connection button based on the client's connection status
         connectionBtn.IsVisible = client == null || !client.isConnected();
-
-
         if (client != null)
         {
             // Set the visibility of the stack layout based on the connection button's visibility
@@ -43,9 +44,9 @@ public partial class cmdLine : ContentPage
         }        
         visable = true;
     }
-
-   
-
+    /// <summary>
+    /// unsubscrives from actions, set client to null and set visablity to false.
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
@@ -119,8 +120,9 @@ public partial class cmdLine : ContentPage
             // Update the dialog to indicate that the client is not connected
             dialog.Text = "Not connected";
         }
-    }/// <summary>
-    /// /
+    }
+    /// <summary>
+    /// updates the text with the command buffer.
     /// </summary>
     private void cmdDialogUpdated()
     {

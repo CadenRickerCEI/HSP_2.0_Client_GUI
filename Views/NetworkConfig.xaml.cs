@@ -129,7 +129,11 @@ public partial class NetworkConfig : ContentPage
         // Set focus to the DIAG port
         portDIAG.Focus();
     }
-    
+    /// <summary>
+    /// changes GUI mode and updates it in prefrences.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void demoMode_Clicked(object sender, EventArgs e)
     {
         bool demoMode = Preferences.Get(Constants.demoMode, false);

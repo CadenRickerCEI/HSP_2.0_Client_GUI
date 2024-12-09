@@ -19,9 +19,7 @@ public partial class AntenaSetUp : ContentPage
     public AntenaSetUp()
     {
         client = HSPClient.Instance;
-
         InitializeComponent();
-        //baudRateSelector.SelectedIndex = Math.Max(baudRateSelector.SelectedIndex, 0);
         tariSelector.SelectedIndex = Math.Max(tariSelector.SelectedIndex, 0);
         bitPatternSelector.SelectedIndex = Math.Max(bitPatternSelector.SelectedIndex, 0);
         LFSelector.SelectedIndex = Math.Max(LFSelector.SelectedIndex, 0);
@@ -39,7 +37,6 @@ public partial class AntenaSetUp : ContentPage
         if (client != null && client.isConnected())
         {
             var settings = await client.readAntenaSettings();
-
             if (settings != null && settings.Length > 4)
             {                
                 tariSelector.SelectedIndex = int.Parse(settings[0].Substring(0,1));
@@ -48,8 +45,7 @@ public partial class AntenaSetUp : ContentPage
                 recieverGainSelector.SelectedIndex = int.Parse(settings[1]);
                 asyncRecieverGain.SelectedIndex = int.Parse(settings[2]);
                 RadioFrequency.Text = settings[3];
-                recieverAttenuation.SelectedIndex = int.Parse(settings[4]);              
-
+                recieverAttenuation.SelectedIndex = int.Parse(settings[4]);    
             }
         }
     }
@@ -71,7 +67,6 @@ public partial class AntenaSetUp : ContentPage
             settings[2] = asyncRecieverGain.SelectedIndex.ToString();
             settings[3] = RadioFrequency.Text;
             settings[4] = recieverAttenuation.SelectedIndex.ToString();
-
             if (client != null && client.isConnected())
             {
                 await client.writeAntenaSettings(settings);
@@ -79,7 +74,11 @@ public partial class AntenaSetUp : ContentPage
         }        
     }
 
-
+    /// <summary>
+    /// Listner for a change on Radio Freqeuncy then limits the frequnecy to the valid range.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void RadioFrequency_Completed(object sender, EventArgs e)
     {
         decimal number;

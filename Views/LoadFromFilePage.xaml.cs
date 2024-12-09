@@ -1,6 +1,4 @@
-﻿// using Windows.Media.Protection.PlayReady;
-
-using CommunityToolkit.Maui.Storage;
+﻿using CommunityToolkit.Maui.Storage;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
@@ -20,6 +18,9 @@ public partial class LoadFromFilePage : ContentPage
     /// A Progress object to track the progress of the file loading operation.
     /// </summary>
     private Progress<double> _progress;
+    /// <summary>
+    /// cancelation token for creating sample file.
+    /// </summary>
     private CancellationTokenSource cancellationTokenSource;
 
 
@@ -41,6 +42,9 @@ public partial class LoadFromFilePage : ContentPage
         };
         
     }
+    /// <summary>
+    /// subscribes to actions
+    /// </summary>
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -51,6 +55,9 @@ public partial class LoadFromFilePage : ContentPage
             //scrollDIAG.ScrollToAsync(0, cmdDIAG.Height, true);
         }
     }
+    /// <summary>
+    /// unsubscribe from actions
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
@@ -130,7 +137,6 @@ public partial class LoadFromFilePage : ContentPage
         progressBar.IsVisible = false;
         progressFrame.IsVisible = false;
         loadFileBtn.IsEnabled = true;
-        //await scrollDIAG.ScrollToAsync(0,cmdDIAG.Height+scrollDIAG.Height,false);
     }
 
     /// <summary>

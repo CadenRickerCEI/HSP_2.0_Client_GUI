@@ -21,28 +21,49 @@ public partial class GenerateFromFilePage : ContentPage
     /// Boolean flags to indicate the validity of various input fields.
     /// </value>
     private bool EPC_Valid;
+    /// <summary>
+    /// Info on why the EPC feild is invalid
+    /// </summary>
     private string EPC_invalidReason;
     /// <value>
     /// Status of the USR fields validity
     /// </value>
     private bool USR_Valid;
+    /// <summary>
+    /// Information on why the USR data is invalid.
+    /// </summary>
     private string USR_invalidReason;
     /// <value>
     /// Status of the KIL fields validity
     /// </value>
     private bool KIL_Valid;
+    /// <summary>
+    /// Information on why the KIL is invalid
+    /// </summary>
     private string KIL_invalidReason;
     /// <value>
     /// Status of the ACC fields validity
     /// </value>
     private bool ACC_Valid;
+    /// <summary>
+    /// info on why ACC is invalid
+    /// </summary>
     private string ACC_invalidReason;
     /// <value>
     /// Status of the PCW fields validity
     /// </value>
     private bool PCW_Valid;
+    /// <summary>
+    /// Info on why PCW is invalid
+    /// </summary>
     private string PCW_invalidReason;
+    /// <summary>
+    /// cancel token for sample file generation.
+    /// </summary>
     private CancellationTokenSource cancellationTokenSource;
+    /// <summary>
+    /// defines if the screen is visable to the user.
+    /// </summary>
     private bool visable = false;
     /// <value>
     /// The constructor for the GenerateFromFilePage class. It connects the HSP client variable to the one in the main app,
@@ -66,6 +87,9 @@ public partial class GenerateFromFilePage : ContentPage
         EPC_Entry.MinimumWidthRequest = EPC_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenEPC_hex;
         UserData_Entry.MinimumWidthRequest = UserData_Entry.FontSize * Constants.fontToWidthScale * (double)Constants.MaxLenUSR_Hex;
     }
+    /// <summary>
+    /// Overides on appearing to subscribe to actions, update dialog, and connects the client.
+    /// </summary>
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -78,6 +102,9 @@ public partial class GenerateFromFilePage : ContentPage
         }
         visable = true;
     }
+    /// <summary>
+    /// uns unsubscribes from actions, set visable to false and sets clinet to null to free up rescources.
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
@@ -382,22 +409,28 @@ public partial class GenerateFromFilePage : ContentPage
         // Convert the CSV string to bytes
         var csvBytes = Encoding.UTF8.GetBytes(csv.ToString());
         using var stream = new MemoryStream(csvBytes);
-
         {
             var result = await FileSaver.Default.SaveAsync($"GenerateTag{now.ToString("yy")}{now.ToString("MM")}{now.ToString("dd")}{now.ToString("HH")}{now.ToString("mm")}.csv",
                                                             stream, cancellationTokenSource.Token);
         }
     }
+    /// <summary>
+    /// Updates cmd text and scrolls scroll view
+    /// </summary>
     private async void cmdDataUpdated()
     {
         if ( client != null && visable)
         {
             cmdDIAG.Text = client._cmdbuffer;
-            await Task.Delay(3);
+            await Task.Delay(5);//give time for text to update to the correct height
             var _ = scrollDIAG.ScrollToAsync(0, cmdDIAG.Height ,true);
         }
     }
-
+    /// <summary>
+    /// Displays help window when clicked.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void tagDataHelp_Clicked(object sender, EventArgs e)
     {
         await DisplayAlert("Help: Edit Tag Data", "Tag data may be eddited here before " +
@@ -414,7 +447,11 @@ public partial class GenerateFromFilePage : ContentPage
             "Number of Tags to Generate: Determines how many tags will be added to the buffer."
             , "Done");
     }
-
+    /// <summary>
+    /// Displays help window for file selection
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void fileSelectHelp_Clicked(object sender, EventArgs e)
     {
         await DisplayAlert("Help: File Select", "Press 'Select File' to choose a file as a source.\n" +
